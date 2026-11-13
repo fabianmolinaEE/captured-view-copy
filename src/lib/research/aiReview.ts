@@ -1,12 +1,83 @@
-import { z } from 'zod';
-import { categories, type Session, type Finding } from './types';
-import type { Frame } from './frameSampler';
-const output = z.object({ findings: z.array(z.object({ category:z.enum(categories), title:z.string().min(1), description:z.string(), timestamp_ms:z.number().finite(), end_timestamp_ms:z.number().finite().optional(), screen:z.string().optional(), confidence:z.number().min(0).max(1), visual_evidence:z.string(), event_ids:z.array(z.string()), why_video_matters:z.string(), evidence_sources:z.array(z.enum(['video','events'])) })).max(50) });
-export function validateFindings(raw: unknown, session: Session, runId: string): Finding[] {
-  return output.parse(raw).findings.map(f => ({ ...f, id: crypto.randomUUID(), session_id:session.id, analysis_run_id:runId, timestamp_ms:Math.min(session.duration_ms,Math.max(0,f.timestamp_ms)), end_timestamp_ms:f.end_timestamp_ms === undefined ? undefined : Math.min(session.duration_ms,Math.max(f.timestamp_ms, f.end_timestamp_ms, 0)), event_ids:f.event_ids.filter(id => session.events.some(e => e.id === id)), review_status:'pending' }));
+import { z } from "zod";
+import { safeMetadata } from "./eventLogger";
+import { categories, type Session, type Finding, type AnalysisMode } from "./types";
+import type { Frame } from "./frameSampler";
+
+export const proposalSchema = z.object({
+  category: z.enum(categories),
+  title: z.string().min(1).max(160),
+  description: z.string().min(1).max(4000),
+  timestamp_ms: z.number().finite().nonnegative(),
+  end_timestamp_ms: z.number().finite().nonnegative().optional(),
+  screen: z.string().max(200).optional(),
+  confidence: z.number().min(0).max(1),
+  visual_evidence: z.string().max(4000),
+  observed_evidence: z.string().min(1).max(4000),
+  interpretation: z.string().max(4000),
+  event_ids: z.array(z.string()).max(100),
+  why_video_matters: z.string().max(4000),
+  evidence_sources: z
+    .array(z.enum(["video", "events"]))
+    .min(1)
+    .max(2),
+});
+export const outputSchema = z.object({ findings: z.array(proposalSchema).max(50) }).strict();
+export interface EvidenceContext {
+  id: string;
+  duration_ms: number;
+  events: { id: string }[];
 }
-// Intentionally enumerate the payload: the answer key and review decisions never cross this boundary.
-export function blindPayload(session: Session, frames: Frame[]) {
-  return { duration_ms: session.duration_ms, frames, events: session.events.map(({ id,t_ms,type,screen,target_id,x,y,operation_id,metadata }) => ({ id,t_ms,type,screen,target_id,x,y,operation_id,metadata })), categories:[...categories], mode:'video_frames_plus_events' as const };
+export function validateFindings(
+  raw: unknown,
+  session: EvidenceContext,
+  runId: string,
+  mode: AnalysisMode = "video_frames_plus_events",
+): Finding[] {
+  return outputSchema.parse(raw).findings.map((f) => {
+    if (
+      f.timestamp_ms > session.duration_ms ||
+      (f.end_timestamp_ms !== undefined &&
+        (f.end_timestamp_ms < f.timestamp_ms || f.end_timestamp_ms > session.duration_ms))
+    )
+      throw new Error("Model returned a timestamp outside the recording.");
+    if (f.event_ids.some((id) => !session.events.some((e) => e.id === id)))
+      throw new Error("Model cited an unknown event ID. Analysis was rejected.");
+    if (f.evidence_sources.includes("events") && !f.event_ids.length)
+      throw new Error("Event evidence must cite an observed event.");
+    if (
+      mode === "events_only" &&
+      (f.evidence_sources.includes("video") || f.visual_evidence || f.why_video_matters)
+    )
+      throw new Error("Events-only analysis claimed visual evidence.");
+    return {
+      ...f,
+      id: crypto.randomUUID(),
+      session_id: session.id,
+      analysis_run_id: runId,
+      review_status: "pending",
+    };
+  });
 }
-export const aiStatus = { configured: false, message:'AI is not configured. Recording, playback, and local review are available. A secure Gemini connection must be added before sampled frames can be analyzed.' };
+// Enumerate every allowed input; never spread a session into a model request.
+export function blindPayload(
+  session: Session,
+  frames: Frame[],
+  mode: AnalysisMode = "video_frames_plus_events",
+) {
+  const events = session.events.map(
+    ({ id, t_ms, type, screen, target_id, x, y, operation_id, metadata }) => ({
+      id,
+      t_ms,
+      type,
+      screen,
+      target_id,
+      x,
+      y,
+      operation_id,
+      metadata: safeMetadata(metadata),
+    }),
+  );
+  const common = { duration_ms: session.duration_ms, events, categories: [...categories], mode };
+  // The baseline has no images, crop metadata, or visual context keys at all.
+  return mode === "events_only" ? common : { ...common, frames };
+}

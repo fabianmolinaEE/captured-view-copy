@@ -1,16 +1,280 @@
-import { Link } from '@tanstack/react-router';
-import { useEffect, useState } from 'react';
-import { CirclePlus, Clapperboard, Sparkles, CheckCheck, Clock3, Search, ArrowRight, ShieldCheck, FlaskConical, Film, Trash2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Hero } from './Hero';
-import { Shell, PageHeading, Footer } from './Shell';
-import { deleteSession, listSessions } from '@/lib/research/sessionStorage';
-import { duration, type Session } from '@/lib/research/types';
+import { Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import {
+  CirclePlus,
+  Clapperboard,
+  Sparkles,
+  CheckCheck,
+  Clock3,
+  Search,
+  ArrowRight,
+  ShieldCheck,
+  FlaskConical,
+  Film,
+  Trash2,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Hero } from "./Hero";
+import { Shell, PageHeading, Footer } from "./Shell";
+import { deleteSession, listSessions } from "@/lib/research/sessionStorage";
+import { listShared, fetchShared, type SharedSummary } from "@/lib/research/sharedStorage";
+import { duration, type Session } from "@/lib/research/types";
 export function Sessions() {
-  const [sessions,setSessions] = useState<Session[]>([]); const [loaded,setLoaded] = useState(false); const [error,setError] = useState(''); const [filter,setFilter] = useState('All sessions'); const [search,setSearch] = useState('');
-  useEffect(() => { listSessions().then(setSessions).catch(e => setError(e.message)).finally(() => setLoaded(true)); }, []);
-  const shown = sessions.filter(s => (filter === 'All sessions' || s.status === filter.toLowerCase()) && s.title.toLowerCase().includes(search.toLowerCase()));
-  const stats = [{title:'Total sessions',value:sessions.length,sub:'Actual browser recordings',icon:Clapperboard},{title:'AI proposals',value:sessions.reduce((n,s) => n+s.findings.length,0),sub:'Awaiting human judgment',icon:Sparkles},{title:'Reviewed sessions',value:sessions.filter(s => s.status === 'reviewed').length,sub:'Evidence checked by a person',icon:CheckCheck},{title:'Recorded time',value:duration(sessions.reduce((n,s) => n+s.duration_ms,0)),sub:'Minutes of real interaction',icon:Clock3}];
-  const record = <Button asChild><Link to="/test-app"><CirclePlus/>Record a test session</Link></Button>;
-  return <Shell section="Sessions"><PageHeading title="Sessions" description="Find friction that logs can't explain." action={record}/><div className="stat-grid">{stats.map(s => <div className="stat" key={s.title}><div className="stat-title">{s.title}<s.icon/></div><div className="stat-value">{loaded ? s.value : '—'}</div><div className="stat-sub">{s.sub}</div></div>)}</div><div className="section-toolbar"><div className="filter-tabs">{['All sessions','Captured','Analyzed','Reviewed'].map(f => <Button key={f} variant="ghost" className={`filter-tab ${filter === f ? 'selected' : ''}`} onClick={() => setFilter(f)}>{f}{f === 'All sessions' && <span className="text-[10px] rounded bg-secondary px-1.5 py-0.5">{sessions.length}</span>}</Button>)}</div><div className="search-field"><Search/><input aria-label="Search sessions" placeholder="Search sessions…" value={search} onChange={e => setSearch(e.target.value)}/></div></div><div className="session-table-header"><span>SESSION</span><span>STATUS</span><span>DURATION</span><span>PROPOSALS</span></div>{error && <div className="error-note">{error}</div>}{!loaded ? <div className="empty-sessions"><p>Opening local sessions…</p></div> : shown.length === 0 ? <div className="empty-sessions"><Hero large/><h2>{sessions.length ? 'No matching sessions' : 'Every hero needs an origin story.'}</h2><p>{sessions.length ? 'Try another search or session status.' : <>Record your first session. A real recording, a trail of events,<br className="hidden md:block"/> and a clearer picture of where users get stuck.</>}</p>{sessions.length === 0 && <div className="empty-action">{record}</div>}<div className="empty-footnote"><ShieldCheck size={12}/>No sample recordings. No invented findings.</div></div> : shown.map(s => <div className="session-row" key={s.id}><div className="session-row-title"><div className="session-icon"><Film size={18}/></div><div><Link to="/sessions/$id" params={{id:s.id}}>{s.title}</Link><div className="text-[10px] text-muted-foreground mt-1">{new Date(s.created_at).toLocaleDateString()} · {s.event_count} events · {s.video_blob.size ? 'Video saved' : 'No video'}</div></div></div><div><span className={`status-badge ${s.status}`}>{s.status}</span></div><span className="desktop-cell font-mono">{duration(s.duration_ms)}</span><div className="desktop-cell flex justify-between items-center"><span>{s.findings.length}</span><Button variant="ghost" size="icon" aria-label={`Delete ${s.title}`} title="Delete session" onClick={async () => { if (window.confirm('Delete this recording and all associated evidence? This cannot be undone.')) { await deleteSession(s.id); setSessions(list => list.filter(v => v.id !== s.id)); } }}><Trash2 size={14}/></Button></div></div>)}<div className="research-band"><div className="research-symbol"><FlaskConical size={19}/></div><div><h3>Small sessions. Meaningful evidence.</h3><p>Build your research set with 10–20 real team recordings.<br className="hidden lg:block"/> Label what happened, review proposals, and test what video adds.</p></div><div className="research-progress"><div className="flex justify-between"><span>Research set</span><span>{sessions.length} / 10</span></div><progress max={10} value={Math.min(10,sessions.length)}/></div><Button asChild variant="ghost" size="sm"><Link to="/evaluation">View evaluation<ArrowRight/></Link></Button></div><Footer/></Shell>;
+  const [shared, setShared] = useState<SharedSummary[]>([]);
+  const [busy, setBusy] = useState(false);
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState("");
+  const [filter, setFilter] = useState("All sessions");
+  const [search, setSearch] = useState("");
+  useEffect(() => {
+    listSessions()
+      .then(setSessions)
+      .catch((e) => setError(e.message))
+      .finally(() => setLoaded(true));
+  }, []);
+  const shown = sessions.filter(
+    (s) =>
+      (filter === "All sessions" || s.status === filter.toLowerCase()) &&
+      s.title.toLowerCase().includes(search.toLowerCase()),
+  );
+  const stats = [
+    {
+      title: "Total sessions",
+      value: sessions.length,
+      sub: "Actual browser recordings",
+      icon: Clapperboard,
+    },
+    {
+      title: "AI proposals",
+      value: sessions.reduce((n, s) => n + s.findings.length, 0),
+      sub: "Real model proposals across all runs",
+      icon: Sparkles,
+    },
+    {
+      title: "Reviewed sessions",
+      value: sessions.filter((s) => s.status === "reviewed").length,
+      sub: "Evidence checked by a person",
+      icon: CheckCheck,
+    },
+    {
+      title: "Recorded time",
+      value: duration(sessions.reduce((n, s) => n + s.duration_ms, 0)),
+      sub: "Minutes of real interaction",
+      icon: Clock3,
+    },
+  ];
+  const record = (
+    <Button asChild>
+      <Link to="/test-app">
+        <CirclePlus />
+        Record a test session
+      </Link>
+    </Button>
+  );
+  return (
+    <Shell section="Sessions">
+      <PageHeading
+        title="Sessions"
+        description="Find friction that logs can't explain."
+        action={record}
+      />
+      <div className="flex flex-wrap gap-2 mb-4">
+        <Button
+          variant="outline"
+          disabled={busy}
+          onClick={async () => {
+            setBusy(true);
+            try {
+              setShared(await listShared());
+            } catch (e) {
+              setError(e instanceof Error ? e.message : "Shared loading failed.");
+            } finally {
+              setBusy(false);
+            }
+          }}
+        >
+          Load team’s shared sessions
+        </Button>
+      </div>
+      {shared.map((s) => (
+        <div className="flex justify-between gap-2 mb-3" key={s.id}>
+          <span className="text-sm">{s.title} · Shared</span>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={busy}
+            onClick={async () => {
+              if (
+                sessions.some((local) => local.id === s.id) &&
+                !window.confirm(
+                  "Replace the local copy with the shared version? Export any unsynced local edits first.",
+                )
+              )
+                return;
+              setBusy(true);
+              try {
+                await fetchShared(s.id);
+                setSessions(await listSessions());
+              } catch (e) {
+                setError(e instanceof Error ? e.message : "Import failed.");
+              } finally {
+                setBusy(false);
+              }
+            }}
+          >
+            Import private copy
+          </Button>
+        </div>
+      ))}
+      <div className="stat-grid">
+        {stats.map((s) => (
+          <div className="stat" key={s.title}>
+            <div className="stat-title">
+              {s.title}
+              <s.icon />
+            </div>
+            <div className="stat-value">{loaded ? s.value : "—"}</div>
+            <div className="stat-sub">{s.sub}</div>
+          </div>
+        ))}
+      </div>
+      <div className="section-toolbar">
+        <div className="filter-tabs">
+          {["All sessions", "Captured", "Analyzed", "Reviewed"].map((f) => (
+            <Button
+              key={f}
+              variant="ghost"
+              className={`filter-tab ${filter === f ? "selected" : ""}`}
+              onClick={() => setFilter(f)}
+            >
+              {f}
+              {f === "All sessions" && (
+                <span className="text-[10px] rounded bg-secondary px-1.5 py-0.5">
+                  {sessions.length}
+                </span>
+              )}
+            </Button>
+          ))}
+        </div>
+        <div className="search-field">
+          <Search />
+          <input
+            aria-label="Search sessions"
+            placeholder="Search sessions…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+      </div>
+      <div className="session-table-header">
+        <span>SESSION</span>
+        <span>STATUS</span>
+        <span>DURATION</span>
+        <span>PROPOSALS</span>
+      </div>
+      {error && <div className="error-note">{error}</div>}
+      {!loaded ? (
+        <div className="empty-sessions">
+          <p>Opening local sessions…</p>
+        </div>
+      ) : shown.length === 0 ? (
+        <div className="empty-sessions">
+          <Hero large />
+          <h2>{sessions.length ? "No matching sessions" : "Every hero needs an origin story."}</h2>
+          <p>
+            {sessions.length ? (
+              "Try another search or session status."
+            ) : (
+              <>
+                Record your first session. A real recording, a trail of events,
+                <br className="hidden md:block" /> and a clearer picture of where users get stuck.
+              </>
+            )}
+          </p>
+          {sessions.length === 0 && <div className="empty-action">{record}</div>}
+          <div className="empty-footnote">
+            <ShieldCheck size={12} />
+            No sample recordings. No invented findings.
+          </div>
+        </div>
+      ) : (
+        shown.map((s) => (
+          <div className="session-row" key={s.id}>
+            <div className="session-row-title">
+              <div className="session-icon">
+                <Film size={18} />
+              </div>
+              <div>
+                <Link to="/sessions/$id" params={{ id: s.id }}>
+                  {s.title}
+                </Link>
+                <div className="text-[10px] text-muted-foreground mt-1">
+                  {new Date(s.created_at).toLocaleDateString()} · {s.event_count} events ·{" "}
+                  {s.video_blob.size ? "Video saved" : "No video"} ·{" "}
+                  {s.sync?.state === "synced"
+                    ? "Shared copy saved"
+                    : s.sync
+                      ? "Local changes"
+                      : "Local only"}
+                </div>
+              </div>
+            </div>
+            <div>
+              <span className={`status-badge ${s.status}`}>{s.status}</span>
+            </div>
+            <span className="desktop-cell font-mono">{duration(s.duration_ms)}</span>
+            <div className="desktop-cell flex justify-between items-center">
+              <span>{s.findings.length}</span>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label={`Delete ${s.title}`}
+                title="Delete session"
+                onClick={async () => {
+                  if (
+                    window.confirm(
+                      "Delete this recording and all associated evidence? This cannot be undone.",
+                    )
+                  ) {
+                    await deleteSession(s.id);
+                    setSessions((list) => list.filter((v) => v.id !== s.id));
+                  }
+                }}
+              >
+                <Trash2 size={14} />
+              </Button>
+            </div>
+          </div>
+        ))
+      )}
+      <div className="research-band">
+        <div className="research-symbol">
+          <FlaskConical size={19} />
+        </div>
+        <div>
+          <h3>Small sessions. Meaningful evidence.</h3>
+          <p>
+            Build your research set with 10–20 real team recordings.
+            <br className="hidden lg:block" /> Label what happened, review proposals, and test what
+            video adds.
+          </p>
+        </div>
+        <div className="research-progress">
+          <div className="flex justify-between">
+            <span>Research set</span>
+            <span>{sessions.length} / 10</span>
+          </div>
+          <progress max={10} value={Math.min(10, sessions.length)} />
+        </div>
+        <Button asChild variant="ghost" size="sm">
+          <Link to="/evaluation">
+            View evaluation
+            <ArrowRight />
+          </Link>
+        </Button>
+      </div>
+      <Footer />
+    </Shell>
+  );
 }

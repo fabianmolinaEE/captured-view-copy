@@ -10,21 +10,41 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AbTestsRouteImport } from './routes/ab-tests'
 import { Route as EvaluationRouteImport } from './routes/evaluation'
+import { Route as InsightsRouteImport } from './routes/insights'
+import { Route as RolloutsRouteImport } from './routes/rollouts'
 import { Route as SessionsRouteImport } from './routes/sessions'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as TestAppRouteImport } from './routes/test-app'
+import { Route as InsightsIndexRouteImport } from './routes/insights.index'
 import { Route as SessionsIndexRouteImport } from './routes/sessions.index'
 import { Route as SessionsIdRouteImport } from './routes/sessions.$id'
+import { Route as InsightsSessionIdFindingIdRouteImport } from './routes/insights.$sessionId.$findingId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AbTestsRoute = AbTestsRouteImport.update({
+  id: '/ab-tests',
+  path: '/ab-tests',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EvaluationRoute = EvaluationRouteImport.update({
   id: '/evaluation',
   path: '/evaluation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InsightsRoute = InsightsRouteImport.update({
+  id: '/insights',
+  path: '/insights',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RolloutsRoute = RolloutsRouteImport.update({
+  id: '/rollouts',
+  path: '/rollouts',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SessionsRoute = SessionsRouteImport.update({
@@ -42,6 +62,11 @@ const TestAppRoute = TestAppRouteImport.update({
   path: '/test-app',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InsightsIndexRoute = InsightsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => InsightsRoute,
+} as any)
 const SessionsIndexRoute = SessionsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -52,66 +77,103 @@ const SessionsIdRoute = SessionsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => SessionsRoute,
 } as any)
+const InsightsSessionIdFindingIdRoute =
+  InsightsSessionIdFindingIdRouteImport.update({
+    id: '/$sessionId/$findingId',
+    path: '/$sessionId/$findingId',
+    getParentRoute: () => InsightsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/ab-tests': typeof AbTestsRoute
   '/evaluation': typeof EvaluationRoute
+  '/insights': typeof InsightsRouteWithChildren
+  '/rollouts': typeof RolloutsRoute
   '/sessions': typeof SessionsRouteWithChildren
   '/settings': typeof SettingsRoute
   '/test-app': typeof TestAppRoute
   '/sessions/$id': typeof SessionsIdRoute
+  '/insights/': typeof InsightsIndexRoute
   '/sessions/': typeof SessionsIndexRoute
+  '/insights/$sessionId/$findingId': typeof InsightsSessionIdFindingIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/ab-tests': typeof AbTestsRoute
   '/evaluation': typeof EvaluationRoute
+  '/rollouts': typeof RolloutsRoute
   '/settings': typeof SettingsRoute
   '/test-app': typeof TestAppRoute
   '/sessions/$id': typeof SessionsIdRoute
+  '/insights': typeof InsightsIndexRoute
   '/sessions': typeof SessionsIndexRoute
+  '/insights/$sessionId/$findingId': typeof InsightsSessionIdFindingIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/ab-tests': typeof AbTestsRoute
   '/evaluation': typeof EvaluationRoute
+  '/insights': typeof InsightsRouteWithChildren
+  '/rollouts': typeof RolloutsRoute
   '/sessions': typeof SessionsRouteWithChildren
   '/settings': typeof SettingsRoute
   '/test-app': typeof TestAppRoute
   '/sessions/$id': typeof SessionsIdRoute
+  '/insights/': typeof InsightsIndexRoute
   '/sessions/': typeof SessionsIndexRoute
+  '/insights/$sessionId/$findingId': typeof InsightsSessionIdFindingIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/ab-tests'
     | '/evaluation'
+    | '/insights'
+    | '/rollouts'
     | '/sessions'
     | '/settings'
     | '/test-app'
     | '/sessions/$id'
+    | '/insights/'
     | '/sessions/'
+    | '/insights/$sessionId/$findingId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/ab-tests'
     | '/evaluation'
+    | '/rollouts'
     | '/settings'
     | '/test-app'
     | '/sessions/$id'
+    | '/insights'
     | '/sessions'
+    | '/insights/$sessionId/$findingId'
   id:
     | '__root__'
     | '/'
+    | '/ab-tests'
     | '/evaluation'
+    | '/insights'
+    | '/rollouts'
     | '/sessions'
     | '/settings'
     | '/test-app'
     | '/sessions/$id'
+    | '/insights/'
     | '/sessions/'
+    | '/insights/$sessionId/$findingId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AbTestsRoute: typeof AbTestsRoute
   EvaluationRoute: typeof EvaluationRoute
+  InsightsRoute: typeof InsightsRouteWithChildren
+  RolloutsRoute: typeof RolloutsRoute
   SessionsRoute: typeof SessionsRouteWithChildren
   SettingsRoute: typeof SettingsRoute
   TestAppRoute: typeof TestAppRoute
@@ -126,11 +188,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ab-tests': {
+      id: '/ab-tests'
+      path: '/ab-tests'
+      fullPath: '/ab-tests'
+      preLoaderRoute: typeof AbTestsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/evaluation': {
       id: '/evaluation'
       path: '/evaluation'
       fullPath: '/evaluation'
       preLoaderRoute: typeof EvaluationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/insights': {
+      id: '/insights'
+      path: '/insights'
+      fullPath: '/insights'
+      preLoaderRoute: typeof InsightsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rollouts': {
+      id: '/rollouts'
+      path: '/rollouts'
+      fullPath: '/rollouts'
+      preLoaderRoute: typeof RolloutsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sessions': {
@@ -154,6 +237,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TestAppRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/insights/': {
+      id: '/insights/'
+      path: '/'
+      fullPath: '/insights/'
+      preLoaderRoute: typeof InsightsIndexRouteImport
+      parentRoute: typeof InsightsRoute
+    }
     '/sessions/': {
       id: '/sessions/'
       path: '/'
@@ -168,8 +258,29 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SessionsIdRouteImport
       parentRoute: typeof SessionsRoute
     }
+    '/insights/$sessionId/$findingId': {
+      id: '/insights/$sessionId/$findingId'
+      path: '/$sessionId/$findingId'
+      fullPath: '/insights/$sessionId/$findingId'
+      preLoaderRoute: typeof InsightsSessionIdFindingIdRouteImport
+      parentRoute: typeof InsightsRoute
+    }
   }
 }
+
+interface InsightsRouteChildren {
+  InsightsIndexRoute: typeof InsightsIndexRoute
+  InsightsSessionIdFindingIdRoute: typeof InsightsSessionIdFindingIdRoute
+}
+
+const InsightsRouteChildren: InsightsRouteChildren = {
+  InsightsIndexRoute: InsightsIndexRoute,
+  InsightsSessionIdFindingIdRoute: InsightsSessionIdFindingIdRoute,
+}
+
+const InsightsRouteWithChildren = InsightsRoute._addFileChildren(
+  InsightsRouteChildren,
+)
 
 interface SessionsRouteChildren {
   SessionsIdRoute: typeof SessionsIdRoute
@@ -187,7 +298,10 @@ const SessionsRouteWithChildren = SessionsRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AbTestsRoute: AbTestsRoute,
   EvaluationRoute: EvaluationRoute,
+  InsightsRoute: InsightsRouteWithChildren,
+  RolloutsRoute: RolloutsRoute,
   SessionsRoute: SessionsRouteWithChildren,
   SettingsRoute: SettingsRoute,
   TestAppRoute: TestAppRoute,

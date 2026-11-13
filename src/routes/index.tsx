@@ -1,3 +1,11 @@
-import { createFileRoute, redirect } from '@tanstack/react-router';
-import { pageHead } from '@/components/research/Shell';
-export const Route = createFileRoute('/')({ head: () => pageHead('Sessions', 'Zero To Hero — evidence-first usability research with real browser recordings.'), beforeLoad: () => { throw redirect({ to: '/sessions' }); } });
+import { createFileRoute } from "@tanstack/react-router";
+import { pageHead } from "@/components/research/Shell";
+import { Home } from "@/components/research/Home";
+export const Route = createFileRoute("/")({
+  head: () =>
+    pageHead(
+      "Home",
+      "LoopMate brings recordings, insights, and human judgment into one improvement loop.",
+    ),
+  component: Home,
+});

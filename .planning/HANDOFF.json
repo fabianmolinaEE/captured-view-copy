@@ -1,0 +1,318 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-11-13T01:55:11.153Z",
+  "source": "auto-postool",
+  "partial": false,
+  "phase": null,
+  "phase_name": null,
+  "phase_dir": null,
+  "plan": null,
+  "task": null,
+  "total_tasks": null,
+  "status": "auto-checkpoint",
+  "completed_tasks": [],
+  "remaining_tasks": [],
+  "blockers": [],
+  "human_actions_pending": [],
+  "decisions": [],
+  "uncommitted_files": [
+    {
+      "status": "M",
+      "path": ".gitignore"
+    },
+    {
+      "status": "M",
+      "path": "AGENTS.md"
+    },
+    {
+      "status": "M",
+      "path": "README.md"
+    },
+    {
+      "status": "M",
+      "path": "package.json"
+    },
+    {
+      "status": "M",
+      "path": "roadmap.md"
+    },
+    {
+      "status": "M",
+      "path": "src/components/research/Evaluation.tsx"
+    },
+    {
+      "status": "M",
+      "path": "src/components/research/Hero.tsx"
+    },
+    {
+      "status": "M",
+      "path": "src/components/research/SessionReview.tsx"
+    },
+    {
+      "status": "M",
+      "path": "src/components/research/Sessions.tsx"
+    },
+    {
+      "status": "M",
+      "path": "src/components/research/Settings.tsx"
+    },
+    {
+      "status": "M",
+      "path": "src/components/research/Shell.tsx"
+    },
+    {
+      "status": "M",
+      "path": "src/components/research/TestApp.tsx"
+    },
+    {
+      "status": "M",
+      "path": "src/lib/research/aiReview.ts"
+    },
+    {
+      "status": "M",
+      "path": "src/lib/research/capture.ts"
+    },
+    {
+      "status": "M",
+      "path": "src/lib/research/evaluation.ts"
+    },
+    {
+      "status": "M",
+      "path": "src/lib/research/eventLogger.ts"
+    },
+    {
+      "status": "M",
+      "path": "src/lib/research/frameSampler.ts"
+    },
+    {
+      "status": "M",
+      "path": "src/lib/research/sessionStorage.ts"
+    },
+    {
+      "status": "M",
+      "path": "src/lib/research/types.ts"
+    },
+    {
+      "status": "M",
+      "path": "src/routeTree.gen.ts"
+    },
+    {
+      "status": "M",
+      "path": "src/routes/__root.tsx"
+    },
+    {
+      "status": "M",
+      "path": "src/routes/evaluation.tsx"
+    },
+    {
+      "status": "M",
+      "path": "src/routes/index.tsx"
+    },
+    {
+      "status": "M",
+      "path": "src/routes/sessions.$id.tsx"
+    },
+    {
+      "status": "M",
+      "path": "src/routes/sessions.index.tsx"
+    },
+    {
+      "status": "M",
+      "path": "src/routes/sessions.tsx"
+    },
+    {
+      "status": "M",
+      "path": "src/routes/settings.tsx"
+    },
+    {
+      "status": "M",
+      "path": "src/routes/test-app.tsx"
+    },
+    {
+      "status": "M",
+      "path": "src/server.ts"
+    },
+    {
+      "status": "M",
+      "path": "src/styles.css"
+    },
+    {
+      "status": "M",
+      "path": "src/test/setup.ts"
+    },
+    {
+      "status": "??",
+      "path": ".env.example"
+    },
+    {
+      "status": "??",
+      "path": ".planning/"
+    },
+    {
+      "status": "??",
+      "path": "CLAUDE.md"
+    },
+    {
+      "status": "??",
+      "path": "docs/"
+    },
+    {
+      "status": "??",
+      "path": "package-lock.json"
+    },
+    {
+      "status": "??",
+      "path": "src/components/research/AnalysisPanel.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/components/research/ComingSoon.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/components/research/EvidencePanel.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/components/research/Home.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/components/research/InsightDetail.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/components/research/Insights.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/components/research/LoopJourney.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/components/research/NextStepDraft.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/components/research/SharedSessionPanel.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/hooks/use-motion-preference.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/hooks/use-research-session.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/lib/research/actions.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/lib/research/apiClient.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/lib/research/captureViewport.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/lib/research/evidence.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/lib/research/insights.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/lib/research/review.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/lib/research/server/"
+    },
+    {
+      "status": "??",
+      "path": "src/lib/research/sharedStorage.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/routes/ab-tests.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/routes/insights.$sessionId.$findingId.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/routes/insights.index.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/routes/insights.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/routes/rollouts.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/test/backend.test.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/test/capture-viewport.test.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/test/capture.test.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/test/gemini-errors.test.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/test/insight-actions.test.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/test/insight-detail.test.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/test/motion.test.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/test/research-fixtures.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/test/research.test.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/test/review.test.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/test/storage.test.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/test/test-app-capture.test.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/test/video-metadata.test.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/test/workspace-ux.test.tsx"
+    }
+  ],
+  "next_action": null,
+  "context_notes": "Recent commits:\n187c951 Add project README\nf661437 Implemented zero-to-hero flow\n1904112 Changes\n4b86de6 Changes\nf371c5e Changes"
+}

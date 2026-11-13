@@ -81,16 +81,25 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Zero To Hero" },
-      { name: "description", content: "Find friction that logs can't explain. Evidence-first usability research." },
-      { name: "author", content: "Zero To Hero" },
-      { property: "og:title", content: "Zero To Hero" },
-      { property: "og:description", content: "Find friction that logs can't explain. Evidence-first usability research." },
+      { title: "LoopMate" },
+      {
+        name: "description",
+        content: "Find friction that logs can't explain. Evidence-first usability research.",
+      },
+      { name: "author", content: "LoopMate" },
+      { property: "og:title", content: "LoopMate" },
+      {
+        property: "og:description",
+        content: "Find friction that logs can't explain. Evidence-first usability research.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
-      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;550;600;650;700&family=IBM+Plex+Mono:wght@400;500&display=swap' },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;550;600;650;700&family=IBM+Plex+Mono:wght@400;500&display=swap",
+      },
       {
         rel: "stylesheet",
         href: appCss,
