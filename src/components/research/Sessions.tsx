@@ -1,4 +1,21 @@
-import { Link } from "@tanstack/react-router";
+import {
+  evidenceDuration,
+  pregeneratedLabel,
+  publicSessionNotes,
+} from "@/lib/research/publicVideo";
+import { useSessionsChanged } from "@/hooks/use-demo-import";
+import { notifySessionsChanged } from "@/lib/research/demo/importTrackerRuns";
+import { useProduct } from "@/hooks/use-product";
+import {
+  sessionsForProduct,
+  productNameForSource,
+  isArchivedSession,
+} from "@/lib/research/products";
+import { competitorOf, competitorSessionsFor } from "@/lib/research/competitors";
+import { discardRunsForSession } from "@/lib/research/simulation";
+import { PublicSourceLibrary } from "./UberEatsSources";
+import { ScoutMascot } from "./ScoutMascot";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
   CirclePlus,
@@ -16,13 +33,41 @@ import {
 import { Button } from "@/components/ui/button";
 import { Hero } from "./Hero";
 import { Shell, PageHeading, Footer } from "./Shell";
-import { deleteSession, listSessions } from "@/lib/research/sessionStorage";
+import {
+  deleteSession,
+  listSessions,
+  exportSession,
+  downloadFile,
+} from "@/lib/research/sessionStorage";
 import { listShared, fetchShared, type SharedSummary } from "@/lib/research/sharedStorage";
 import { duration, type Session } from "@/lib/research/types";
+/** Caveats such as "Historical UI (2020)" or "Tracker found no insights in this clip". */
+function SessionNotes({ session }: { session: Session }) {
+  const notes = publicSessionNotes(session);
+  if (!notes.length) return null;
+  return (
+    <div className="mt-1 flex flex-wrap gap-1.5">
+      {notes.map((note) => (
+        <span
+          key={note}
+          className="rounded border border-border px-1.5 py-0.5 text-[10px] text-muted-foreground"
+        >
+          {note}
+        </span>
+      ))}
+    </div>
+  );
+}
 export function Sessions() {
+  const navigate = useNavigate();
   const [shared, setShared] = useState<SharedSummary[]>([]);
   const [busy, setBusy] = useState(false);
-  const [sessions, setSessions] = useState<Session[]>([]);
+  const { productId, product } = useProduct();
+  const [allSessions, setSessions] = useState<Session[]>([]);
+  const sessions = sessionsForProduct(allSessions, productId);
+  const archived = allSessions.filter(isArchivedSession);
+  const competitor = competitorOf(productId);
+  const competitorSessions = competitorSessionsFor(allSessions, productId);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState("");
   const [filter, setFilter] = useState("All sessions");
@@ -33,6 +78,12 @@ export function Sessions() {
       .catch((e) => setError(e.message))
       .finally(() => setLoaded(true));
   }, []);
+  // The automatic Tracker import can finish after this list has loaded.
+  useSessionsChanged(() => {
+    listSessions()
+      .then(setSessions)
+      .catch(() => {});
+  });
   const shown = sessions.filter(
     (s) =>
       (filter === "All sessions" || s.status === filter.toLowerCase()) &&
@@ -42,25 +93,25 @@ export function Sessions() {
     {
       title: "Total sessions",
       value: sessions.length,
-      sub: "Actual browser recordings",
+      sub: "This product",
       icon: Clapperboard,
     },
     {
       title: "AI proposals",
       value: sessions.reduce((n, s) => n + s.findings.length, 0),
-      sub: "Real model proposals across all runs",
+      sub: "Real model output",
       icon: Sparkles,
     },
     {
       title: "Reviewed sessions",
       value: sessions.filter((s) => s.status === "reviewed").length,
-      sub: "Evidence checked by a person",
+      sub: "Checked by a person",
       icon: CheckCheck,
     },
     {
       title: "Recorded time",
-      value: duration(sessions.reduce((n, s) => n + s.duration_ms, 0)),
-      sub: "Minutes of real interaction",
+      value: duration(sessions.reduce((n, s) => n + evidenceDuration(s), 0)),
+      sub: "Total footage",
       icon: Clock3,
     },
   ];
@@ -68,7 +119,7 @@ export function Sessions() {
     <Button asChild>
       <Link to="/test-app">
         <CirclePlus />
-        Record a test session
+        {productId === "uber-eats" ? "Add recording" : "Record a session"}
       </Link>
     </Button>
   );
@@ -76,7 +127,7 @@ export function Sessions() {
     <Shell section="Sessions">
       <PageHeading
         title="Sessions"
-        description="Find friction that logs can't explain."
+        description={`${product?.name ?? "Product"} · Recordings and review progress`}
         action={record}
       />
       <div className="flex flex-wrap gap-2 mb-4">
@@ -97,7 +148,7 @@ export function Sessions() {
           Load team’s shared sessions
         </Button>
       </div>
-      {shared.map((s) => (
+      {sessionsForProduct(shared, productId).map((s) => (
         <div className="flex justify-between gap-2 mb-3" key={s.id}>
           <span className="text-sm">{s.title} · Shared</span>
           <Button
@@ -106,7 +157,7 @@ export function Sessions() {
             disabled={busy}
             onClick={async () => {
               if (
-                sessions.some((local) => local.id === s.id) &&
+                allSessions.some((local) => local.id === s.id) &&
                 !window.confirm(
                   "Replace the local copy with the shared version? Export any unsynced local edits first.",
                 )
@@ -183,19 +234,34 @@ export function Sessions() {
           <Hero large />
           <h2>{sessions.length ? "No matching sessions" : "Every hero needs an origin story."}</h2>
           <p>
-            {sessions.length ? (
-              "Try another search or session status."
-            ) : (
-              <>
-                Record your first session. A real recording, a trail of events,
-                <br className="hidden md:block" /> and a clearer picture of where users get stuck.
-              </>
-            )}
+            {sessions.length
+              ? "Try another search or status."
+              : productId === "uber-eats"
+                ? "Play a walkthrough below and save a clip."
+                : "Add your first recording."}
           </p>
-          {sessions.length === 0 && <div className="empty-action">{record}</div>}
+          {sessions.length === 0 && (
+            <div className="empty-action">
+              {productId === "uber-eats" ? (
+                // The walkthrough library is rendered below on this page; no need to leave it.
+                <Button
+                  onClick={() =>
+                    document
+                      .getElementById("own-footage")
+                      ?.scrollIntoView({ behavior: "smooth", block: "start" })
+                  }
+                >
+                  <CirclePlus />
+                  Choose a walkthrough below
+                </Button>
+              ) : (
+                record
+              )}
+            </div>
+          )}
           <div className="empty-footnote">
             <ShieldCheck size={12} />
-            No sample recordings. No invented findings.
+            No sample recordings or invented findings
           </div>
         </div>
       ) : (
@@ -210,20 +276,24 @@ export function Sessions() {
                   {s.title}
                 </Link>
                 <div className="text-[10px] text-muted-foreground mt-1">
+                  {productNameForSource(s.source_app)} ·{" "}
                   {new Date(s.created_at).toLocaleDateString()} · {s.event_count} events ·{" "}
-                  {s.video_blob.size ? "Video saved" : "No video"} ·{" "}
+                  {s.public_video ? "Video linked" : s.video_blob.size ? "Video saved" : "No video"}{" "}
+                  ·{" "}
                   {s.sync?.state === "synced"
                     ? "Shared copy saved"
                     : s.sync
                       ? "Local changes"
                       : "Local only"}
+                  {pregeneratedLabel(s) && <> · {pregeneratedLabel(s)}</>}
                 </div>
+                <SessionNotes session={s} />
               </div>
             </div>
             <div>
               <span className={`status-badge ${s.status}`}>{s.status}</span>
             </div>
-            <span className="desktop-cell font-mono">{duration(s.duration_ms)}</span>
+            <span className="desktop-cell font-mono">{duration(evidenceDuration(s))}</span>
             <div className="desktop-cell flex justify-between items-center">
               <span>{s.findings.length}</span>
               <Button
@@ -238,7 +308,9 @@ export function Sessions() {
                     )
                   ) {
                     await deleteSession(s.id);
+                    discardRunsForSession(s.id);
                     setSessions((list) => list.filter((v) => v.id !== s.id));
+                    notifySessionsChanged();
                   }
                 }}
               >
@@ -248,24 +320,72 @@ export function Sessions() {
           </div>
         ))
       )}
+      {productId === "uber-eats" && (
+        <PublicSourceLibrary
+          sessions={allSessions}
+          includeCompetitors={!!competitor}
+          onSaved={(session) => setSessions((list) => [session, ...list])}
+        />
+      )}
+      {competitor && competitorSessions.length > 0 && (
+        <section aria-label={`Saved ${competitor.name} recordings`} className="mb-8">
+          <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold">
+            <ScoutMascot scout="explorer" size={28} decorative />
+            Saved {competitor.name} recordings · Explorer
+          </h2>
+          {competitorSessions.map((s) => (
+            <div className="session-row competitor-row" key={s.id}>
+              <div className="session-row-title">
+                <div className="session-icon">
+                  <Film size={18} />
+                </div>
+                <div>
+                  <Link to="/sessions/$id" params={{ id: s.id }}>
+                    {s.title}
+                  </Link>
+                  <div className="text-[10px] text-muted-foreground mt-1">
+                    Competitor · {competitor.name} · {s.public_video?.creator} · Not counted in{" "}
+                    {product?.name} metrics
+                  </div>
+                  <SessionNotes session={s} />
+                </div>
+              </div>
+              <div>
+                <span className={`status-badge ${s.status}`}>{s.status}</span>
+              </div>
+              <span className="desktop-cell font-mono">{duration(evidenceDuration(s))}</span>
+              <div className="desktop-cell flex justify-between items-center">
+                <span>{s.findings.length}</span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label={`Delete ${s.title}`}
+                  title="Delete recording"
+                  onClick={async () => {
+                    if (
+                      window.confirm("Delete this competitor recording reference and its analysis?")
+                    ) {
+                      await deleteSession(s.id);
+                      discardRunsForSession(s.id);
+                      setSessions((list) => list.filter((v) => v.id !== s.id));
+                      notifySessionsChanged();
+                    }
+                  }}
+                >
+                  <Trash2 size={14} />
+                </Button>
+              </div>
+            </div>
+          ))}
+        </section>
+      )}
       <div className="research-band">
         <div className="research-symbol">
           <FlaskConical size={19} />
         </div>
         <div>
-          <h3>Small sessions. Meaningful evidence.</h3>
-          <p>
-            Build your research set with 10–20 real team recordings.
-            <br className="hidden lg:block" /> Label what happened, review proposals, and test what
-            video adds.
-          </p>
-        </div>
-        <div className="research-progress">
-          <div className="flex justify-between">
-            <span>Research set</span>
-            <span>{sessions.length} / 10</span>
-          </div>
-          <progress max={10} value={Math.min(10, sessions.length)} />
+          <h3>Check AI accuracy</h3>
+          <p>Compare insights with what you saw.</p>
         </div>
         <Button asChild variant="ghost" size="sm">
           <Link to="/evaluation">
@@ -274,6 +394,29 @@ export function Sessions() {
           </Link>
         </Button>
       </div>
+      {!!archived.length && (
+        <details className="recording-provenance">
+          <summary>Archived recordings · {archived.length}</summary>
+          {archived.map((session) => (
+            <div className="flex flex-wrap items-center gap-3 my-3" key={session.id}>
+              <span>{session.title}</span>
+              <Button size="sm" variant="outline" onClick={() => exportSession(session)}>
+                Export data
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                disabled={!session.video_blob.size}
+                onClick={() =>
+                  downloadFile(session.video_blob, `loopmate-${session.id}.${session.extension}`)
+                }
+              >
+                Download video
+              </Button>
+            </div>
+          ))}
+        </details>
+      )}
       <Footer />
     </Shell>
   );

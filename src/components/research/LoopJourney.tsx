@@ -2,34 +2,50 @@ import { useId, useState } from "react";
 import { Sparkles, FlaskConical, Rocket, ArrowUpRight, RotateCw } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Hero } from "./Hero";
+import { ScoutMascot } from "./ScoutMascot";
+import type { ScoutId } from "@/lib/research/scouts";
 
-const stages = [
+/** Discover → Test → Grow, mapped to the functional areas. Hero names are internal labels. */
+interface Stage {
+  name: string;
+  verb: string;
+  icon: typeof Sparkles;
+  to: "/insights" | "/ab-tests" | "/rollouts";
+  scouts: readonly ScoutId[];
+  title: string;
+  description: string;
+  tag: string;
+}
+const stages: readonly Stage[] = [
   {
     name: "Insights",
     verb: "Discover",
     icon: Sparkles,
-    to: "/insights" as const,
+    to: "/insights",
+    scouts: ["tracker", "explorer"],
     title: "Every hero starts with a little insight.",
-    description: "See the friction. Review the evidence. Find your next opportunity.",
-    tag: "Start with real evidence",
+    description: "Tracker watches your product. Explorer watches competitors.",
+    tag: "Tracker + Explorer · Real",
   },
   {
     name: "A/B Tests",
     verb: "Test",
     icon: FlaskConical,
-    to: "/ab-tests" as const,
+    to: "/ab-tests",
+    scouts: ["experimenter"],
     title: "Give a promising idea its moment.",
-    description: "Planned: turn approved ideas into controlled, human-guided experiments.",
-    tag: "Future experiments",
+    description: "You approve. Experimenter runs the test.",
+    tag: "Experimenter · Simulated demo",
   },
   {
     name: "Rollouts",
     verb: "Grow",
     icon: Rocket,
-    to: "/rollouts" as const,
-    title: "Bring the learning around again.",
-    description: "Planned: connect release outcomes to the next round of insights.",
-    tag: "Future rollouts",
+    to: "/rollouts",
+    scouts: ["experimenter"],
+    title: "Ship the winner.",
+    description: "Review the PR and merge it. PRs are simulated in this prototype.",
+    tag: "Experimenter · Simulated demo",
   },
 ];
 const loopPath =
@@ -44,7 +60,7 @@ export function LoopJourney() {
     <div className={`loop-journey journey-stage-${active}`}>
       <div className="journey-caption">
         <span className="journey-caption-dot" />
-        The LoopMate workflow<span>Product vision</span>
+        The LoopMate loop<span>Product vision</span>
       </div>
       <div className="journey-scene" aria-hidden="true">
         <div className="journey-ambient ambient-aqua" />
@@ -117,7 +133,12 @@ export function LoopJourney() {
         </button>
       </div>
       <div className="journey-explainer" aria-live="polite">
-        <span>{stage.tag}</span>
+        <span className="inline-flex items-center gap-2">
+          {stage.scouts.map((scout) => (
+            <ScoutMascot key={scout} scout={scout} size={26} halo={false} decorative />
+          ))}
+          {stage.tag}
+        </span>
         <Link to={stage.to}>
           {stage.title}
           <ArrowUpRight size={15} />

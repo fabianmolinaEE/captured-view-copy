@@ -2,6 +2,7 @@ import { researchFetch } from "./apiClient";
 import { saveSession } from "./sessionStorage";
 import type { Session } from "./types";
 export interface SharedSummary {
+  source_app?: string | null;
   id: string;
   title: string;
   created_at: string;

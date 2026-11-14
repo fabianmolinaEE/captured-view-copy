@@ -1,7 +1,10 @@
-import type { Finding, Session } from "./types";
+import { isCompetitorSession } from "./competitors";
+import { productForSource } from "./products";
+import { isPublicVideo } from "./publicVideo";
+import type { Finding, Session, AnalysisMode } from "./types";
 export function latestFindings(
   session: Session,
-  mode: "events_only" | "video_frames_plus_events" = "video_frames_plus_events",
+  mode: AnalysisMode = isPublicVideo(session) ? "public_video" : "video_frames_plus_events",
 ) {
   const run = session.runs.filter((r) => r.status === "completed" && r.mode === mode).at(-1);
   return run ? session.findings.filter((f) => f.analysis_run_id === run.id) : [];
@@ -20,10 +23,15 @@ export interface Insight {
   retryRate: number;
   evidence: { session: Session; finding: Finding }[];
 }
-/** Controlled-app equivalence is category + screen. Scores are triage heuristics, never causal impact. */
+/**
+ * Equivalence is source app + category + screen. Scores are triage heuristics, never causal impact.
+ * Own-product evidence only: competitor (Explorer) footage and public references never count.
+ */
 export function aggregateInsights(sessions: Session[]): Insight[] {
   const eligible = sessions.filter(
     (s) =>
+      !isCompetitorSession(s) &&
+      !isPublicVideo(s) &&
       s.runs.some((r) => r.status === "completed" && r.mode === "video_frames_plus_events") &&
       latestFindings(s).every((f) => f.review_status !== "pending"),
   );
@@ -31,14 +39,17 @@ export function aggregateInsights(sessions: Session[]): Insight[] {
   for (const session of eligible)
     for (const finding of latestFindings(session).filter((f) => f.review_status === "accepted")) {
       const screen = (finding.screen ?? "unspecified").trim().toLowerCase().replaceAll(/\s+/g, "_");
-      const key = `${finding.category}:${screen}`;
+      const sourceKey = productForSource(session.source_app)?.id ?? session.source_app;
+      const key = `${sourceKey}:${finding.category}:${screen}`;
       const insight = groups.get(key) ?? {
         key,
         title: finding.title,
         category: finding.category,
         screen,
         affected: 0,
-        eligible: eligible.length,
+        eligible: eligible.filter(
+          (s) => (productForSource(s.source_app)?.id ?? s.source_app) === sourceKey,
+        ).length,
         percentage: 0,
         priority: 0,
         severity: "minor",

@@ -38,7 +38,7 @@ export async function handleResearchRequest(request: Request, bindings: unknown 
       backend_configured: !!(config.url && config.key),
       access_required: !!config.access || !local,
       message: config.gemini
-        ? "Gemini is configured. Analysis sends consented checkout frames and events to Google."
+        ? "Gemini is configured. Analysis sends consented frames/events or a selected public YouTube segment to Google."
         : "Set GEMINI_API_KEY in server secrets to enable real analysis.",
     });
   // Browser Origin protection plus an explicit shared workspace credential. Local dev may omit the credential.

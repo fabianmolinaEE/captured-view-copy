@@ -1,6 +1,6 @@
 import { fixWebmDuration } from "@fix-webm-duration/fix";
 import { EventLogger } from "./eventLogger";
-import { scenarios, type Category, type Session } from "./types";
+import { demoSources, scenarios, type Category, type Session } from "./types";
 export type CaptureState =
   "idle" | "requesting_permission" | "recording" | "stopping" | "saved" | "error";
 export const MIN_CAPTURE_DURATION_MS = 1000;
@@ -28,7 +28,16 @@ export class CaptureController {
   private completed?: (session: Session) => void;
   private sourceListener: ((event: Event) => void) | undefined;
   constructor(private state: (state: CaptureState, error?: string) => void) {}
-  async start(title: string, config: Category[], delay: number, onComplete: (s: Session) => void) {
+  async start(
+    title: string,
+    config: Category[],
+    delay: number,
+    onComplete: (s: Session) => void,
+    source: { name: string; scenarios: typeof scenarios } = {
+      name: demoSources.checkout,
+      scenarios,
+    },
+  ) {
     if (this.requesting || this.finalizing || this.recorder?.state === "recording") return;
     if (!captureSupport()) {
       this.state(
@@ -104,7 +113,7 @@ export class CaptureController {
         mime_type: this.recorder.mimeType,
         extension: this.recorder.mimeType.includes("mp4") ? "mp4" : "webm",
         capture_mode: "browser_tab",
-        source_app: "Carry checkout",
+        source_app: source.name,
         scenario_config: [...config],
         loading_delay_ms: delay,
         status: "captured",
@@ -112,7 +121,7 @@ export class CaptureController {
         event_count: 0,
         events: [],
         findings: [],
-        issues: scenarios
+        issues: source.scenarios
           .filter((s) => config.includes(s.id))
           .map((s) => ({
             id: crypto.randomUUID(),

@@ -104,3 +104,19 @@ describe("private backend adapter", () => {
     expect(fetcher.mock.calls[1]![0]).toContain("/rest/v1/research_sessions");
   });
 });
+
+describe("product-aware shared summaries", () => {
+  it("projects source metadata from the existing JSON document without a schema change", async () => {
+    const rows = [
+      { id: "example", title: "Example", created_at: "2026-11-12", source_app: "Carry checkout" },
+    ];
+    const fetcher = vi.fn().mockResolvedValue(Response.json(rows));
+    vi.stubGlobal("fetch", fetcher);
+    const response = await backendRequest(
+      new Request("https://app.example/api/research/sessions"),
+      config,
+    );
+    expect(await response.json()).toEqual(rows);
+    expect(fetcher.mock.calls[0]![0]).toContain("source_app:document->>source_app");
+  });
+});

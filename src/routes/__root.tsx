@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { useDemoImport } from "../hooks/use-demo-import";
 
 function NotFoundComponent() {
   return (
@@ -81,6 +82,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "referrer", content: "strict-origin-when-cross-origin" },
       { title: "LoopMate" },
       {
         name: "description",
@@ -129,6 +131,8 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  // Client-only, once per browser: adds the real pre-generated Uber Eats Tracker runs.
+  useDemoImport();
 
   return (
     <QueryClientProvider client={queryClient}>

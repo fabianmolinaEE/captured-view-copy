@@ -5,7 +5,7 @@ export const Route = createFileRoute("/test-app")({
   head: () =>
     pageHead(
       "Test App",
-      "Record a controlled mobile-shaped checkout with first-party synchronized interaction evidence.",
+      "Record the Bag Checkout App or add Uber Eats recordings with synchronized evidence.",
     ),
   component: TestApp,
 });

@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AbTestsRouteImport } from './routes/ab-tests'
 import { Route as EvaluationRouteImport } from './routes/evaluation'
+import { Route as HqRouteImport } from './routes/hq'
 import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as RolloutsRouteImport } from './routes/rollouts'
 import { Route as SessionsRouteImport } from './routes/sessions'
@@ -35,6 +36,11 @@ const AbTestsRoute = AbTestsRouteImport.update({
 const EvaluationRoute = EvaluationRouteImport.update({
   id: '/evaluation',
   path: '/evaluation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HqRoute = HqRouteImport.update({
+  id: '/hq',
+  path: '/hq',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InsightsRoute = InsightsRouteImport.update({
@@ -88,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/ab-tests': typeof AbTestsRoute
   '/evaluation': typeof EvaluationRoute
+  '/hq': typeof HqRoute
   '/insights': typeof InsightsRouteWithChildren
   '/rollouts': typeof RolloutsRoute
   '/sessions': typeof SessionsRouteWithChildren
@@ -102,6 +109,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/ab-tests': typeof AbTestsRoute
   '/evaluation': typeof EvaluationRoute
+  '/hq': typeof HqRoute
   '/rollouts': typeof RolloutsRoute
   '/settings': typeof SettingsRoute
   '/test-app': typeof TestAppRoute
@@ -115,6 +123,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/ab-tests': typeof AbTestsRoute
   '/evaluation': typeof EvaluationRoute
+  '/hq': typeof HqRoute
   '/insights': typeof InsightsRouteWithChildren
   '/rollouts': typeof RolloutsRoute
   '/sessions': typeof SessionsRouteWithChildren
@@ -131,6 +140,7 @@ export interface FileRouteTypes {
     | '/'
     | '/ab-tests'
     | '/evaluation'
+    | '/hq'
     | '/insights'
     | '/rollouts'
     | '/sessions'
@@ -145,6 +155,7 @@ export interface FileRouteTypes {
     | '/'
     | '/ab-tests'
     | '/evaluation'
+    | '/hq'
     | '/rollouts'
     | '/settings'
     | '/test-app'
@@ -157,6 +168,7 @@ export interface FileRouteTypes {
     | '/'
     | '/ab-tests'
     | '/evaluation'
+    | '/hq'
     | '/insights'
     | '/rollouts'
     | '/sessions'
@@ -172,6 +184,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AbTestsRoute: typeof AbTestsRoute
   EvaluationRoute: typeof EvaluationRoute
+  HqRoute: typeof HqRoute
   InsightsRoute: typeof InsightsRouteWithChildren
   RolloutsRoute: typeof RolloutsRoute
   SessionsRoute: typeof SessionsRouteWithChildren
@@ -200,6 +213,13 @@ declare module '@tanstack/react-router' {
       path: '/evaluation'
       fullPath: '/evaluation'
       preLoaderRoute: typeof EvaluationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hq': {
+      id: '/hq'
+      path: '/hq'
+      fullPath: '/hq'
+      preLoaderRoute: typeof HqRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/insights': {
@@ -300,6 +320,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AbTestsRoute: AbTestsRoute,
   EvaluationRoute: EvaluationRoute,
+  HqRoute: HqRoute,
   InsightsRoute: InsightsRouteWithChildren,
   RolloutsRoute: RolloutsRoute,
   SessionsRoute: SessionsRouteWithChildren,

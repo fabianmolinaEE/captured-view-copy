@@ -1,0 +1,584 @@
+{
+  "generated_at": "2026-11-13T22:56:58.731Z",
+  "model_name": "gemini-3.5-flash-lite",
+  "scout": "explorer",
+  "competitor_of": "uber-eats",
+  "source": "DoorDash",
+  "note": "Real Gemini Explorer output on public DoorDash YouTube footage (competitor of Uber Eats); pre-generated for the demo",
+  "videos": [
+    {
+      "candidate_id": "Q-41ykn9eMI",
+      "session_id": "771e5c45-bedd-457d-9276-4fa64f0b7b43",
+      "source": "DoorDash",
+      "competitor_of": "uber-eats",
+      "title": "How to Use DoorDash App 2026 | Complete Beginner's Guide to Ordering Food & Groceries",
+      "creator": "Online Money",
+      "published_label": "Titled 2026",
+      "context": "Beginner walkthrough of ordering food and groceries. Review usable segments first.",
+      "url": "https://www.youtube.com/watch?v=Q-41ykn9eMI",
+      "duration_ms": 109066,
+      "clip": {
+        "start_ms": 0,
+        "end_ms": 109000
+      },
+      "clip_rationale": "Whole video (1:49): setup, addresses, browse, item customization, checkout, tracking.",
+      "run": {
+        "id": "b87139b1-522b-492c-9209-7db896f8a628",
+        "mode": "public_video",
+        "model_name": "gemini-3.5-flash-lite",
+        "status": "completed",
+        "source_clip": {
+          "url": "https://www.youtube.com/watch?v=Q-41ykn9eMI",
+          "start_ms": 0,
+          "end_ms": 109000
+        },
+        "started_at": "2026-11-13T22:56:32.578Z",
+        "completed_at": "2026-11-13T22:56:38.731Z",
+        "latency_ms": 6153,
+        "raw_output": {
+          "findings": [
+            {
+              "category": "Competitor Analysis",
+              "recommendation": "Adopt a streamlined sign-up and authentication flow similar to DoorDash's visible UI in DoorDash's app, offering prominent social login options alongside phone verification on Uber Eats.",
+              "expected_benefit": "Reducing friction during user registration and making the sign-up process faster and more convenient for first-time users.",
+              "title": "Streamlined sign-up and authentication options",
+              "description": "In DoorDash's visible UI, the sign-up screen offers quick access via multiple social login buttons (Google, Facebook, Apple) alongside phone and email entry, minimizing typing effort.",
+              "timestamp_ms": 12000,
+              "end_timestamp_ms": 15000,
+              "screen": "Sign Up Screen",
+              "confidence": 0.9,
+              "visual_evidence": "DoorDash's sign-up screen showing 'Continue with Google', 'Continue with Facebook', and 'Continue with Apple' buttons prominently at the top.",
+              "observed_evidence": "The sign-up screen displays social authentication options clearly before traditional manual form entry.",
+              "interpretation": "Providing prominent social login options accelerates account creation by leveraging existing credentials.",
+              "event_ids": [],
+              "why_video_matters": "Video footage confirms the exact placement and hierarchy of social login options relative to phone/email fields.",
+              "evidence_sources": [
+                "video"
+              ],
+              "suggested_test": {
+                "hypothesis": "If we feature prominent social login options on the sign-up screen, then user registration time will decrease because users can authenticate with existing credentials without manual typing.",
+                "change": "Add prominent social login buttons to the top of the sign-up screen.",
+                "primary_metric": "time to complete sign up"
+              },
+              "suggested_route": "experiment"
+            },
+            {
+              "category": "Competitor Analysis",
+              "recommendation": "Adopt a granular address saving and categorization feature similar to DoorDash's visible UI in DoorDash's app, allowing users to save addresses with specific tags like Home, Work, or Hotel with delivery preferences.",
+              "expected_benefit": "Making address entry and future ordering faster and more precise with preset delivery instructions.",
+              "title": "Granular address categorization and preference saving",
+              "description": "In DoorDash's visible UI, the address setup screen allows users to select address types (House, Apartment, Hotel, Office, Other) and specify delivery preferences like 'Leave at a door' or 'Meet at a location'.",
+              "timestamp_ms": 28000,
+              "end_timestamp_ms": 32000,
+              "screen": "Address Details Screen",
+              "confidence": 0.85,
+              "visual_evidence": "DoorDash's address type selector showing options for House, Apartment, Hotel, Office, and Other with accompanying icons.",
+              "observed_evidence": "The interface presents structured address categorization and delivery preference selectors during address setup.",
+              "interpretation": "Structuring address details and preferences upfront clarifies delivery instructions for couriers on subsequent orders.",
+              "event_ids": [],
+              "why_video_matters": "Video footage demonstrates the step-by-step address categorization flow and preference selection.",
+              "evidence_sources": [
+                "video"
+              ],
+              "suggested_test": {
+                "hypothesis": "If we introduce categorized address types and preference selectors during address entry, then address setup completion rate will increase because users can easily specify delivery instructions.",
+                "change": "Add address type categorization and delivery preference checkboxes to the address creation flow.",
+                "primary_metric": "task completion"
+              },
+              "suggested_route": "experiment"
+            }
+          ]
+        },
+        "input_fingerprint": "bb5f7d251cfa9579d8e6b6d1709415cf3ccd4baa63fc79d6ef48f3dd91781c7e",
+        "competitor_of": "uber-eats",
+        "frame_timestamps_ms": [],
+        "usage": {
+          "input_tokens": 10976,
+          "output_tokens": 863,
+          "total_tokens": 11839
+        }
+      },
+      "findings": [
+        {
+          "category": "Competitor Analysis",
+          "recommendation": "Adopt a streamlined sign-up and authentication flow similar to DoorDash's visible UI in DoorDash's app, offering prominent social login options alongside phone verification on Uber Eats.",
+          "expected_benefit": "Reducing friction during user registration and making the sign-up process faster and more convenient for first-time users.",
+          "title": "Streamlined sign-up and authentication options",
+          "description": "In DoorDash's visible UI, the sign-up screen offers quick access via multiple social login buttons (Google, Facebook, Apple) alongside phone and email entry, minimizing typing effort.",
+          "timestamp_ms": 12000,
+          "end_timestamp_ms": 15000,
+          "screen": "Sign Up Screen",
+          "confidence": 0.9,
+          "visual_evidence": "DoorDash's sign-up screen showing 'Continue with Google', 'Continue with Facebook', and 'Continue with Apple' buttons prominently at the top.",
+          "observed_evidence": "The sign-up screen displays social authentication options clearly before traditional manual form entry.",
+          "interpretation": "Providing prominent social login options accelerates account creation by leveraging existing credentials.",
+          "event_ids": [],
+          "why_video_matters": "Video footage confirms the exact placement and hierarchy of social login options relative to phone/email fields.",
+          "evidence_sources": [
+            "video"
+          ],
+          "suggested_test": {
+            "hypothesis": "If we feature prominent social login options on the sign-up screen, then user registration time will decrease because users can authenticate with existing credentials without manual typing.",
+            "change": "Add prominent social login buttons to the top of the sign-up screen.",
+            "primary_metric": "time to complete sign up"
+          },
+          "suggested_route": "experiment",
+          "id": "327e123e-6711-4c38-88b0-7f717aaf0a77",
+          "session_id": "771e5c45-bedd-457d-9276-4fa64f0b7b43",
+          "analysis_run_id": "b87139b1-522b-492c-9209-7db896f8a628",
+          "review_status": "pending"
+        },
+        {
+          "category": "Competitor Analysis",
+          "recommendation": "Adopt a granular address saving and categorization feature similar to DoorDash's visible UI in DoorDash's app, allowing users to save addresses with specific tags like Home, Work, or Hotel with delivery preferences.",
+          "expected_benefit": "Making address entry and future ordering faster and more precise with preset delivery instructions.",
+          "title": "Granular address categorization and preference saving",
+          "description": "In DoorDash's visible UI, the address setup screen allows users to select address types (House, Apartment, Hotel, Office, Other) and specify delivery preferences like 'Leave at a door' or 'Meet at a location'.",
+          "timestamp_ms": 28000,
+          "end_timestamp_ms": 32000,
+          "screen": "Address Details Screen",
+          "confidence": 0.85,
+          "visual_evidence": "DoorDash's address type selector showing options for House, Apartment, Hotel, Office, and Other with accompanying icons.",
+          "observed_evidence": "The interface presents structured address categorization and delivery preference selectors during address setup.",
+          "interpretation": "Structuring address details and preferences upfront clarifies delivery instructions for couriers on subsequent orders.",
+          "event_ids": [],
+          "why_video_matters": "Video footage demonstrates the step-by-step address categorization flow and preference selection.",
+          "evidence_sources": [
+            "video"
+          ],
+          "suggested_test": {
+            "hypothesis": "If we introduce categorized address types and preference selectors during address entry, then address setup completion rate will increase because users can easily specify delivery instructions.",
+            "change": "Add address type categorization and delivery preference checkboxes to the address creation flow.",
+            "primary_metric": "task completion"
+          },
+          "suggested_route": "experiment",
+          "id": "76213778-f44d-41df-8a79-b451875cd008",
+          "session_id": "771e5c45-bedd-457d-9276-4fa64f0b7b43",
+          "analysis_run_id": "b87139b1-522b-492c-9209-7db896f8a628",
+          "review_status": "pending"
+        }
+      ]
+    },
+    {
+      "candidate_id": "GvejoxdR0Vo",
+      "session_id": "f6a95600-1b7f-4932-8856-504d818afaf9",
+      "source": "DoorDash",
+      "competitor_of": "uber-eats",
+      "title": "How to Order Food Through DoorDash in 2026 | Step-by-Step Delivery Guide",
+      "creator": "DiziSight",
+      "published_label": "Titled 2026",
+      "context": "Step-by-step ordering guide. Check that the app screen is readable.",
+      "url": "https://www.youtube.com/watch?v=GvejoxdR0Vo",
+      "duration_ms": 42800,
+      "clip": {
+        "start_ms": 0,
+        "end_ms": 42000
+      },
+      "clip_rationale": "Whole video (0:43): search, menu, cart, checkout.",
+      "run": {
+        "id": "520f67fd-4a44-414b-9552-c3b4ca00f995",
+        "mode": "public_video",
+        "model_name": "gemini-3.5-flash-lite",
+        "status": "completed",
+        "source_clip": {
+          "url": "https://www.youtube.com/watch?v=GvejoxdR0Vo",
+          "start_ms": 0,
+          "end_ms": 42000
+        },
+        "started_at": "2026-11-13T22:56:38.733Z",
+        "completed_at": "2026-11-13T22:56:43.467Z",
+        "latency_ms": 4734,
+        "raw_output": {
+          "findings": [
+            {
+              "category": "Trust & Transparency",
+              "recommendation": "Adopt DoorDash's pattern of displaying a prominent modal explaining local fee regulations and changes when opening the app, before the user browses.",
+              "expected_benefit": "Increases transparency around pricing changes and builds trust by proactively informing users rather than surprising them at checkout.",
+              "title": "Proactive Fee Policy Explanation",
+              "description": "On DoorDash's app, an informational sheet titled 'How Fees Work' appears immediately after opening the home screen, explaining local fee regulations and tax changes.",
+              "timestamp_ms": 18880,
+              "end_timestamp_ms": 20000,
+              "screen": "Home Screen",
+              "confidence": 0.85,
+              "visual_evidence": "A pop-up modal overlay titled 'How Fees Work' with an 'Got it' button explaining fee structures.",
+              "observed_evidence": "The modal appears on screen shortly after the home feed loads and is then dismissed.",
+              "interpretation": "Providing clear upfront context regarding fees helps set accurate expectations for total order cost early in the session.",
+              "event_ids": [],
+              "why_video_matters": "Video captures the exact timing of the fee explanation modal appearing right after app launch.",
+              "evidence_sources": [
+                "video"
+              ],
+              "suggested_test": {
+                "hypothesis": "If we introduce an upfront informational modal explaining local fee adjustments upon app launch, then users will exhibit fewer cart abandonments at checkout because pricing expectations are set early.",
+                "change": "Display an informational sheet explaining local delivery fees upon opening the app for the first time in a session.",
+                "primary_metric": "checkout completion rate",
+                "guardrail_metric": "home screen bounce rate",
+                "target_screen": "Home Screen"
+              },
+              "suggested_route": "experiment"
+            },
+            {
+              "category": "Cross-sell & Add-ons",
+              "recommendation": "Adopt DoorDash's pattern of displaying a dedicated 'Complement your cart' section during checkout with quick-add items like drinks and sides.",
+              "expected_benefit": "Drives higher average order value by surfacing relevant add-ons right before payment without forcing users back into the full restaurant menu.",
+              "title": "Cart Complement Recommendations",
+              "description": "In DoorDash's checkout flow, a 'Complement your cart' carousel suggests popular add-on items such as beverages and side dishes with a simple tap-to-add button.",
+              "timestamp_ms": 33200,
+              "end_timestamp_ms": 36000,
+              "screen": "Cart / Checkout Screen",
+              "confidence": 0.8,
+              "visual_evidence": "A horizontal scroll section labeled 'Complement your cart' featuring images and prices of drinks and sides with plus buttons.",
+              "observed_evidence": "The user views the cart screen which prominently features recommended side items before finalizing payment methods.",
+              "interpretation": "Presenting curated complementary items inside the checkout view streamlines add-on discovery and increases basket size.",
+              "event_ids": [],
+              "why_video_matters": "Video shows the exact position and layout of recommended add-on items within the checkout flow.",
+              "evidence_sources": [
+                "video"
+              ],
+              "suggested_test": {
+                "hypothesis": "If we add a dedicated complementary items carousel to the cart screen, then average order value will increase because users can easily add drinks and sides without navigating back.",
+                "change": "Incorporate a 'Complement your cart' section showing recommended side items and beverages directly inside the cart view.",
+                "primary_metric": "average items per order",
+                "guardrail_metric": "time to complete checkout",
+                "target_screen": "Cart Screen"
+              },
+              "suggested_route": "experiment"
+            }
+          ]
+        },
+        "input_fingerprint": "50ee62910cb15864a402649d5197af27ccb22f385f21045ef4d0e9ca4a985592",
+        "competitor_of": "uber-eats",
+        "frame_timestamps_ms": [],
+        "usage": {
+          "input_tokens": 4873,
+          "output_tokens": 896,
+          "total_tokens": 5769
+        }
+      },
+      "findings": [
+        {
+          "category": "Trust & Transparency",
+          "recommendation": "Adopt DoorDash's pattern of displaying a prominent modal explaining local fee regulations and changes when opening the app, before the user browses.",
+          "expected_benefit": "Increases transparency around pricing changes and builds trust by proactively informing users rather than surprising them at checkout.",
+          "title": "Proactive Fee Policy Explanation",
+          "description": "On DoorDash's app, an informational sheet titled 'How Fees Work' appears immediately after opening the home screen, explaining local fee regulations and tax changes.",
+          "timestamp_ms": 18880,
+          "end_timestamp_ms": 20000,
+          "screen": "Home Screen",
+          "confidence": 0.85,
+          "visual_evidence": "A pop-up modal overlay titled 'How Fees Work' with an 'Got it' button explaining fee structures.",
+          "observed_evidence": "The modal appears on screen shortly after the home feed loads and is then dismissed.",
+          "interpretation": "Providing clear upfront context regarding fees helps set accurate expectations for total order cost early in the session.",
+          "event_ids": [],
+          "why_video_matters": "Video captures the exact timing of the fee explanation modal appearing right after app launch.",
+          "evidence_sources": [
+            "video"
+          ],
+          "suggested_test": {
+            "hypothesis": "If we introduce an upfront informational modal explaining local fee adjustments upon app launch, then users will exhibit fewer cart abandonments at checkout because pricing expectations are set early.",
+            "change": "Display an informational sheet explaining local delivery fees upon opening the app for the first time in a session.",
+            "primary_metric": "checkout completion rate",
+            "guardrail_metric": "home screen bounce rate",
+            "target_screen": "Home Screen"
+          },
+          "suggested_route": "experiment",
+          "id": "45ffaa95-053e-4612-8105-c90ce2c4479a",
+          "session_id": "f6a95600-1b7f-4932-8856-504d818afaf9",
+          "analysis_run_id": "520f67fd-4a44-414b-9552-c3b4ca00f995",
+          "review_status": "pending"
+        },
+        {
+          "category": "Cross-sell & Add-ons",
+          "recommendation": "Adopt DoorDash's pattern of displaying a dedicated 'Complement your cart' section during checkout with quick-add items like drinks and sides.",
+          "expected_benefit": "Drives higher average order value by surfacing relevant add-ons right before payment without forcing users back into the full restaurant menu.",
+          "title": "Cart Complement Recommendations",
+          "description": "In DoorDash's checkout flow, a 'Complement your cart' carousel suggests popular add-on items such as beverages and side dishes with a simple tap-to-add button.",
+          "timestamp_ms": 33200,
+          "end_timestamp_ms": 36000,
+          "screen": "Cart / Checkout Screen",
+          "confidence": 0.8,
+          "visual_evidence": "A horizontal scroll section labeled 'Complement your cart' featuring images and prices of drinks and sides with plus buttons.",
+          "observed_evidence": "The user views the cart screen which prominently features recommended side items before finalizing payment methods.",
+          "interpretation": "Presenting curated complementary items inside the checkout view streamlines add-on discovery and increases basket size.",
+          "event_ids": [],
+          "why_video_matters": "Video shows the exact position and layout of recommended add-on items within the checkout flow.",
+          "evidence_sources": [
+            "video"
+          ],
+          "suggested_test": {
+            "hypothesis": "If we add a dedicated complementary items carousel to the cart screen, then average order value will increase because users can easily add drinks and sides without navigating back.",
+            "change": "Incorporate a 'Complement your cart' section showing recommended side items and beverages directly inside the cart view.",
+            "primary_metric": "average items per order",
+            "guardrail_metric": "time to complete checkout",
+            "target_screen": "Cart Screen"
+          },
+          "suggested_route": "experiment",
+          "id": "763474ac-b1d8-40a9-9a0f-994bb42a93af",
+          "session_id": "f6a95600-1b7f-4932-8856-504d818afaf9",
+          "analysis_run_id": "520f67fd-4a44-414b-9552-c3b4ca00f995",
+          "review_status": "pending"
+        }
+      ]
+    },
+    {
+      "candidate_id": "POS585Ok0Jg",
+      "session_id": "350a3b4a-54a6-4418-aad4-b58207209b13",
+      "source": "DoorDash",
+      "competitor_of": "uber-eats",
+      "title": "How To Use DoorDash - Complete Beginner's Guide",
+      "creator": "Howfinity",
+      "published_label": "Date not verified",
+      "context": "Beginner guide; app version may be older than the current UI.",
+      "url": "https://www.youtube.com/watch?v=POS585Ok0Jg",
+      "duration_ms": 295294,
+      "clip": {
+        "start_ms": 0,
+        "end_ms": 295000
+      },
+      "clip_rationale": "Whole video (4:55): sign-up, addresses, home/browse, search (Five Guys), cart, payment, place order, tracking. App version may be older than the current UI.",
+      "run": {
+        "id": "c9451963-ae42-4baa-8de4-3a0e9689869e",
+        "mode": "public_video",
+        "model_name": "gemini-3.5-flash-lite",
+        "status": "completed",
+        "source_clip": {
+          "url": "https://www.youtube.com/watch?v=POS585Ok0Jg",
+          "start_ms": 0,
+          "end_ms": 295000
+        },
+        "started_at": "2026-11-13T22:56:43.468Z",
+        "completed_at": "2026-11-13T22:56:53.102Z",
+        "latency_ms": 9634,
+        "raw_output": {
+          "findings": [
+            {
+              "category": "Cross-Vertical Tab Discovery",
+              "recommendation": "Adopt DoorDash's horizontal category tab bar below the search header on Uber Eats to let users easily filter between restaurant, grocery, pet, and convenience items without scrolling through the main feed.",
+              "expected_benefit": "Improves discoverability of non-restaurant verticals, reducing the effort needed to find specific shopping categories.",
+              "title": "Horizontal Category Tabs for Multi-Vertical Navigation",
+              "description": "In the competitor video at timestamp 2:03 to 2:10, DoorDash displays a horizontal navigation bar with tabs like 'All', 'Restaurant', 'Grocery', and 'Pets' directly beneath the search area. This allows users to instantly pivot their shopping context.",
+              "timestamp_ms": 123000,
+              "end_timestamp_ms": 136000,
+              "screen": "Home Screen",
+              "confidence": 0.85,
+              "visual_evidence": "At 2:03 in the video, horizontal category tabs ('All', 'Restaurant', 'Grocery', 'Pets') appear under the search bar on DoorDash.",
+              "observed_evidence": "The user switches between grocery and pet shopping categories using dedicated horizontal tabs at the top of the results page.",
+              "interpretation": "Horizontal category filters make cross-vertical shopping faster and more intuitive by keeping vertical switching visible at all times.",
+              "event_ids": [],
+              "why_video_matters": "Video footage demonstrates how users transition between distinct retail verticals seamlessly using top-level category pills.",
+              "evidence_sources": [
+                "video"
+              ],
+              "suggested_test": {
+                "hypothesis": "If we introduce horizontal vertical-switching tabs below the search bar, then users will navigate to non-restaurant verticals in fewer taps because category options remain persistently visible.",
+                "change": "Add a horizontal scrollable tab bar below the search header with icons and labels for Restaurant, Grocery, Convenience, and Retail.",
+                "primary_metric": "vertical_switch_tap_count",
+                "guardrail_metric": "restaurant_order_conversion_rate",
+                "target_screen": "Home Screen"
+              },
+              "suggested_route": "experiment"
+            },
+            {
+              "category": "Item Customization & Recommendation",
+              "recommendation": "Display popular topping combinations or top recommended options from other buyers directly inside the item customization modal in Uber Eats, as seen in DoorDash.",
+              "expected_benefit": "Helps users make faster decisions when customizing complex items by leveraging social proof and popular presets.",
+              "title": "Recommended Customization Presets",
+              "description": "At timestamp 3:34 in the video, DoorDash highlights 'Your recommended options' inside a cheeseburger customization view, showing a popular combination ordered recently by others with a one-tap select action.",
+              "timestamp_ms": 202000,
+              "end_timestamp_ms": 217000,
+              "screen": "Item Customization Screen",
+              "confidence": 0.8,
+              "visual_evidence": "At 3:35, the burger customization screen features a 'Your recommended options' section showing a popular condiment combination.",
+              "observed_evidence": "The user views pre-aggregated popular topping combinations inside the item configuration view before choosing individual ingredients.",
+              "interpretation": "Highlighting popular pairings reduces decision fatigue when users face long lists of individual ingredients or modifiers.",
+              "event_ids": [],
+              "why_video_matters": "Shows how social proof and pre-selected popular bundles streamline item configuration.",
+              "evidence_sources": [
+                "video"
+              ],
+              "suggested_test": {
+                "hypothesis": "If we add popular topping preset suggestions to item customization modals, then item configuration time will decrease because users can select curated bundles in a single tap.",
+                "change": "Add a 'Most Popular Combination' preset banner at the top of item modifier screens.",
+                "primary_metric": "item_customization_duration",
+                "guardrail_metric": "cart_abandonment_rate",
+                "target_screen": "Item Customization Screen"
+              },
+              "suggested_route": "experiment"
+            }
+          ]
+        },
+        "input_fingerprint": "4461920c68a7d89f936ce4283c6ad34abc73cbd0da31c1842aaca7f2a2740b7c",
+        "competitor_of": "uber-eats",
+        "frame_timestamps_ms": [],
+        "usage": {
+          "input_tokens": 27900,
+          "output_tokens": 958,
+          "total_tokens": 28858
+        }
+      },
+      "findings": [
+        {
+          "category": "Cross-Vertical Tab Discovery",
+          "recommendation": "Adopt DoorDash's horizontal category tab bar below the search header on Uber Eats to let users easily filter between restaurant, grocery, pet, and convenience items without scrolling through the main feed.",
+          "expected_benefit": "Improves discoverability of non-restaurant verticals, reducing the effort needed to find specific shopping categories.",
+          "title": "Horizontal Category Tabs for Multi-Vertical Navigation",
+          "description": "In the competitor video at timestamp 2:03 to 2:10, DoorDash displays a horizontal navigation bar with tabs like 'All', 'Restaurant', 'Grocery', and 'Pets' directly beneath the search area. This allows users to instantly pivot their shopping context.",
+          "timestamp_ms": 123000,
+          "end_timestamp_ms": 136000,
+          "screen": "Home Screen",
+          "confidence": 0.85,
+          "visual_evidence": "At 2:03 in the video, horizontal category tabs ('All', 'Restaurant', 'Grocery', 'Pets') appear under the search bar on DoorDash.",
+          "observed_evidence": "The user switches between grocery and pet shopping categories using dedicated horizontal tabs at the top of the results page.",
+          "interpretation": "Horizontal category filters make cross-vertical shopping faster and more intuitive by keeping vertical switching visible at all times.",
+          "event_ids": [],
+          "why_video_matters": "Video footage demonstrates how users transition between distinct retail verticals seamlessly using top-level category pills.",
+          "evidence_sources": [
+            "video"
+          ],
+          "suggested_test": {
+            "hypothesis": "If we introduce horizontal vertical-switching tabs below the search bar, then users will navigate to non-restaurant verticals in fewer taps because category options remain persistently visible.",
+            "change": "Add a horizontal scrollable tab bar below the search header with icons and labels for Restaurant, Grocery, Convenience, and Retail.",
+            "primary_metric": "vertical_switch_tap_count",
+            "guardrail_metric": "restaurant_order_conversion_rate",
+            "target_screen": "Home Screen"
+          },
+          "suggested_route": "experiment",
+          "id": "a5196b92-2368-48a5-a09e-406a8eeaa31c",
+          "session_id": "350a3b4a-54a6-4418-aad4-b58207209b13",
+          "analysis_run_id": "c9451963-ae42-4baa-8de4-3a0e9689869e",
+          "review_status": "pending"
+        },
+        {
+          "category": "Item Customization & Recommendation",
+          "recommendation": "Display popular topping combinations or top recommended options from other buyers directly inside the item customization modal in Uber Eats, as seen in DoorDash.",
+          "expected_benefit": "Helps users make faster decisions when customizing complex items by leveraging social proof and popular presets.",
+          "title": "Recommended Customization Presets",
+          "description": "At timestamp 3:34 in the video, DoorDash highlights 'Your recommended options' inside a cheeseburger customization view, showing a popular combination ordered recently by others with a one-tap select action.",
+          "timestamp_ms": 202000,
+          "end_timestamp_ms": 217000,
+          "screen": "Item Customization Screen",
+          "confidence": 0.8,
+          "visual_evidence": "At 3:35, the burger customization screen features a 'Your recommended options' section showing a popular condiment combination.",
+          "observed_evidence": "The user views pre-aggregated popular topping combinations inside the item configuration view before choosing individual ingredients.",
+          "interpretation": "Highlighting popular pairings reduces decision fatigue when users face long lists of individual ingredients or modifiers.",
+          "event_ids": [],
+          "why_video_matters": "Shows how social proof and pre-selected popular bundles streamline item configuration.",
+          "evidence_sources": [
+            "video"
+          ],
+          "suggested_test": {
+            "hypothesis": "If we add popular topping preset suggestions to item customization modals, then item configuration time will decrease because users can select curated bundles in a single tap.",
+            "change": "Add a 'Most Popular Combination' preset banner at the top of item modifier screens.",
+            "primary_metric": "item_customization_duration",
+            "guardrail_metric": "cart_abandonment_rate",
+            "target_screen": "Item Customization Screen"
+          },
+          "suggested_route": "experiment",
+          "id": "0d6b0ae6-75fe-40e0-923c-c0c20a9b4148",
+          "session_id": "350a3b4a-54a6-4418-aad4-b58207209b13",
+          "analysis_run_id": "c9451963-ae42-4baa-8de4-3a0e9689869e",
+          "review_status": "pending"
+        }
+      ]
+    },
+    {
+      "candidate_id": "VfirQD7YTqM",
+      "session_id": "5446f7d5-66bc-4216-a31c-0fa9cb24268d",
+      "source": "DoorDash",
+      "competitor_of": "uber-eats",
+      "title": "How to Order Food on DoorDash 2024",
+      "creator": "lemme help",
+      "published_label": "Titled 2024",
+      "context": "Older backup. Do not describe historical UI as the current app.",
+      "url": "https://www.youtube.com/watch?v=VfirQD7YTqM",
+      "duration_ms": 61466,
+      "clip": {
+        "start_ms": 10000,
+        "end_ms": 61000
+      },
+      "clip_rationale": "0:10-1:01: ordering chapter after the intro (creator's chapter list). Older backup (January 2024 upload): historical UI, not the current app.",
+      "run": {
+        "id": "0eec6817-de00-4158-9ceb-ae14022f34d7",
+        "mode": "public_video",
+        "model_name": "gemini-3.5-flash-lite",
+        "status": "completed",
+        "source_clip": {
+          "url": "https://www.youtube.com/watch?v=VfirQD7YTqM",
+          "start_ms": 10000,
+          "end_ms": 61000
+        },
+        "started_at": "2026-11-13T22:56:53.103Z",
+        "completed_at": "2026-11-13T22:56:58.731Z",
+        "latency_ms": 5628,
+        "raw_output": {
+          "findings": [
+            {
+              "category": "Checkout Error Recovery",
+              "recommendation": "Adopt DoorDash's pattern of inline payment method prompts on the checkout review screen in Uber Eats, allowing users to select or add a payment method proactively rather than waiting for an inline error alert after tapping continue.",
+              "expected_benefit": "Reduces checkout friction and prevents sudden error states by ensuring a valid payment method is selected before attempting to place the order.",
+              "title": "Proactive Payment Selection vs. Reactive Error State",
+              "description": "In DoorDash's checkout flow visible around timestamps 40000 to 44000, an error modal appears stating 'Something went wrong. No payment method was found' when attempting to proceed. Providing payment status clearly upfront prevents this dead-end.",
+              "timestamp_ms": 40000,
+              "end_timestamp_ms": 44000,
+              "screen": "Checkout",
+              "confidence": 0.85,
+              "visual_evidence": "Video footage at 00:41 shows a bottom sheet warning 'Something went wrong. No payment method was found' after tapping the continue button.",
+              "observed_evidence": "The checkout screen prompts the user to continue, which triggers a validation error dialog requiring an extra step to change payment methods.",
+              "interpretation": "Requiring a separate action only after hitting a blocker increases cognitive load and delays order completion.",
+              "event_ids": [],
+              "why_video_matters": "The video reveals the exact sequence where a missing payment method interrupts checkout completion, highlighting the need for upfront payment readiness.",
+              "evidence_sources": [
+                "video"
+              ],
+              "suggested_test": {
+                "hypothesis": "If we highlight missing payment methods prior to checkout submission, then users will complete checkout faster because they avoid reactive error handling.",
+                "change": "Display an explicit payment method selector banner on the main checkout screen when no default payment is set.",
+                "primary_metric": "time to complete the step"
+              },
+              "suggested_route": "experiment"
+            }
+          ]
+        },
+        "input_fingerprint": "9654c3a57f1c0f448a643268b002f473de13e453729da59a7c4d71919a69d8bb",
+        "competitor_of": "uber-eats",
+        "frame_timestamps_ms": [],
+        "usage": {
+          "input_tokens": 5696,
+          "output_tokens": 481,
+          "total_tokens": 6177
+        }
+      },
+      "findings": [
+        {
+          "category": "Checkout Error Recovery",
+          "recommendation": "Adopt DoorDash's pattern of inline payment method prompts on the checkout review screen in Uber Eats, allowing users to select or add a payment method proactively rather than waiting for an inline error alert after tapping continue.",
+          "expected_benefit": "Reduces checkout friction and prevents sudden error states by ensuring a valid payment method is selected before attempting to place the order.",
+          "title": "Proactive Payment Selection vs. Reactive Error State",
+          "description": "In DoorDash's checkout flow visible around timestamps 40000 to 44000, an error modal appears stating 'Something went wrong. No payment method was found' when attempting to proceed. Providing payment status clearly upfront prevents this dead-end.",
+          "timestamp_ms": 40000,
+          "end_timestamp_ms": 44000,
+          "screen": "Checkout",
+          "confidence": 0.85,
+          "visual_evidence": "Video footage at 00:41 shows a bottom sheet warning 'Something went wrong. No payment method was found' after tapping the continue button.",
+          "observed_evidence": "The checkout screen prompts the user to continue, which triggers a validation error dialog requiring an extra step to change payment methods.",
+          "interpretation": "Requiring a separate action only after hitting a blocker increases cognitive load and delays order completion.",
+          "event_ids": [],
+          "why_video_matters": "The video reveals the exact sequence where a missing payment method interrupts checkout completion, highlighting the need for upfront payment readiness.",
+          "evidence_sources": [
+            "video"
+          ],
+          "suggested_test": {
+            "hypothesis": "If we highlight missing payment methods prior to checkout submission, then users will complete checkout faster because they avoid reactive error handling.",
+            "change": "Display an explicit payment method selector banner on the main checkout screen when no default payment is set.",
+            "primary_metric": "time to complete the step"
+          },
+          "suggested_route": "experiment",
+          "id": "0d712800-1efc-40a4-ae21-632922783b81",
+          "session_id": "5446f7d5-66bc-4216-a31c-0fa9cb24268d",
+          "analysis_run_id": "0eec6817-de00-4158-9ceb-ae14022f34d7",
+          "review_status": "pending"
+        }
+      ]
+    }
+  ]
+}

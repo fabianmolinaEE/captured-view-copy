@@ -1,3 +1,5 @@
+> **Historical checkpoint (November 11, 2026).** This report is preserved as written and is not current status. The canonical product vision and UI contract is [AUTOMATED-LOOP.md](AUTOMATED-LOOP.md): an automated loop where agents collect, analyze for product improvements, suggest A/B tests, run experiments, measure deltas and draft PRs, and humans only review insights, approve/edit/reject tests and merge PRs. Products are Uber Eats and Bag Checkout App; Miso is archived. Test counts, "Coming Soon" pages and manual-workflow descriptions below are historical.
+
 # LoopMate — Implementation report — November 11, 2026
 
 ## November 12 naming and scope update

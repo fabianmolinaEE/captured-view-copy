@@ -14,20 +14,22 @@ afterEach(() => {
   localStorage.clear();
 });
 describe("closed-loop exploration", () => {
-  it("cycles through the workflow while keeping future actions labeled as planned", () => {
+  it("cycles Discover, Test and Grow while labeling simulated stages", () => {
     render(<LoopJourney />);
     expect(screen.getByRole("button", { name: "Insights" })).toHaveAttribute(
       "aria-pressed",
       "true",
     );
+    expect(screen.getByText("Tracker + Explorer · Real")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Competitors" })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "A/B Tests" }));
-    expect(screen.getByText("Future experiments")).toBeInTheDocument();
+    expect(screen.getByText("Experimenter · Simulated demo")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Give a promising idea/ })).toHaveAttribute(
       "href",
       "/ab-tests",
     );
     fireEvent.click(screen.getByRole("button", { name: "Rollouts" }));
-    expect(screen.getByText(/Planned: connect release outcomes/)).toBeInTheDocument();
+    expect(screen.getByText(/PRs are simulated in this prototype/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Next part of the loop" }));
     expect(screen.getByRole("button", { name: "Insights" })).toHaveAttribute(
       "aria-pressed",

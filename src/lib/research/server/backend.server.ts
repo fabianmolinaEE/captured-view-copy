@@ -42,7 +42,7 @@ export async function backendRequest(request: Request, config: BackendConfig, id
   const storage = `/storage/v1/object/${encodeURIComponent(config.bucket)}/${id}/recording`;
   if (request.method === "GET" && !id) {
     const response = await upstream(
-      `${table}?select=id,title,created_at&order=created_at.desc&limit=100`,
+      `${table}?select=id,title,created_at,source_app:document->>source_app&order=created_at.desc&limit=100`,
     );
     return Response.json(await response.json());
   }

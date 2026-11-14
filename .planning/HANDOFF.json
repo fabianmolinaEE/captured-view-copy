@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "timestamp": "2026-11-13T01:55:11.153Z",
+  "timestamp": "2026-11-14T03:37:23.111Z",
   "source": "auto-postool",
   "partial": false,
   "phase": null,
@@ -18,7 +18,7 @@
   "uncommitted_files": [
     {
       "status": "M",
-      "path": ".gitignore"
+      "path": ".planning/HANDOFF.json"
     },
     {
       "status": "M",
@@ -26,11 +26,31 @@
     },
     {
       "status": "M",
+      "path": "CLAUDE.md"
+    },
+    {
+      "status": "M",
       "path": "README.md"
     },
     {
       "status": "M",
-      "path": "package.json"
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/IMPLEMENTATION.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/MANUAL-VERIFICATION.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/PROTOTYPE-PHASE-PLAN.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/UX-IMPLEMENTATION.md"
     },
     {
       "status": "M",
@@ -38,11 +58,39 @@
     },
     {
       "status": "M",
+      "path": "src/components/research/AnalysisPanel.tsx"
+    },
+    {
+      "status": "D",
+      "path": "src/components/research/ComingSoon.tsx"
+    },
+    {
+      "status": "M",
       "path": "src/components/research/Evaluation.tsx"
     },
     {
       "status": "M",
-      "path": "src/components/research/Hero.tsx"
+      "path": "src/components/research/EvidencePanel.tsx"
+    },
+    {
+      "status": "M",
+      "path": "src/components/research/Home.tsx"
+    },
+    {
+      "status": "M",
+      "path": "src/components/research/InsightDetail.tsx"
+    },
+    {
+      "status": "M",
+      "path": "src/components/research/Insights.tsx"
+    },
+    {
+      "status": "M",
+      "path": "src/components/research/LoopJourney.tsx"
+    },
+    {
+      "status": "M",
+      "path": "src/components/research/NextStepDraft.tsx"
     },
     {
       "status": "M",
@@ -66,7 +114,15 @@
     },
     {
       "status": "M",
+      "path": "src/hooks/use-research-session.ts"
+    },
+    {
+      "status": "M",
       "path": "src/lib/research/aiReview.ts"
+    },
+    {
+      "status": "M",
+      "path": "src/lib/research/apiClient.ts"
     },
     {
       "status": "M",
@@ -78,7 +134,7 @@
     },
     {
       "status": "M",
-      "path": "src/lib/research/eventLogger.ts"
+      "path": "src/lib/research/evidence.ts"
     },
     {
       "status": "M",
@@ -86,7 +142,31 @@
     },
     {
       "status": "M",
+      "path": "src/lib/research/insights.ts"
+    },
+    {
+      "status": "M",
+      "path": "src/lib/research/review.ts"
+    },
+    {
+      "status": "M",
+      "path": "src/lib/research/server/analysis.server.ts"
+    },
+    {
+      "status": "M",
+      "path": "src/lib/research/server/api.server.ts"
+    },
+    {
+      "status": "M",
+      "path": "src/lib/research/server/backend.server.ts"
+    },
+    {
+      "status": "M",
       "path": "src/lib/research/sessionStorage.ts"
+    },
+    {
+      "status": "M",
+      "path": "src/lib/research/sharedStorage.ts"
     },
     {
       "status": "M",
@@ -102,27 +182,23 @@
     },
     {
       "status": "M",
-      "path": "src/routes/evaluation.tsx"
+      "path": "src/routes/ab-tests.tsx"
     },
     {
       "status": "M",
-      "path": "src/routes/index.tsx"
+      "path": "src/routes/insights.$sessionId.$findingId.tsx"
     },
     {
       "status": "M",
-      "path": "src/routes/sessions.$id.tsx"
+      "path": "src/routes/insights.index.tsx"
     },
     {
       "status": "M",
-      "path": "src/routes/sessions.index.tsx"
+      "path": "src/routes/insights.tsx"
     },
     {
       "status": "M",
-      "path": "src/routes/sessions.tsx"
-    },
-    {
-      "status": "M",
-      "path": "src/routes/settings.tsx"
+      "path": "src/routes/rollouts.tsx"
     },
     {
       "status": "M",
@@ -130,189 +206,285 @@
     },
     {
       "status": "M",
-      "path": "src/server.ts"
-    },
-    {
-      "status": "M",
       "path": "src/styles.css"
     },
     {
       "status": "M",
-      "path": "src/test/setup.ts"
-    },
-    {
-      "status": "??",
-      "path": ".env.example"
-    },
-    {
-      "status": "??",
-      "path": ".planning/"
-    },
-    {
-      "status": "??",
-      "path": "CLAUDE.md"
-    },
-    {
-      "status": "??",
-      "path": "docs/"
-    },
-    {
-      "status": "??",
-      "path": "package-lock.json"
-    },
-    {
-      "status": "??",
-      "path": "src/components/research/AnalysisPanel.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/components/research/ComingSoon.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/components/research/EvidencePanel.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/components/research/Home.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/components/research/InsightDetail.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/components/research/Insights.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/components/research/LoopJourney.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/components/research/NextStepDraft.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/components/research/SharedSessionPanel.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/hooks/use-motion-preference.ts"
-    },
-    {
-      "status": "??",
-      "path": "src/hooks/use-research-session.ts"
-    },
-    {
-      "status": "??",
-      "path": "src/lib/research/actions.ts"
-    },
-    {
-      "status": "??",
-      "path": "src/lib/research/apiClient.ts"
-    },
-    {
-      "status": "??",
-      "path": "src/lib/research/captureViewport.ts"
-    },
-    {
-      "status": "??",
-      "path": "src/lib/research/evidence.ts"
-    },
-    {
-      "status": "??",
-      "path": "src/lib/research/insights.ts"
-    },
-    {
-      "status": "??",
-      "path": "src/lib/research/review.ts"
-    },
-    {
-      "status": "??",
-      "path": "src/lib/research/server/"
-    },
-    {
-      "status": "??",
-      "path": "src/lib/research/sharedStorage.ts"
-    },
-    {
-      "status": "??",
-      "path": "src/routes/ab-tests.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/routes/insights.$sessionId.$findingId.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/routes/insights.index.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/routes/insights.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/routes/rollouts.tsx"
-    },
-    {
-      "status": "??",
       "path": "src/test/backend.test.ts"
     },
     {
-      "status": "??",
-      "path": "src/test/capture-viewport.test.ts"
+      "status": "M",
+      "path": "src/test/frame-sampler-signals.test.ts"
     },
     {
-      "status": "??",
-      "path": "src/test/capture.test.ts"
-    },
-    {
-      "status": "??",
-      "path": "src/test/gemini-errors.test.ts"
-    },
-    {
-      "status": "??",
-      "path": "src/test/insight-actions.test.ts"
-    },
-    {
-      "status": "??",
+      "status": "M",
       "path": "src/test/insight-detail.test.tsx"
     },
     {
-      "status": "??",
+      "status": "M",
       "path": "src/test/motion.test.tsx"
     },
     {
-      "status": "??",
-      "path": "src/test/research-fixtures.ts"
-    },
-    {
-      "status": "??",
-      "path": "src/test/research.test.ts"
-    },
-    {
-      "status": "??",
+      "status": "M",
       "path": "src/test/review.test.tsx"
     },
     {
-      "status": "??",
-      "path": "src/test/storage.test.ts"
-    },
-    {
-      "status": "??",
+      "status": "M",
       "path": "src/test/test-app-capture.test.tsx"
     },
     {
-      "status": "??",
-      "path": "src/test/video-metadata.test.ts"
+      "status": "M",
+      "path": "src/test/workspace-ux.test.tsx"
     },
     {
       "status": "??",
-      "path": "src/test/workspace-ux.test.tsx"
+      "path": "docs/AUTOMATED-LOOP.md"
+    },
+    {
+      "status": "??",
+      "path": "docs/SUNDAY-DELIVERY-DEMO.md"
+    },
+    {
+      "status": "??",
+      "path": "docs/UBER-EATS-DEMO.md"
+    },
+    {
+      "status": "??",
+      "path": "src/components/research/ABTests.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/components/research/FoodDeliveryDemo.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/components/research/HeroHQ.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/components/research/MergeCelebration.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/components/research/PRReview.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/components/research/ProductPicker.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/components/research/PublicVideoPlayer.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/components/research/Rollouts.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/components/research/SampleInsightDetail.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/components/research/ScoutCard.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/components/research/ScoutMascot.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/components/research/SimulatedBadge.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/components/research/SourceMarker.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/components/research/SuggestedTestPanel.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/components/research/UberEatsSources.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/hooks/use-agent-settings.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/hooks/use-demo-import.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/hooks/use-insights-back-search.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/hooks/use-product.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/hooks/use-simulation.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/lib/research/agentSettings.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/lib/research/competitors.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/lib/research/demo/"
+    },
+    {
+      "status": "??",
+      "path": "src/lib/research/products.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/lib/research/publicVideo.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/lib/research/scouts.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/lib/research/server/analysisPrompt.server.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/lib/research/simulation.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/lib/research/sourceMarkers.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/lib/research/testDecisions.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/lib/research/unifiedInsights.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/lib/research/videoAttachment.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/routes/hq.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/test/ab-tests-rollouts.test.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/test/explorer-import.test.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/test/food-delivery.test.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/test/hero-hq-shell.test.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/test/hero-hq.test.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/test/home-scouts.test.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/test/insight-card-thumbnail.test.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/test/insights-scouts.test.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/test/late-import-links.test.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/test/product-analysis.test.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/test/product-workspace.test.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/test/public-video-client.test.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/test/public-video-player.test.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/test/public-video-ui.test.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/test/public-video.test.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/test/scout-analysis.test.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/test/scout-loop.test.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/test/scout-shell.test.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/test/scouts.test.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/test/session-review-public.test.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/test/small-target-analysis.test.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/test/tracker-import-ui.test.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/test/tracker-import.test.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/test/tracker-integration.test.tsx"
+    },
+    {
+      "status": "??",
+      "path": "src/test/unified-insights.test.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/test/video-attachment.test.ts"
     }
   ],
   "next_action": null,
-  "context_notes": "Recent commits:\n187c951 Add project README\nf661437 Implemented zero-to-hero flow\n1904112 Changes\n4b86de6 Changes\nf371c5e Changes"
+  "context_notes": "Recent commits:\nc80db85 steps 1,2\n187c951 Add project README\nf661437 Implemented zero-to-hero flow\n1904112 Changes\n4b86de6 Changes"
 }

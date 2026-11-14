@@ -1,0 +1,665 @@
+{
+  "generated_at": "2026-11-13T22:31:27.733Z",
+  "model_name": "gemini-3.5-flash-lite",
+  "note": "Real Gemini output on public YouTube footage; pre-generated for the demo",
+  "videos": [
+    {
+      "candidate_id": "EFCmkDTBYck",
+      "session_id": "75f7d43d-b250-43dc-8df2-5f14c420684a",
+      "title": "How to Use Uber Eats for the First Time",
+      "creator": "4kEasyGuide",
+      "published_label": "June 2026",
+      "context": "Ordering walkthrough; indexed description covers login through checkout.",
+      "url": "https://www.youtube.com/watch?v=EFCmkDTBYck",
+      "duration_ms": 82874,
+      "clip": {
+        "start_ms": 0,
+        "end_ms": 82000
+      },
+      "clip_rationale": "Whole video (1:22).",
+      "run": {
+        "id": "50f70b03-93a9-4b91-babb-732ed59730d0",
+        "mode": "public_video",
+        "model_name": "gemini-3.5-flash-lite",
+        "status": "completed",
+        "source_clip": {
+          "url": "https://www.youtube.com/watch?v=EFCmkDTBYck",
+          "start_ms": 0,
+          "end_ms": 82000
+        },
+        "started_at": "2026-11-13T22:30:51.695Z",
+        "completed_at": "2026-11-13T22:30:57.693Z",
+        "latency_ms": 5998,
+        "raw_output": {
+          "findings": [
+            {
+              "category": "Navigation & Discoverability",
+              "recommendation": "Experiment with adding a persistent floating search or category quick-filter bar that remains accessible as users scroll down the main landing page.",
+              "expected_benefit": "Reduces the need for users to scroll all the way back to the top when browsing long category feeds, decreasing friction and time to find desired food items.",
+              "title": "Persistent search access during long vertical scrolling",
+              "description": "As the user scrolls extensively through national favorites, deals, and local stores on the home screen, the top search and category navigation bar scrolls out of view, requiring manual upward scrolling to initiate a new search.",
+              "timestamp_ms": 19000,
+              "end_timestamp_ms": 35000,
+              "screen": "Home Screen",
+              "confidence": 0.8,
+              "visual_evidence": "The top category bar and search options disappear as the user scrolls down past national favorites and store lists between timestamp 00:19 and 00:35.",
+              "observed_evidence": "User continuously scrolls downwards through multiple sections (National favorites, Most loved deals, Stores near you) while the primary navigation icons scroll off-screen.",
+              "interpretation": "Without sticky navigation, users are forced to backtrack vertically to change categories or search terms.",
+              "event_ids": [],
+              "why_video_matters": "Only video evidence demonstrates how scrolling behavior causes the initial navigation tools to leave the viewport.",
+              "evidence_sources": [
+                "video"
+              ],
+              "suggested_test": {
+                "hypothesis": "If we introduce a sticky header containing quick search and top categories upon scrolling, then users will complete restaurant selection faster because they can switch categories without backtracking.",
+                "change": "Add a floating/sticky mini header with search and category pills when the user scrolls past the top navigation bar.",
+                "primary_metric": "time to complete the step",
+                "guardrail_metric": "missed or repeated taps",
+                "target_screen": "Home Screen"
+              },
+              "suggested_route": "experiment"
+            },
+            {
+              "category": "Information Architecture & Decision Support",
+              "recommendation": "Fix the layout of the cart preview button so it does not overlap with promotional banner elements like savings callouts when items are added.",
+              "expected_benefit": "Ensures that promotional banners and cart action buttons do not compete for visual attention, creating a clearer path to checkout.",
+              "title": "Visual overlap between promotional savings banner and floating cart view",
+              "description": "When an item is added to the cart, a floating 'View cart' button appears alongside an orange 'You're saving X with Uber One' banner, creating a dense stacked overlay near the bottom of the screen.",
+              "timestamp_ms": 53000,
+              "end_timestamp_ms": 56000,
+              "screen": "Restaurant Menu / Cart Preview",
+              "confidence": 0.75,
+              "visual_evidence": "At timestamp 53000 to 56000, the 'View cart' pill button sits directly above the orange promotional savings notification bar.",
+              "observed_evidence": "User taps 'View cart' immediately adjacent to a prominent promotional savings banner at the bottom of the display.",
+              "interpretation": "Stacking promotional elements directly next to primary conversion buttons increases visual clutter and potential mis-taps.",
+              "event_ids": [],
+              "why_video_matters": "Video capture reveals the exact layout and spatial relationship between the temporary cart popup and promotional messaging.",
+              "evidence_sources": [
+                "video"
+              ],
+              "suggested_test": {
+                "hypothesis": "If we integrate promotional savings messaging directly inside the cart summary view instead of a separate floating banner below the cart button, then users will tap the checkout button with fewer mis-taps.",
+                "change": "Consolidate the savings banner and cart button into a single unified bottom bar container.",
+                "primary_metric": "missed or repeated taps",
+                "target_screen": "Restaurant Menu / Cart Preview"
+              },
+              "suggested_route": "fix"
+            }
+          ]
+        },
+        "input_fingerprint": "3e6d3edb8bf559d20345203a2119fba604f11dfba28dad34c3e205f12f842f2f",
+        "frame_timestamps_ms": [],
+        "usage": {
+          "input_tokens": 8422,
+          "output_tokens": 960,
+          "total_tokens": 9382
+        }
+      },
+      "findings": [
+        {
+          "category": "Navigation & Discoverability",
+          "recommendation": "Experiment with adding a persistent floating search or category quick-filter bar that remains accessible as users scroll down the main landing page.",
+          "expected_benefit": "Reduces the need for users to scroll all the way back to the top when browsing long category feeds, decreasing friction and time to find desired food items.",
+          "title": "Persistent search access during long vertical scrolling",
+          "description": "As the user scrolls extensively through national favorites, deals, and local stores on the home screen, the top search and category navigation bar scrolls out of view, requiring manual upward scrolling to initiate a new search.",
+          "timestamp_ms": 19000,
+          "end_timestamp_ms": 35000,
+          "screen": "Home Screen",
+          "confidence": 0.8,
+          "visual_evidence": "The top category bar and search options disappear as the user scrolls down past national favorites and store lists between timestamp 00:19 and 00:35.",
+          "observed_evidence": "User continuously scrolls downwards through multiple sections (National favorites, Most loved deals, Stores near you) while the primary navigation icons scroll off-screen.",
+          "interpretation": "Without sticky navigation, users are forced to backtrack vertically to change categories or search terms.",
+          "event_ids": [],
+          "why_video_matters": "Only video evidence demonstrates how scrolling behavior causes the initial navigation tools to leave the viewport.",
+          "evidence_sources": [
+            "video"
+          ],
+          "suggested_test": {
+            "hypothesis": "If we introduce a sticky header containing quick search and top categories upon scrolling, then users will complete restaurant selection faster because they can switch categories without backtracking.",
+            "change": "Add a floating/sticky mini header with search and category pills when the user scrolls past the top navigation bar.",
+            "primary_metric": "time to complete the step",
+            "guardrail_metric": "missed or repeated taps",
+            "target_screen": "Home Screen"
+          },
+          "suggested_route": "experiment",
+          "id": "c630f88b-4e75-4709-bcc7-5bdd1bbed2ab",
+          "session_id": "75f7d43d-b250-43dc-8df2-5f14c420684a",
+          "analysis_run_id": "50f70b03-93a9-4b91-babb-732ed59730d0",
+          "review_status": "pending"
+        },
+        {
+          "category": "Information Architecture & Decision Support",
+          "recommendation": "Fix the layout of the cart preview button so it does not overlap with promotional banner elements like savings callouts when items are added.",
+          "expected_benefit": "Ensures that promotional banners and cart action buttons do not compete for visual attention, creating a clearer path to checkout.",
+          "title": "Visual overlap between promotional savings banner and floating cart view",
+          "description": "When an item is added to the cart, a floating 'View cart' button appears alongside an orange 'You're saving X with Uber One' banner, creating a dense stacked overlay near the bottom of the screen.",
+          "timestamp_ms": 53000,
+          "end_timestamp_ms": 56000,
+          "screen": "Restaurant Menu / Cart Preview",
+          "confidence": 0.75,
+          "visual_evidence": "At timestamp 53000 to 56000, the 'View cart' pill button sits directly above the orange promotional savings notification bar.",
+          "observed_evidence": "User taps 'View cart' immediately adjacent to a prominent promotional savings banner at the bottom of the display.",
+          "interpretation": "Stacking promotional elements directly next to primary conversion buttons increases visual clutter and potential mis-taps.",
+          "event_ids": [],
+          "why_video_matters": "Video capture reveals the exact layout and spatial relationship between the temporary cart popup and promotional messaging.",
+          "evidence_sources": [
+            "video"
+          ],
+          "suggested_test": {
+            "hypothesis": "If we integrate promotional savings messaging directly inside the cart summary view instead of a separate floating banner below the cart button, then users will tap the checkout button with fewer mis-taps.",
+            "change": "Consolidate the savings banner and cart button into a single unified bottom bar container.",
+            "primary_metric": "missed or repeated taps",
+            "target_screen": "Restaurant Menu / Cart Preview"
+          },
+          "suggested_route": "fix",
+          "id": "f631c28f-3241-449c-a657-7331eaf63f30",
+          "session_id": "75f7d43d-b250-43dc-8df2-5f14c420684a",
+          "analysis_run_id": "50f70b03-93a9-4b91-babb-732ed59730d0",
+          "review_status": "pending"
+        }
+      ]
+    },
+    {
+      "candidate_id": "XRYyOhmIdfg",
+      "session_id": "48933c97-f06b-4ef0-adc8-303c2f7b743d",
+      "title": "How To Order Food On Uber Eats",
+      "creator": "How to Everything",
+      "published_label": "January 2026",
+      "context": "Customer ordering tutorial; footage and usable segments need review.",
+      "url": "https://www.youtube.com/watch?v=XRYyOhmIdfg",
+      "duration_ms": 98433,
+      "clip": {
+        "start_ms": 0,
+        "end_ms": 98000
+      },
+      "clip_rationale": "Whole video (1:38).",
+      "run": {
+        "id": "1b04a563-b6c6-44d5-97d0-a85e76ed0aa0",
+        "mode": "public_video",
+        "model_name": "gemini-3.5-flash-lite",
+        "status": "completed",
+        "source_clip": {
+          "url": "https://www.youtube.com/watch?v=XRYyOhmIdfg",
+          "start_ms": 0,
+          "end_ms": 98000
+        },
+        "started_at": "2026-11-13T22:30:57.695Z",
+        "completed_at": "2026-11-13T22:31:03.427Z",
+        "latency_ms": 5732,
+        "raw_output": {
+          "findings": [
+            {
+              "category": "Checkout Engagement",
+              "recommendation": "Integrate the tipping prompt directly into the main checkout review screen instead of inserting a dedicated modal step right before payment confirmation.",
+              "expected_benefit": "Reduces screen transitions and cognitive overhead during final payment authorization, helping users complete their purchase with fewer steps.",
+              "title": "Streamline Courier Tipping in Checkout",
+              "description": "During the final stages of checkout, the flow transitions to a dedicated 'Tip your late-night courier' screen where users select or edit a tip before being allowed to place the order and pay.",
+              "timestamp_ms": 77670,
+              "end_timestamp_ms": 82000,
+              "screen": "Tip Your Courier",
+              "confidence": 0.85,
+              "visual_evidence": "The app transitions from the checkout summary to a dedicated fullscreen tip selection view featuring percentage buttons and an 'Order and pay' CTA.",
+              "observed_evidence": "The user moves from the order review screen to a separate tipping step, and then back to review or payment confirmation.",
+              "interpretation": "Splitting the tipping selection onto a separate full-page view introduces an additional navigation step in the critical payment path, which can increase task effort.",
+              "event_ids": [],
+              "why_video_matters": "Video is essential to reveal how many separate screens and transitions are required between order review and final payment submission.",
+              "evidence_sources": [
+                "video"
+              ],
+              "suggested_test": {
+                "hypothesis": "If we embed the courier tipping selection directly into the main checkout summary screen, then users will complete the checkout flow faster because an extra page transition is eliminated.",
+                "change": "Move the tipping options section into the main checkout scroll view above the final payment button.",
+                "primary_metric": "time to complete the checkout step",
+                "guardrail_metric": "average tip amount selected"
+              },
+              "suggested_route": "experiment"
+            },
+            {
+              "category": "Information Architecture",
+              "recommendation": "Provide clear category anchors or a sticky sub-navigation bar when browsing restaurant menus with numerous horizontal tabs to reduce horizontal scrolling effort.",
+              "expected_benefit": "Makes it easier for users to scan large menus and discover items across different sections without repeatedly swiping through hidden menu categories.",
+              "title": "Improve Menu Category Discoverability",
+              "description": "When viewing the restaurant menu, multiple horizontal category tabs (such as 'Featured', 'What's New', 'Secret Menu', 'Sharers & Bundles') appear in a scrollable header row.",
+              "timestamp_ms": 40000,
+              "end_timestamp_ms": 58000,
+              "screen": "Restaurant Menu",
+              "confidence": 0.75,
+              "visual_evidence": "Multiple category pills are displayed horizontally at the top of the menu, requiring lateral swipes to reveal off-screen options.",
+              "observed_evidence": "The interface displays a long horizontal row of menu categories that scroll off-screen as the user navigates.",
+              "interpretation": "Horizontal scrolling lists for primary navigation can hide relevant menu sections from immediate view, requiring extra scanning effort from users.",
+              "event_ids": [],
+              "why_video_matters": "Video shows the interaction pattern of swiping horizontally through multiple menu tabs while browsing items.",
+              "evidence_sources": [
+                "video"
+              ],
+              "suggested_test": {
+                "hypothesis": "If we display menu categories in a grid or expandable dropdown filter, then users will tap on more diverse category sections because visibility of secondary categories is improved.",
+                "change": "Replace the single horizontal scrolling tab bar with a collapsible category menu overlay or multi-row grid.",
+                "primary_metric": "number of menu categories explored per session",
+                "guardrail_metric": "time to select an item"
+              },
+              "suggested_route": "experiment"
+            }
+          ]
+        },
+        "input_fingerprint": "bf584a0225b114b4196caf7ffb74174f362848427e31948fd8ba6939ac3e4f06",
+        "frame_timestamps_ms": [],
+        "usage": {
+          "input_tokens": 9879,
+          "output_tokens": 908,
+          "total_tokens": 10787
+        }
+      },
+      "findings": [
+        {
+          "category": "Checkout Engagement",
+          "recommendation": "Integrate the tipping prompt directly into the main checkout review screen instead of inserting a dedicated modal step right before payment confirmation.",
+          "expected_benefit": "Reduces screen transitions and cognitive overhead during final payment authorization, helping users complete their purchase with fewer steps.",
+          "title": "Streamline Courier Tipping in Checkout",
+          "description": "During the final stages of checkout, the flow transitions to a dedicated 'Tip your late-night courier' screen where users select or edit a tip before being allowed to place the order and pay.",
+          "timestamp_ms": 77670,
+          "end_timestamp_ms": 82000,
+          "screen": "Tip Your Courier",
+          "confidence": 0.85,
+          "visual_evidence": "The app transitions from the checkout summary to a dedicated fullscreen tip selection view featuring percentage buttons and an 'Order and pay' CTA.",
+          "observed_evidence": "The user moves from the order review screen to a separate tipping step, and then back to review or payment confirmation.",
+          "interpretation": "Splitting the tipping selection onto a separate full-page view introduces an additional navigation step in the critical payment path, which can increase task effort.",
+          "event_ids": [],
+          "why_video_matters": "Video is essential to reveal how many separate screens and transitions are required between order review and final payment submission.",
+          "evidence_sources": [
+            "video"
+          ],
+          "suggested_test": {
+            "hypothesis": "If we embed the courier tipping selection directly into the main checkout summary screen, then users will complete the checkout flow faster because an extra page transition is eliminated.",
+            "change": "Move the tipping options section into the main checkout scroll view above the final payment button.",
+            "primary_metric": "time to complete the checkout step",
+            "guardrail_metric": "average tip amount selected"
+          },
+          "suggested_route": "experiment",
+          "id": "fe8918c1-fd1c-48de-9bcd-01a082de971e",
+          "session_id": "48933c97-f06b-4ef0-adc8-303c2f7b743d",
+          "analysis_run_id": "1b04a563-b6c6-44d5-97d0-a85e76ed0aa0",
+          "review_status": "pending"
+        },
+        {
+          "category": "Information Architecture",
+          "recommendation": "Provide clear category anchors or a sticky sub-navigation bar when browsing restaurant menus with numerous horizontal tabs to reduce horizontal scrolling effort.",
+          "expected_benefit": "Makes it easier for users to scan large menus and discover items across different sections without repeatedly swiping through hidden menu categories.",
+          "title": "Improve Menu Category Discoverability",
+          "description": "When viewing the restaurant menu, multiple horizontal category tabs (such as 'Featured', 'What's New', 'Secret Menu', 'Sharers & Bundles') appear in a scrollable header row.",
+          "timestamp_ms": 40000,
+          "end_timestamp_ms": 58000,
+          "screen": "Restaurant Menu",
+          "confidence": 0.75,
+          "visual_evidence": "Multiple category pills are displayed horizontally at the top of the menu, requiring lateral swipes to reveal off-screen options.",
+          "observed_evidence": "The interface displays a long horizontal row of menu categories that scroll off-screen as the user navigates.",
+          "interpretation": "Horizontal scrolling lists for primary navigation can hide relevant menu sections from immediate view, requiring extra scanning effort from users.",
+          "event_ids": [],
+          "why_video_matters": "Video shows the interaction pattern of swiping horizontally through multiple menu tabs while browsing items.",
+          "evidence_sources": [
+            "video"
+          ],
+          "suggested_test": {
+            "hypothesis": "If we display menu categories in a grid or expandable dropdown filter, then users will tap on more diverse category sections because visibility of secondary categories is improved.",
+            "change": "Replace the single horizontal scrolling tab bar with a collapsible category menu overlay or multi-row grid.",
+            "primary_metric": "number of menu categories explored per session",
+            "guardrail_metric": "time to select an item"
+          },
+          "suggested_route": "experiment",
+          "id": "6321d952-2e6a-4edd-9c94-687a5e1fa308",
+          "session_id": "48933c97-f06b-4ef0-adc8-303c2f7b743d",
+          "analysis_run_id": "1b04a563-b6c6-44d5-97d0-a85e76ed0aa0",
+          "review_status": "pending"
+        }
+      ]
+    },
+    {
+      "candidate_id": "oDcQjVREO5w",
+      "session_id": "e02675ea-079d-47d7-916b-527f483be7c7",
+      "title": "Uber Eats: how to order food (Russian-language tutorial)",
+      "creator": "HardReset_info Ukraine",
+      "published_label": "October 2025",
+      "context": "Short tutorial with published chapters covering address, cart, delivery and payment. Narration and app language are Russian.",
+      "url": "https://www.youtube.com/watch?v=oDcQjVREO5w",
+      "duration_ms": 101366,
+      "clip": {
+        "start_ms": 0,
+        "end_ms": 101000
+      },
+      "clip_rationale": "Whole video (1:41); Russian UI.",
+      "run": {
+        "id": "c0eefee6-fb50-4c7f-b9e9-caec737025a6",
+        "mode": "public_video",
+        "model_name": "gemini-3.5-flash-lite",
+        "status": "completed",
+        "source_clip": {
+          "url": "https://www.youtube.com/watch?v=oDcQjVREO5w",
+          "start_ms": 0,
+          "end_ms": 101000
+        },
+        "started_at": "2026-11-13T22:31:03.428Z",
+        "completed_at": "2026-11-13T22:31:10.281Z",
+        "latency_ms": 6853,
+        "raw_output": {
+          "findings": [
+            {
+              "category": "Navigation & Findability",
+              "recommendation": "Elevate the Uber Eats entry point or add a dedicated persistent bottom tab for food delivery directly inside the primary app home screen to reduce entry steps.",
+              "expected_benefit": "Decreases the number of navigation taps required to reach food ordering features and increases feature discoverability for users transitioning from rides to delivery services.",
+              "title": "Nested Uber Eats entry point",
+              "description": "The user starts on a ride-hailing home screen and must tap a small segmented control at the top to switch to Uber Eats. This requires an extra contextual shift before even browsing restaurants.",
+              "timestamp_ms": 11000,
+              "end_timestamp_ms": 14000,
+              "screen": "Home Screen",
+              "confidence": 0.82,
+              "visual_evidence": "The user's finger taps the small Uber Eats toggle button located at the top right of the main rides interface.",
+              "observed_evidence": "User navigates from the main rides home screen by tapping the Uber Eats toggle near the header.",
+              "interpretation": "Embedding food delivery inside a ride app header may obscure the food service for users seeking quick meal delivery.",
+              "event_ids": [],
+              "why_video_matters": "Video footage clearly shows the exact navigation path and the small tap target required to access the food ordering section from the default ride view.",
+              "evidence_sources": [
+                "video"
+              ],
+              "suggested_test": {
+                "hypothesis": "If we add a dedicated bottom navigation bar shortcut for food delivery, then users will reach the restaurant listing screen with fewer taps because the entry point is permanently visible.",
+                "change": "Introduce a bottom navigation tab for Uber Eats alongside rides.",
+                "primary_metric": "time to complete the step",
+                "guardrail_metric": "missed or repeated taps",
+                "target_screen": "Home Screen"
+              },
+              "suggested_route": "experiment"
+            },
+            {
+              "category": "Information Architecture & Decision Support",
+              "recommendation": "Display the restaurant's minimum order requirement directly on the restaurant card or prominently at the top of the menu before items are added, rather than triggering a banner warning in the cart.",
+              "expected_benefit": "Reduces cart abandonment and back-and-forth navigation between the restaurant menu and cart by setting upfront order value expectations.",
+              "title": "Hidden minimum order threshold",
+              "description": "The user adds a single item to the cart and proceeds to checkout, only to be met with a warning banner indicating that the minimum order amount has not been met, forcing them to return to the menu.",
+              "timestamp_ms": 29000,
+              "end_timestamp_ms": 34000,
+              "screen": "Restaurant Menu / Cart",
+              "confidence": 0.89,
+              "visual_evidence": "A red warning triangle and text appear in the cart stating 'Измените содержимое корзины, чтобы разместить заказ. До минимальной суммы заказа не хватает 12.00 PLN.'",
+              "observed_evidence": "User views cart, sees the warning banner about minimum order value, and is forced to tap back to add more items.",
+              "interpretation": "Discovering minimum order rules only inside the cart creates unnecessary friction and backtracking for users.",
+              "event_ids": [],
+              "why_video_matters": "The video captures the exact moment the user encounters the restriction inside the cart view and has to modify their order quantity.",
+              "evidence_sources": [
+                "video"
+              ],
+              "suggested_test": {
+                "hypothesis": "If we display the minimum order amount prominently on the restaurant header, then users will incur fewer backtracks to the menu because they can plan their order size beforehand.",
+                "change": "Add minimum order requirement text to the top restaurant info banner.",
+                "primary_metric": "backtracks",
+                "guardrail_metric": "time to complete the step",
+                "target_screen": "Restaurant Menu"
+              },
+              "suggested_route": "experiment"
+            }
+          ]
+        },
+        "input_fingerprint": "00c47e61fe71942041141ab6ba60a9a67178272e9c64f4bd27f5156e128568cf",
+        "frame_timestamps_ms": [],
+        "usage": {
+          "input_tokens": 10156,
+          "output_tokens": 950,
+          "total_tokens": 11106
+        }
+      },
+      "findings": [
+        {
+          "category": "Navigation & Findability",
+          "recommendation": "Elevate the Uber Eats entry point or add a dedicated persistent bottom tab for food delivery directly inside the primary app home screen to reduce entry steps.",
+          "expected_benefit": "Decreases the number of navigation taps required to reach food ordering features and increases feature discoverability for users transitioning from rides to delivery services.",
+          "title": "Nested Uber Eats entry point",
+          "description": "The user starts on a ride-hailing home screen and must tap a small segmented control at the top to switch to Uber Eats. This requires an extra contextual shift before even browsing restaurants.",
+          "timestamp_ms": 11000,
+          "end_timestamp_ms": 14000,
+          "screen": "Home Screen",
+          "confidence": 0.82,
+          "visual_evidence": "The user's finger taps the small Uber Eats toggle button located at the top right of the main rides interface.",
+          "observed_evidence": "User navigates from the main rides home screen by tapping the Uber Eats toggle near the header.",
+          "interpretation": "Embedding food delivery inside a ride app header may obscure the food service for users seeking quick meal delivery.",
+          "event_ids": [],
+          "why_video_matters": "Video footage clearly shows the exact navigation path and the small tap target required to access the food ordering section from the default ride view.",
+          "evidence_sources": [
+            "video"
+          ],
+          "suggested_test": {
+            "hypothesis": "If we add a dedicated bottom navigation bar shortcut for food delivery, then users will reach the restaurant listing screen with fewer taps because the entry point is permanently visible.",
+            "change": "Introduce a bottom navigation tab for Uber Eats alongside rides.",
+            "primary_metric": "time to complete the step",
+            "guardrail_metric": "missed or repeated taps",
+            "target_screen": "Home Screen"
+          },
+          "suggested_route": "experiment",
+          "id": "60923714-ab76-4020-bb32-e2d36fd2eda2",
+          "session_id": "e02675ea-079d-47d7-916b-527f483be7c7",
+          "analysis_run_id": "c0eefee6-fb50-4c7f-b9e9-caec737025a6",
+          "review_status": "pending"
+        },
+        {
+          "category": "Information Architecture & Decision Support",
+          "recommendation": "Display the restaurant's minimum order requirement directly on the restaurant card or prominently at the top of the menu before items are added, rather than triggering a banner warning in the cart.",
+          "expected_benefit": "Reduces cart abandonment and back-and-forth navigation between the restaurant menu and cart by setting upfront order value expectations.",
+          "title": "Hidden minimum order threshold",
+          "description": "The user adds a single item to the cart and proceeds to checkout, only to be met with a warning banner indicating that the minimum order amount has not been met, forcing them to return to the menu.",
+          "timestamp_ms": 29000,
+          "end_timestamp_ms": 34000,
+          "screen": "Restaurant Menu / Cart",
+          "confidence": 0.89,
+          "visual_evidence": "A red warning triangle and text appear in the cart stating 'Измените содержимое корзины, чтобы разместить заказ. До минимальной суммы заказа не хватает 12.00 PLN.'",
+          "observed_evidence": "User views cart, sees the warning banner about minimum order value, and is forced to tap back to add more items.",
+          "interpretation": "Discovering minimum order rules only inside the cart creates unnecessary friction and backtracking for users.",
+          "event_ids": [],
+          "why_video_matters": "The video captures the exact moment the user encounters the restriction inside the cart view and has to modify their order quantity.",
+          "evidence_sources": [
+            "video"
+          ],
+          "suggested_test": {
+            "hypothesis": "If we display the minimum order amount prominently on the restaurant header, then users will incur fewer backtracks to the menu because they can plan their order size beforehand.",
+            "change": "Add minimum order requirement text to the top restaurant info banner.",
+            "primary_metric": "backtracks",
+            "guardrail_metric": "time to complete the step",
+            "target_screen": "Restaurant Menu"
+          },
+          "suggested_route": "experiment",
+          "id": "822882b7-fc89-4cce-88a0-5625cf8ef575",
+          "session_id": "e02675ea-079d-47d7-916b-527f483be7c7",
+          "analysis_run_id": "c0eefee6-fb50-4c7f-b9e9-caec737025a6",
+          "review_status": "pending"
+        }
+      ]
+    },
+    {
+      "candidate_id": "BgETPxj78Eo",
+      "session_id": "ee08bb6d-654b-487a-a9bf-05a1ad0f8a48",
+      "title": "Join us as we explore the Uber Eats app",
+      "creator": "Bridges Helpdesk and Technical Assistance Center",
+      "published_label": "Linked in an August 2024 review",
+      "context": "VoiceOver demonstration. Screen-reader gestures are not ordinary touch behavior.",
+      "url": "https://www.youtube.com/watch?v=BgETPxj78Eo",
+      "duration_ms": 1468520,
+      "clip": {
+        "start_ms": 980000,
+        "end_ms": 1280000
+      },
+      "clip_rationale": "16:20-21:20: view cart, checkout and place order with VoiceOver (from the creator's published timestamped transcript).",
+      "run": {
+        "id": "0c442a45-7d79-45ca-b5fd-fada22907fb6",
+        "mode": "public_video",
+        "model_name": "gemini-3.5-flash-lite",
+        "status": "completed",
+        "source_clip": {
+          "url": "https://www.youtube.com/watch?v=BgETPxj78Eo",
+          "start_ms": 980000,
+          "end_ms": 1280000
+        },
+        "started_at": "2026-11-13T22:31:10.282Z",
+        "completed_at": "2026-11-13T22:31:16.075Z",
+        "latency_ms": 5793,
+        "raw_output": {
+          "findings": []
+        },
+        "input_fingerprint": "cd621e0f2d451243c4e971ac63c8907b88734d5a1a3b79a4498b84ceaa171827",
+        "frame_timestamps_ms": [],
+        "usage": {
+          "input_tokens": 28270,
+          "output_tokens": 9,
+          "total_tokens": 28279
+        }
+      },
+      "findings": []
+    },
+    {
+      "candidate_id": "Xkv-FUvspg0",
+      "session_id": "a56d0e77-c712-4f9c-8cb8-ea3659504eb2",
+      "title": "How to Use Uber Eats on iPhone & Android - Walkthrough Tutorial",
+      "creator": "TechZG Guides",
+      "published_label": "August 2020",
+      "context": "Older backup. Do not describe historical UI as the current app.",
+      "url": "https://www.youtube.com/watch?v=Xkv-FUvspg0",
+      "duration_ms": 373164,
+      "clip": {
+        "start_ms": 73000,
+        "end_ms": 373000
+      },
+      "clip_rationale": "1:13-6:13: wallet/payment chapter end, Restaurants chapter (171 s) through to the end; 2020 UI.",
+      "run": {
+        "id": "7886a157-70ab-44bc-a047-e524c7941395",
+        "mode": "public_video",
+        "model_name": "gemini-3.5-flash-lite",
+        "status": "completed",
+        "source_clip": {
+          "url": "https://www.youtube.com/watch?v=Xkv-FUvspg0",
+          "start_ms": 73000,
+          "end_ms": 373000
+        },
+        "started_at": "2026-11-13T22:31:16.076Z",
+        "completed_at": "2026-11-13T22:31:27.732Z",
+        "latency_ms": 11656,
+        "raw_output": {
+          "findings": [
+            {
+              "category": "Navigation & Structure",
+              "recommendation": "Add a prominent direct shortcut to payment methods and order history on the main account screen rather than burying them inside the wallet menu.",
+              "expected_benefit": "Reduces the number of taps required to manage billing information and improves the discoverability of financial settings.",
+              "title": "Account Menu Depth for Payment Methods",
+              "description": "The user must navigate through the wallet submenu to locate and manage payment options, which increases friction when attempting to add or update credit cards.",
+              "timestamp_ms": 147000,
+              "end_timestamp_ms": 150000,
+              "screen": "Wallet Screen",
+              "confidence": 0.85,
+              "visual_evidence": "User views wallet screen displaying options to add payment methods and vouchers.",
+              "observed_evidence": "The user taps on the wallet option from the account list and views payment configuration layers.",
+              "interpretation": "Financial settings are nested under a wallet category that requires multiple transitional screens to reach specific payment inputs.",
+              "event_ids": [],
+              "why_video_matters": "Shows the exact structural depth and transitional steps needed to reach credit card addition from the primary profile.",
+              "evidence_sources": [
+                "video"
+              ],
+              "suggested_test": {
+                "hypothesis": "If we promote payment management to the top-level account menu, then users will complete card additions in fewer steps because financial settings are more immediate.",
+                "change": "Expose direct 'Payment Methods' link on the primary account screen.",
+                "primary_metric": "time_to_complete_step"
+              },
+              "suggested_route": "experiment"
+            },
+            {
+              "category": "Information Architecture",
+              "recommendation": "Provide clearer inline guidance or tooltips explaining what each price tier symbol ($ to $$$$) represents in absolute monetary terms.",
+              "expected_benefit": "Helps users make faster, more confident filtering decisions without needing to guess restaurant pricing bands.",
+              "title": "Vague Price Range Filter Categories",
+              "description": "The price range filter utilizes abstract dollar sign icons ($ to $$$$) without any descriptive monetary range or scale indicator.",
+              "timestamp_ms": 323000,
+              "end_timestamp_ms": 329000,
+              "screen": "Price Range Filter",
+              "confidence": 0.8,
+              "visual_evidence": "Price range selector showing single to quadruple dollar signs with no contextual range values.",
+              "observed_evidence": "The interface displays price tier buttons labeled with dollar signs before applying sort criteria.",
+              "interpretation": "Users receive little numerical guidance on what constitutes each pricing tier, leading to imprecise filtering.",
+              "event_ids": [],
+              "why_video_matters": "Demonstrates the lack of descriptive labels on the price filtering modal.",
+              "evidence_sources": [
+                "video"
+              ],
+              "suggested_test": {
+                "hypothesis": "If we add estimated average cost ranges below each dollar sign icon, then users will select filters faster because they have clearer cost expectations.",
+                "change": "Include currency ranges under each price tier button.",
+                "primary_metric": "time_to_complete_step"
+              },
+              "suggested_route": "experiment"
+            }
+          ]
+        },
+        "input_fingerprint": "88528ab1d502d093abe2cadc933640c56f41c8858500e10b01a4ee684c7bbd17",
+        "frame_timestamps_ms": [],
+        "usage": {
+          "input_tokens": 24968,
+          "output_tokens": 772,
+          "total_tokens": 25740
+        }
+      },
+      "findings": [
+        {
+          "category": "Navigation & Structure",
+          "recommendation": "Add a prominent direct shortcut to payment methods and order history on the main account screen rather than burying them inside the wallet menu.",
+          "expected_benefit": "Reduces the number of taps required to manage billing information and improves the discoverability of financial settings.",
+          "title": "Account Menu Depth for Payment Methods",
+          "description": "The user must navigate through the wallet submenu to locate and manage payment options, which increases friction when attempting to add or update credit cards.",
+          "timestamp_ms": 147000,
+          "end_timestamp_ms": 150000,
+          "screen": "Wallet Screen",
+          "confidence": 0.85,
+          "visual_evidence": "User views wallet screen displaying options to add payment methods and vouchers.",
+          "observed_evidence": "The user taps on the wallet option from the account list and views payment configuration layers.",
+          "interpretation": "Financial settings are nested under a wallet category that requires multiple transitional screens to reach specific payment inputs.",
+          "event_ids": [],
+          "why_video_matters": "Shows the exact structural depth and transitional steps needed to reach credit card addition from the primary profile.",
+          "evidence_sources": [
+            "video"
+          ],
+          "suggested_test": {
+            "hypothesis": "If we promote payment management to the top-level account menu, then users will complete card additions in fewer steps because financial settings are more immediate.",
+            "change": "Expose direct 'Payment Methods' link on the primary account screen.",
+            "primary_metric": "time_to_complete_step"
+          },
+          "suggested_route": "experiment",
+          "id": "39ccff90-aa5f-4529-97bc-0098e4578dca",
+          "session_id": "a56d0e77-c712-4f9c-8cb8-ea3659504eb2",
+          "analysis_run_id": "7886a157-70ab-44bc-a047-e524c7941395",
+          "review_status": "pending"
+        },
+        {
+          "category": "Information Architecture",
+          "recommendation": "Provide clearer inline guidance or tooltips explaining what each price tier symbol ($ to $$$$) represents in absolute monetary terms.",
+          "expected_benefit": "Helps users make faster, more confident filtering decisions without needing to guess restaurant pricing bands.",
+          "title": "Vague Price Range Filter Categories",
+          "description": "The price range filter utilizes abstract dollar sign icons ($ to $$$$) without any descriptive monetary range or scale indicator.",
+          "timestamp_ms": 323000,
+          "end_timestamp_ms": 329000,
+          "screen": "Price Range Filter",
+          "confidence": 0.8,
+          "visual_evidence": "Price range selector showing single to quadruple dollar signs with no contextual range values.",
+          "observed_evidence": "The interface displays price tier buttons labeled with dollar signs before applying sort criteria.",
+          "interpretation": "Users receive little numerical guidance on what constitutes each pricing tier, leading to imprecise filtering.",
+          "event_ids": [],
+          "why_video_matters": "Demonstrates the lack of descriptive labels on the price filtering modal.",
+          "evidence_sources": [
+            "video"
+          ],
+          "suggested_test": {
+            "hypothesis": "If we add estimated average cost ranges below each dollar sign icon, then users will select filters faster because they have clearer cost expectations.",
+            "change": "Include currency ranges under each price tier button.",
+            "primary_metric": "time_to_complete_step"
+          },
+          "suggested_route": "experiment",
+          "id": "422fe03e-0d4a-4fff-9d25-8126cc7f3904",
+          "session_id": "a56d0e77-c712-4f9c-8cb8-ea3659504eb2",
+          "analysis_run_id": "7886a157-70ab-44bc-a047-e524c7941395",
+          "review_status": "pending"
+        }
+      ]
+    }
+  ]
+}

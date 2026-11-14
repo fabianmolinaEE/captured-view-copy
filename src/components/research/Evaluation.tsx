@@ -1,3 +1,5 @@
+import { useProduct } from "@/hooks/use-product";
+import { sessionsForProduct } from "@/lib/research/products";
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -12,17 +14,25 @@ import {
 import { Button } from "@/components/ui/button";
 import { Shell, PageHeading, Footer } from "./Shell";
 import { listSessions, saveSession } from "@/lib/research/sessionStorage";
+import { useSessionsChanged } from "@/hooks/use-demo-import";
 import { type Session, type FindingMatch, type AnalysisMode, label } from "@/lib/research/types";
 import { score, rate, pairedScores } from "@/lib/research/evaluation";
 export function Evaluation() {
   const [mode, setMode] = useState<AnalysisMode>("video_frames_plus_events");
-  const [sessions, setSessions] = useState<Session[]>([]);
+  const { productId, product } = useProduct();
+  const [allSessions, setSessions] = useState<Session[]>([]);
+  const sessions = sessionsForProduct(allSessions, productId);
   const [error, setError] = useState("");
   useEffect(() => {
     listSessions()
       .then(setSessions)
       .catch((e) => setError(e.message));
   }, []);
+  useSessionsChanged(() => {
+    listSessions()
+      .then(setSessions)
+      .catch(() => {});
+  });
   const queue = useRef(Promise.resolve());
   const persist = async (s: Session) => {
     try {
@@ -38,7 +48,8 @@ export function Evaluation() {
       setError(e instanceof Error ? e.message : "Saving failed.");
     }
   };
-  const metrics = score(sessions, mode);
+  const activeMode = productId === "uber-eats" ? "public_video" : mode;
+  const metrics = score(sessions, activeMode);
   const paired = pairedScores(sessions);
   const stats = [
     {
@@ -72,7 +83,7 @@ export function Evaluation() {
     <Shell section="Evaluation">
       <PageHeading
         title="Evaluation"
-        description="Does video reveal what events alone can't? Let the evidence decide."
+        description={`${product?.name ?? "Product"} · Does video catch what events miss?`}
         action={
           <Button asChild variant="outline">
             <Link to="/test-app">
@@ -84,57 +95,66 @@ export function Evaluation() {
       />
       <label className="field">
         Evaluation mode
-        <select value={mode} onChange={(e) => setMode(e.target.value as AnalysisMode)}>
-          <option value="video_frames_plus_events">Video + events</option>
-          <option value="events_only">Events-only baseline</option>
+        <select value={activeMode} onChange={(e) => setMode(e.target.value as AnalysisMode)}>
+          {productId === "uber-eats" ? (
+            <option value="public_video">Video recordings</option>
+          ) : (
+            <>
+              <option value="video_frames_plus_events">Video + events</option>
+              <option value="events_only">Events-only baseline</option>
+            </>
+          )}
         </select>
       </label>
       <p className="text-xs mb-4">
-        {metrics.eligibleSessions} analyzed sessions · {metrics.unresolved} unresolved correctness
-        decisions. Detection is withheld while proposals are unresolved.
+        {metrics.eligibleSessions} analyzed sessions · {metrics.unresolved} unresolved · Detection
+        waits until all are resolved.
       </p>
-      <section className="finding">
-        <h3>Paired comparison · {paired.sessions} identical sessions</h3>
-        <p>
-          Latest completed run per mode, on sessions with both modes. Each mode uses the same human
-          rubric. No improvement estimate is asserted.
-        </p>
-        <div className="overflow-x-auto">
-          <table className="text-xs w-full">
-            <thead>
-              <tr>
-                <th>Input</th>
-                <th>Verified detection</th>
-                <th>False-positive share</th>
-                <th>Verified evidence</th>
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                ["Video + events", paired.video],
-                ["Events only", paired.events],
-              ].map(([name, raw]) => {
-                const m = raw as ReturnType<typeof score>;
-                return (
-                  <tr key={String(name)}>
-                    <td>{String(name)}</td>
-                    <td>
-                      {m.unresolved ? "Insufficient labeled data" : rate(m.detected, m.observed)} (
-                      {m.detected}/{m.observed})
-                    </td>
-                    <td>
-                      {rate(m.unmatched, m.reviewed)} ({m.unmatched}/{m.reviewed})
-                    </td>
-                    <td>
-                      {rate(m.evidence, m.evidenceJudged)} ({m.evidence}/{m.evidenceJudged})
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+      {productId === "uber-eats" ? (
+        <div className="info-note mb-5">
+          No interaction events on these recordings, so there is no events-only comparison.
         </div>
-      </section>
+      ) : (
+        <section className="finding">
+          <h3>Paired comparison · {paired.sessions} identical sessions</h3>
+          <p>Latest run per mode, same human rubric. No improvement claimed.</p>
+          <div className="overflow-x-auto">
+            <table className="text-xs w-full">
+              <thead>
+                <tr>
+                  <th>Input</th>
+                  <th>Verified detection</th>
+                  <th>False-positive share</th>
+                  <th>Verified evidence</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  ["Video + events", paired.video],
+                  ["Events only", paired.events],
+                ].map(([name, raw]) => {
+                  const m = raw as ReturnType<typeof score>;
+                  return (
+                    <tr key={String(name)}>
+                      <td>{String(name)}</td>
+                      <td>
+                        {m.unresolved ? "Insufficient labeled data" : rate(m.detected, m.observed)}{" "}
+                        ({m.detected}/{m.observed})
+                      </td>
+                      <td>
+                        {rate(m.unmatched, m.reviewed)} ({m.unmatched}/{m.reviewed})
+                      </td>
+                      <td>
+                        {rate(m.evidence, m.evidenceJudged)} ({m.evidence}/{m.evidenceJudged})
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
       <div className="stat-grid">
         {stats.map((s) => (
           <div className="stat" key={s.title}>
@@ -149,10 +169,8 @@ export function Evaluation() {
       </div>
       <div className="info-note mb-7">
         <Info />
-        <span>
-          Only explicitly observed issues and human-verified matches count. Duplicate proposals
-          cannot increase recall. Video necessity is human judgment, not a model claim. Zero
-          eligible evidence means N/A.
+        <span title="Duplicate proposals cannot raise recall. Whether video was needed is a human judgment, not a model claim.">
+          Only observed issues and human-verified matches count. Zero eligible evidence means N/A.
         </span>
       </div>
       <div className="research-band border-t">
@@ -161,15 +179,10 @@ export function Evaluation() {
         </div>
         <div>
           <h3>Build an honest research set</h3>
-          <p>
-            {sessions.length} real recordings · Aim for 10–20 team sessions.
-            <br />
-            Small samples are directional, not a proven performance claim.
-          </p>
+          <p>Small samples are directional, not proof.</p>
         </div>
         <div className="research-progress">
-          <span>{sessions.length} / 10 recordings</span>
-          <progress max={10} value={Math.min(sessions.length, 10)} />
+          <span>{sessions.length} recordings</span>
         </div>
       </div>
       {error && <div className="error-note">{error}</div>}
@@ -177,11 +190,7 @@ export function Evaluation() {
         <div className="empty-sessions border-t mb-7">
           <Target size={31} className="text-primary mb-5" />
           <h2>No evidence to evaluate. Yet.</h2>
-          <p>
-            Record a real session, mark which issues appeared,
-            <br />
-            then match reviewed proposals to the observed evidence.
-          </p>
+          <p>Record a session, label what you saw, then match the AI proposals.</p>
           <Button asChild className="mt-6">
             <Link to="/test-app">
               Record a test session
@@ -191,8 +200,10 @@ export function Evaluation() {
         </div>
       ) : (
         sessions.map((s) => {
-          const per = score([s], mode);
-          const run = s.runs.filter((r) => r.status === "completed" && r.mode === mode).at(-1);
+          const per = score([s], activeMode);
+          const run = s.runs
+            .filter((r) => r.status === "completed" && r.mode === activeMode)
+            .at(-1);
           const findings = run ? s.findings.filter((f) => f.analysis_run_id === run.id) : [];
           return (
             <section key={s.id} className="eval-session">
@@ -329,7 +340,7 @@ export function Evaluation() {
               })}
               {!findings.length && (
                 <p className="text-xs text-muted-foreground mt-4">
-                  No AI proposals to match. Observed issue labels are saved independently.
+                  No AI proposals to match. Your labels are still saved.
                 </p>
               )}
             </section>

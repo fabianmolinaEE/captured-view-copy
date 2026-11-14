@@ -1,28 +1,61 @@
 # LoopMate — Manual acceptance checks
 
-These checks require a real desktop browser and, for inference, a real server Gemini key. They are intentionally not claimed as passing by mocked tests.
+Updated November 13, 2026. These checks need a real desktop browser and, for inference, a real server Gemini key. Mocked tests do not count as passing them. The target loop is defined in [AUTOMATED-LOOP.md](AUTOMATED-LOOP.md). Checks marked **(planned)** apply once that UI contract is implemented; until then, record them as not yet testable.
 
-## Meeting-aligned interview rehearsal
+## 1. Sunday demo: Uber Eats in-page playback and highlights
 
-- Check the animated infinity loop, stage selector and colored cards on Home. Pause motion, navigate/reload, and verify it stays paused. Change the system reduced-motion setting and confirm animation stops without hiding content.
-- Confirm LoopMate appears in desktop/mobile navigation, page titles and sharing metadata; new video/JSON downloads should use the `loopmate-` prefix. Existing browser recordings must remain accessible after the rename.
-- Prioritize a consented internal recording → real AI insight → timestamped evidence → human decision. Rehearse on the second laptop identified in the November 12 meeting.
-- Open a saved finding from Internal Insights and verify its source, model, run date and usage; it must be labeled Saved real analysis rather than a fresh call. Prerecorded external analysis and Agentic Vision/video-link input remain separate roadmap acceptance items until implemented.
-- Verify the current A/B Tests, Rollouts and External Insights pages say Coming Soon and show no running work or fabricated metrics. Future agent status, credit-allocation or frequency previews must label synthetic/unavailable behavior explicitly. Verify that preview controls cannot start real recording, experiments, repository writes or deployments.
-- Verify only the selected, actually configured storage adapter. The current optional adapter is Supabase; the meeting's R2 preference is not an existing connection. Cloud setup is not required for the local interview flow.
+1. Open Recordings, choose **Uber Eats**. Confirm saved references appear and (planned) the five candidates from `publicVideo.ts` are browsable on this page with creator attribution. Today the candidate library is under Record a session.
+2. Preview a candidate. It must play **inside the page** via the YouTube IFrame API: no redirect or new tab to youtube.com. Check the iframe `src` includes `enablejsapi=1`, `origin=<this origin>`, `playsinline=1`, and `start`/`end` for the saved clip.
+3. Confirm the player reports duration, the reviewed segment is capped at five minutes, and saving creates one reference (duplicate clicks do not create two).
+4. Make one explicitly consented `public_video` analysis. Verify actual model name, latency, usage and that every timestamp falls inside the clip on the original video timeline. Empty results stay empty; failures show a fixed hint, not a raw provider message.
+5. Open an insight from Insights. Click each highlight chip/timestamp: the embedded player seeks (`seekTo`) to that point and stops after the bounded ~4 s range. Repeat several highlights and a full replay.
+6. Use a blocked/private/removed video ID if available: an error message appears and only then a "Watch on YouTube" link.
+7. On mobile width, the player is inline (`playsinline`), attribution visible, no horizontal overflow.
 
-The complete meeting-derived task list is in [PROTOTYPE-PHASE-PLAN.md](PROTOTYPE-PHASE-PLAN.md). The checks below cover the current implementation.
+## 2. Insight review and suggested A/B test
 
-## Current research workflow
+1. Accept, reject and reopen an insight; type notes quickly and set severity; refresh. Everything persists and exported JSON keeps the original model output unchanged.
+2. **(planned)** Each insight shows an "Agent suggestion" test (hypothesis, change, primary metric, optional guardrail and target screen) with no predicted numbers.
+3. **(planned)** "Approve test" is disabled while the insight is pending or rejected. "Accept insight & approve test" sets both in one write; refresh and confirm.
+4. **(planned)** Edit the test: the card shows "Edited by reviewer", the agent original stays intact in export, and editing an approved test returns it to pending. Empty hypothesis, change or primary metric blocks approval.
+5. **(planned)** Reject a test; reopen or reject an insight with an approved test and confirm the test returns to pending. Refresh after each step.
+6. **(planned)** Confirm approval starts only the labeled client-side simulated run: no network request, repository write or deployment (check the network panel), and the UI says so.
+7. Legacy `next_step` drafts on older findings remain readable as "Earlier research draft" (planned label) and never appear in model input.
 
-1. Start without credentials. Confirm session list is empty for a clean browser, Settings says AI not configured, and Analyze is disabled. No sample recordings/findings should appear.
-2. Open Test App on desktop Chrome/Edge localhost/HTTPS. Confirm no recording starts without consent and a native permission picker. Cancel/deny the picker; no session should be saved. Retry, select a window or another tab; supported browsers should reject the selection and release tracks. Browser support for Capture Handle varies: when unavailable, manually verify the current tab selection.
-3. Choose several issues, use synthetic values, and record the current tab. Confirm the fixed checkout stage and Stop & save control are visible. Create events, scroll inside the checkout, stop via the app, then refresh. Reopen, replay, click events and compare their actual timing. Download video and full JSON. If storage fails, use the unsaved-video recovery download.
-4. Record again; stop using the browser's sharing control. Confirm final chunks and events are saved once. Resize during recording; confirm capture stops and multimodal analysis requires a new stable-crop recording. Attempt navigation/closing while recording and verify the browser unload warning; abrupt crashes remain an acknowledged data-loss limit.
-5. Set `.env` server secrets and restart. Select a currently accessible vision/structured-output model. Consent to sending sampled frames/events and analyze a recording. Inspect the real request's result, actual model name, latency and usage. Empty findings are possible and must stay empty. Retry with invalid credentials/quota and confirm a failure rather than success. Old successful runs must remain available.
-6. Inspect frame cropping: researcher labels/settings must be outside every image sent to the model. No ground-truth/scenario/reviewer fields should appear in JSON inputs. Do not add real personal data for this test. Review frame coverage for brief modal/button failures.
-7. Open a finding detail from Internal Insights. Play the ~4-second highlight and seek cited events. Accept/reject findings, type notes quickly, set severity, then refresh. Add a next-step title/scope, approve it, refresh, then change the scope or reopen the finding; approval must return to draft. No experiment or code change should start. Confirm all edits remain and original model output in exported JSON is unchanged. Try pending/accepted/rejected filters and older runs. Click finding/event timestamps and Insights deep links.
-8. Label observed ground truth independently, including an issue without a planted scenario. Verify known-correct and known-incorrect proposals in Evaluation. Unknown truth/necessity/evidence must not count as completed judgments. Duplicate findings must not raise recall. No analyzed or labeled data should produce “Insufficient labeled data.”
-9. Run events-only analysis on the same recording. Inspect the request: no frames key, image parts, prior model descriptions or visual evidence fields in input. Annotate baseline results with the same rubric and inspect the paired cohort and denominators.
-10. Record/analyze/review three distinct sessions with equivalent category + screen findings. Confirm one Insights group affects three sessions, with each recording accessible. Multiple findings in one session should not raise the affected-session count. A human-confirmed rare blocker should retain high priority.
-11. After Lovable provisions the private backend, enter the team code, explicitly consent to upload, save, refresh and import from another browser. Verify full video/events/runs/review/labels survive. Edit both copies: stale upload must return a conflict without losing local work. Verify public-bucket upload is refused. Delete shared and local copies using their separate controls; list/import again to confirm deletion. Never assume local deletion removes cloud data.
+## 3. A/B Tests, Rollouts and simulated stages
+
+- Today both pages are Coming Soon placeholders and must show no running work, participants, deltas, uplift, PRs or counters.
+- **(planned)** A/B Tests lists stored approved tests for the selected product; each runs a client-side simulated experiment through visible stages and ends with deltas marked "illustrative, not measured". Every card and detail shows a visible "Simulated demo" badge (not tooltip-only). Pending-suggestion count links to Insights; rejected list present.
+- **(planned)** Rollouts shows the approved test → experiment → deltas → PR → merge diagram, simulated PR cards badged "Simulated demo", and "Merge (simulated)" / "Close" that only change the simulated record. Before any run, an empty state explains PRs appear after an experiment finishes.
+- **(planned)** Simulated records do not change Insights priorities, Evaluation metrics or any real count. Settings → "Reset simulated demo data" clears them and leaves research sessions intact.
+- **(planned)** Home shows the eight loop stages with agent/human badges and real / simulated / not-connected status.
+
+## 4. Settings → Agents (planned)
+
+Pick focus areas and confirm the request contains only the fixed enum values. Raise minimum confidence and confirm lower findings are hidden behind "show N below threshold" but still stored. Set max analyses/day low, analyze until reached, and confirm Analyze is disabled with an explanation. Cadence reads "Runner not connected in prototype".
+
+## 5. Products and Home
+
+1. Fresh tab: Home shows hero and "Across your products" overview with no product picker.
+2. Insights, Recordings, Evaluation and Record a session require a product. The picker lists **Uber Eats** and **Bag Checkout App** only; Miso does not appear. Old Miso recordings, if present, show as "Archived delivery app" and are not counted as Uber Eats.
+3. Each scoped page uses only the selected product's data. Selection persists per tab across navigation and refresh. Deep links adopt their evidence product. Historical `Carry checkout` recordings belong to Bag Checkout App.
+4. Product buttons are disabled during permission, capture, save and unsaved-video recovery.
+
+## 6. Diagnostic research tools (Bag Checkout)
+
+These remain available under Research tools; they are not the operating loop.
+
+1. Without credentials: no sample data, Settings says AI not configured, Analyze disabled.
+2. Record a session (Bag Checkout): no capture without consent and the native picker; cancel/deny saves nothing; wrong tab/window is rejected where Capture Handle is supported. Record, scroll, stop via the app and via the browser control, refresh, replay, click events, download video/JSON. Resize during recording: capture continues and crop recalculates. Stops under one second show a retry message.
+3. Analyze with consent; inspect the real result, model, latency and usage. Researcher setup pixels, scenarios, ground truth, notes, drafts and test decisions never appear in model input. Invalid credentials produce a failure, not a success; older runs remain.
+4. Events-only run: no frames or visual fields in the request.
+5. Evaluation: independent ground truth, verified matches, unknown judgments not counted, duplicates do not raise recall, paired denominators shown.
+6. Optional Supabase adapter, only after Lovable provisions it: explicit upload/import, conflict on stale upload, public bucket refused, local and shared deletion separate.
+
+## 7. Theme and motion
+
+Every route uses the continuous purple/navy canvas; `.phone` keeps its light palette. Pause motion, navigate and reload: it stays paused. System reduced motion stops animation without hiding content. Downloads use the `loopmate-` prefix.
+
+## Archived
+
+Miso food delivery checks (formerly "Sunday food-delivery acceptance" and the Food Delivery product picker) are archived and not part of acceptance. Historical scripts remain in [SUNDAY-DELIVERY-DEMO.md](SUNDAY-DELIVERY-DEMO.md) for reference only.

@@ -49,20 +49,18 @@ beforeEach(() => {
       setCaptureHandleConfig: (config: { handle: string }) => {
         handle = config.handle;
       },
-      getDisplayMedia: vi
-        .fn()
-        .mockResolvedValue({
-          getVideoTracks: () => [
-            {
-              getSettings: () => ({ displaySurface: "browser" }),
-              getCaptureHandle: () => ({ handle }),
-              addEventListener: vi.fn(),
-              removeEventListener: vi.fn(),
-              stop: vi.fn(),
-            },
-          ],
-          getTracks: () => [],
-        }),
+      getDisplayMedia: vi.fn().mockResolvedValue({
+        getVideoTracks: () => [
+          {
+            getSettings: () => ({ displaySurface: "browser" }),
+            getCaptureHandle: () => ({ handle }),
+            addEventListener: vi.fn(),
+            removeEventListener: vi.fn(),
+            stop: vi.fn(),
+          },
+        ],
+        getTracks: () => [],
+      }),
     },
   });
   vi.stubGlobal("innerWidth", 1200);
@@ -88,7 +86,7 @@ afterEach(() => {
   vi.useRealTimers();
 });
 async function recordSmallButton() {
-  render(<TestApp />);
+  render(<TestApp initialDemo="checkout" />);
   fireEvent.click(screen.getByRole("checkbox", { name: /Long loading/ }));
   fireEvent.click(screen.getByRole("checkbox", { name: /Missed button/ }));
   fireEvent.click(screen.getByRole("checkbox", { name: /I consent/ }));
@@ -111,7 +109,7 @@ describe("recording the small-button scenario", () => {
     expect(Recorder.instances[0]?.state).toBe("recording");
     expect(mocks.saveSession).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: /Explore the bag/ }));
-    const tiny = screen.getByRole("button", { name: "Checkout", exact: true });
+    const tiny = screen.getByRole("button", { name: "Checkout" });
     expect(tiny).toHaveClass("tiny-target");
     fireEvent.pointerDown(tiny.parentElement!, { clientX: 410, clientY: 300 });
     fireEvent.click(tiny);
@@ -146,5 +144,53 @@ describe("recording the small-button scenario", () => {
       vi.advanceTimersByTime(500);
     });
     expect(mocks.saveSession).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("delivery capture provenance", () => {
+  it("records delivery interactions with correct source, crop and unknown ground truth", async () => {
+    render(<TestApp initialDemo="delivery" />);
+    fireEvent.click(screen.getByRole("checkbox", { name: /I consent/ }));
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: /Share this tab/ }));
+    });
+    expect(screen.queryByText("Choose your size")).not.toBeInTheDocument();
+    fireEvent.pointerDown(screen.getByRole("img", { name: /Vegetable pizza/ }), {
+      clientX: 500,
+      clientY: 250,
+    });
+    fireEvent.click(screen.getAllByRole("button", { name: /View item/ })[0]!);
+    fireEvent.click(screen.getByRole("radio", { name: /Large/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Add to basket/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Edit item" }));
+    await act(async () => {
+      vi.advanceTimersByTime(5000);
+      fireEvent.click(screen.getByRole("button", { name: /Stop & save/ }));
+    });
+    expect(mocks.saveSession).toHaveBeenCalledTimes(1);
+    const saved = mocks.saveSession.mock.calls[0]![0];
+    expect(saved.source_app).toBe("Miso food delivery");
+    expect(saved.capture_region).toBeDefined();
+    expect(saved.issues).toHaveLength(3);
+    expect(
+      saved.issues.every(
+        (issue: { actually_observed: string }) => issue.actually_observed === "unknown",
+      ),
+    ).toBe(true);
+    expect(saved.events).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: "pointer_down",
+          screen: "delivery_menu",
+          metadata: expect.objectContaining({ hit: false }),
+        }),
+        expect.objectContaining({
+          type: "backtrack",
+          screen: "delivery_basket",
+          target_id: "edit_item",
+        }),
+      ]),
+    );
+    expect(JSON.stringify(saved.events)).not.toContain("1847 West");
   });
 });

@@ -1,16 +1,30 @@
 # LoopMate
 
-Find friction that logs can't explain. A research prototype for **Record → Replay → Analyze → Review → Prioritize → Evaluate**. React 19, TypeScript, TanStack Start/Router, Vite and Tailwind remain in place. The existing dashboard and superhero mascot are preserved.
+An automated product-improvement loop. Agents watch recordings of a product, find **improvements** (UX, UI, layout, button size and target area, copy, discoverability, effort, feedback, trust, engagement; bug fixes are one part), back each insight with playable evidence highlights and propose an A/B test. Approved tests go to an experiment agent that builds the variant, records it and reports user-experience deltas; a PR agent turns supported variants into pull requests on Rollouts. React 19, TypeScript, TanStack Start/Router, Vite and Tailwind.
 
-## Product direction from the November 12 team discussion
+**[docs/AUTOMATED-LOOP.md](docs/AUTOMATED-LOOP.md) is the canonical vision and per-stage status.**
 
-LoopMate's longer-term vision is **evidence → reviewed insights → approved experiments → reviewed code changes → measured rollouts**, combining internal recordings with external competitor research. The initial customer hypothesis is game studios and consumer app incubators that repeatedly launch and retire products; interviews should validate the problem and willingness to pay.
+## The loop and where humans fit
 
-The home and primary navigation now organize LoopMate into **Insights**, **A/B Tests**, and **Rollouts**. Internal Insights shows real saved proposals, review-status filters and the existing Prioritized view. Each finding opens an evidence-focused detail page with safe Markdown, recording highlights, cited events, review controls and an editable next-step draft. **External**, **A/B Tests**, and **Rollouts** are explicit Coming Soon states; they contain no invented findings, running experiments or release metrics. Recordings, recording setup, evaluation and settings remain available under Research tools (in the top menu on mobile).
+Collection agent → insight agent (Gemini video) → evidence highlights + suggested A/B test → **human insight review** → experiment agent → deltas → PR agent → **human merge on Rollouts**.
 
-The interview priority remains a genuinely tested recording-to-insight-to-review flow. Approving a next-step draft saves research intent only; no experiment, repository write or deployment is triggered. Editing an approved title/scope or reopening/rejecting its finding returns the approval to draft.
+Humans do three things only: review insights with their highlights; approve, edit or reject the suggested A/B test; merge or decline the resulting PR. Manual recording, the Analyze button, Evaluation and ground-truth labelling are diagnostic research tools (under Research tools; in the header menu on mobile), not the operating workflow.
 
-Use [the prototype phase plan](docs/PROTOTYPE-PHASE-PLAN.md) as the authoritative feature tracker, including owners, the meeting's November 12–13 targets, acceptance criteria and unresolved decisions. [The roadmap](roadmap.md) provides a short overview. Meeting claims about competitors, Agentic Vision, supported video-link inputs and storage pricing remain hypotheses to verify; this documentation does not treat them as established facts.
+## What is real in the prototype
+
+- **Four scouts:** Tracker (blue) and Explorer (green) find what to improve; Fixer (orange) and Experimenter (purple) change the product. Each has its own mascot and can be turned on/off and tuned in Settings → Scouts.
+- **Real:** the Gemini insight analysis with an improvement-focused prompt (server-side, strict validation), model-suggested A/B tests and fix/experiment routes with human approve/edit/reject, timestamped evidence highlights on local video or the in-page YouTube embed, human accept/reject/notes/severity, focus areas, confidence threshold and a daily analysis cap. One live Gemini public-video call passed on Nov 13; in-page YouTube playback is mock-tested only.
+- **Navigation:** HQ, Insights, A/B Tests, Rollouts. Hero names (Tracker, Explorer, Experimenter, Fixer) are internal labels. HQ shows insights that need you (left) and agent activity tiles (right).
+- **Unified Insights:** own-product (Tracker) and DoorDash competitor (Explorer) insights in one list, no thumbnails, each with a source marker (Tracker, Explorer or Both) and "from N videos". Competitor footage stays out of own-product metrics. The "Order again on the home screen" insight is a fictional sample badged "Simulated demo".
+- **Simulated (labeled):** approving a test starts a client-side simulated Experimenter run that ends in illustrative "not measured" deltas and a simulated PR on Rollouts; approving a fix sends it to the simulated Fixer, which produces a simulated fix PR. Every such record carries a visible "Simulated demo" badge, is stored apart from research data, is excluded from metrics and can be reset in Settings. No real experiment, repository write, deployment or network call happens.
+- **Not connected:** the collection runner, real experiment agent, measured deltas, PR agent and repository connection.
+
+## Products
+
+- **Uber Eats** — public YouTube walkthroughs (third-party footage, attributed; Uber is not a customer). Named demo for **Sunday, November 15, 2026**.
+- **Bag Checkout App** — our controlled checkout fixture with consented screen recordings and semantic events. Legacy `Carry checkout` recordings are recognized without rewriting them.
+
+Miso food delivery is archived: it is not a product and is not shown in the UI. Its old local recordings are left untouched. Home opens unscoped with an overview Across your products; Insights, Recordings, Evaluation and recording setup use the product buttons above the page. The choice is per browser tab and is a view filter, not a tenant boundary.
 
 ## Local setup
 
@@ -40,71 +54,60 @@ For hosted use, set runtime secrets through Lovable. Do not prefix any secret wi
 
 The default model's image input and structured-output support were checked against [Google's model documentation](https://aistudio.google.com/docs/models/gemini-3.5-flash-lite) on November 11, 2026. The integration uses the [Gemini generateContent REST API](https://aistudio.google.com/api-reference/generate-content), including JSON Schema output. Actual account access is verified by a real request; a configured key alone does not prove quota or model access. Override the identifier if your account requires another vision-capable model.
 
-## Live demonstration
+## Sunday demo script (Uber Eats)
 
-For the interview, prioritize steps 1–5: actual footage, actual Gemini output, evidence navigation and a persisted human decision. Cross-session evaluation is a deeper research demonstration. Existing persisted runs now appear as **Saved real analysis**, with model, input mode, date, latency and available usage on the detail page. A real demonstration dataset still needs to be recorded and analyzed. Prerecorded external-app analysis remains planned. No saved result is presented as a new live call.
+Six-step happy path; exact clicks and the pre-demo checklist are in [UBER-EATS-DEMO.md](docs/UBER-EATS-DEMO.md). Start at `/hq`. Implemented and tested with mocks; not yet checked in a real browser by an agent, so rehearse it first.
 
-1. In **Test App**, choose scenarios, use a neutral session title, and consent. Click **Share this tab & start recording** and choose this app's current tab. The capture stage keeps researcher scenario settings outside the checkout crop sent to AI. Keep the window size fixed.
-2. Explore the checkout. Wait through loading, dismiss the returning modal, miss the small Checkout target, or submit a postal code other than `94107` to trigger silent rejection. `94107` lets you continue to the order-timeout scenario. Use made-up details only.
-3. **Stop & save**, then refresh. Reopen the saved session and replay it. Click event timestamps to verify alignment. Adjust the video calibration offset if needed; analysis applies the same offset.
-4. In **Settings**, enter your team workspace code if the server requires one. On the session page choose **Checkout video frames + events**, approve transmission to Google, and click **Analyze with AI**. Real proposals, model version, latency and reported tokens appear. Zero findings is a valid model outcome. Failed requests stay failed; no fixture findings appear in the product.
-5. Open **Insights → Internal** and choose a finding (or follow its title from session review). Inspect the explanation beside the recording, play the bounded ~4-second highlight, and jump to cited events. Accept/reject the finding, add notes and set severity. Add a next-step title/scope and **Approve draft** after accepting the finding. Refresh to confirm persistence. Draft approval records a decision only. Previous model outputs and run history remain intact.
-6. In **Observed issues**, mark each configured issue yes/no/unknown and add notes. Add an independent human issue if something else happened.
-7. Repeat the experiment on three separately recorded sessions. Resolve all proposals in each latest multimodal run. **Insights → Prioritized** groups accepted findings by category + screen, counts distinct sessions and links back to recording timestamps. It shows an explicit triage heuristic, not measured causal impact.
-8. Analyze each same session again with **Events-only baseline**. No frames, visual descriptions, scenario configuration, ground truth, or previous reviews are sent in that mode. Run order should be counterbalanced in a research study.
-9. In **Evaluation**, select each mode. Verify proposal-to-ground-truth matches, explicitly verify unmatched proposals, judge video necessity, and judge whether evidence supports each proposal. The paired comparison uses only sessions with completed runs in both modes and withholds detection while proposal correctness is unresolved. No eligible labels means **Insufficient labeled data**.
-10. Optionally use **Save shared copy**, with separate upload consent. Another browser can load the team list and import a private copy. Upload historical recordings only after explicit approval. Shared deletion and local deletion are separate controls.
+1. **HQ:** insights that need you, agent tiles and usage.
+2. **Insights:** Tracker and Explorer insights together, with source markers and video counts.
+3. Open **Order again on the home screen** (sample, source Both: your users hunt for last week's order; DoorDash puts it on the home screen).
+4. **Approve test** (20% traffic), then **Follow it in A/B Tests** and watch the simulated run.
+5. **Review PR** on Rollouts: files changed, analytics, deltas.
+6. **Merge:** the hero flies across the screen.
 
-JSON export preserves **all** proposals, labels, decisions and original model outputs for audit. Download the video separately; the JSON includes its expected filename. Neither export is silently uploaded.
+The bug-GIF slide from Bag Checkout recordings is made outside the app.
 
-## Existing optional backend setup through Lovable
+## Bag Checkout App walkthrough (diagnostic)
 
-The November 12 meeting prefers **Cloudflare R2 as the candidate for future video storage**, subject to verified costs and access design. R2 is not connected. The existing Supabase adapter below remains an optional implementation, not a requirement for the local interview demo or a settled long-term storage choice. R2 object storage would still need a separate decision for research metadata and identity; see Phase 5 of the [phase plan](docs/PROTOTYPE-PHASE-PLAN.md).
+1. Select **Bag Checkout App → Record a session**. Choose scenarios, use a neutral title, consent, then **Share this tab & start recording** and pick this tab. Keep the window size fixed; scenario settings stay outside the crop sent to AI.
+2. Explore the checkout with made-up details: wait through loading, dismiss the returning modal, miss the small Checkout target, or submit a postal code other than `94107` for silent rejection (`94107` continues to the order-timeout scenario).
+3. **Stop & save**, refresh, replay and check event timestamps against the video (adjust calibration offset if needed).
+4. In **Settings**, enter the team workspace code if required. On the session page choose **Checkout video frames + events**, approve transmission to Google and click **Analyze with AI**. Model, latency and reported tokens are shown.
+5. Review findings in **Insights** as above. Optionally use **Events-only baseline** and **Evaluation** for paired quality checks against independent ground truth; no eligible labels shows **Insufficient labeled data**.
 
-The optional Supabase adapter is implemented but **no database or bucket was provisioned by this work**. AGENTS.md reserves schema changes for Lovable; no migrations or generated database files were edited. Use the setup below only if the team chooses to enable that existing adapter.
+JSON export preserves all proposals, labels, decisions and original model outputs. Video downloads are separate; nothing is uploaded silently.
 
-Ask the [Lovable editor](https://lovable.dev/projects/163fbc3b-4a28-4987-a543-f87d44b66335) to perform this exact setup:
+## Gemini request troubleshooting
+
+The November 12 fix removes a provider `maxItems: 50` schema constraint that reproduced HTTP 400 / INVALID_ARGUMENT with the configured Flash-Lite model. The server still enforces the 50-finding limit through Zod; evidence validation remains intact. If upgrading an already-running local app, restart `npm run dev` and retry the saved recording. No new key or model change was needed for this fix.
+
+Provider failures now distinguish invalid request/input, API-key/restriction issues, unavailable models, rate/quota limits and service failures. Only fixed safe diagnostic hints reach the browser; upstream messages and request data are not forwarded. A live synthetic-frame request through the fixed module passed; the user subsequently reported the basic recording/analysis flow working. Scenario coverage and detection quality remain acceptance tasks.
+
+## Optional shared storage
+
+The Supabase REST adapter is implemented but **no database or bucket has been provisioned**, and cloud behavior is unverified. Cloudflare R2 is a future video-storage candidate, not connected. Schema changes belong to Lovable (see AGENTS.md). If the team enables the adapter, ask the [Lovable editor](https://lovable.dev/projects/163fbc3b-4a28-4987-a543-f87d44b66335) to:
 
 > Enable private Supabase research persistence. Create `public.research_sessions` with `id uuid primary key`, `title text not null`, `created_at timestamptz not null`, `updated_at timestamptz not null`, and `document jsonb not null`. Enable RLS with no anonymous or authenticated public-access policies; this prototype accesses the table only through its protected server using the service-role credential. Create a PRIVATE bucket `research-recordings`, allow video/webm and video/mp4 uploads, and cap object size at 25 MB. Do not add public object access policies. Store SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, RESEARCH_VIDEO_BUCKET, GEMINI_API_KEY, GEMINI_MODEL, and a strong RESEARCH_ACCESS_TOKEN in server secrets/runtime bindings. Preserve the existing TanStack server entry and `/api/research/*` handling. Do not expose server credentials through VITE variables.
 
-The JSON document contains recording metadata, events, all analysis runs, proposed findings, researcher decisions, human ground truth and verified matches. Video bytes live at `<session UUID>/recording` in the private bucket. The adapter checks bucket privacy before upload, proxies authenticated downloads, never returns a public/signed video URL, and uses `updated_at` optimistic concurrency to prevent overwriting another person's edits. Import the latest shared copy after exporting local work if a conflict occurs. It fetches up to 100 shared session summaries for this small research set.
+Video bytes live at `<session UUID>/recording` in the private bucket; downloads are proxied and never use public/signed URLs; `updated_at` optimistic concurrency prevents overwrites. Upload is always explicit. Public-video references have no cloud upload. This is one trusted-team workspace with a shared code, not production authentication.
 
-Local saving remains automatic. Cloud upload/update is always explicit; local edits show **Local changes** until shared again. Full recordings may contain the researcher setup before capture stage settles; cloud upload consent covers the full recording, while AI receives checkout crops only. This is one trusted-team workspace with a shared access code, not production multi-tenant authentication.
-
-## Checks and boundaries
+## Checks
 
 ```sh
 npm test
 npm run typecheck
 npm run lint
 npm run build
-npm run preview
 ```
 
-Tests cover capture timing/lifecycle, denied and wrong-tab permission, late cancellation, frame boundaries, sensitive metadata filtering, blind inputs, the events-only boundary, malformed model outputs and provider failures, review edits and remounting, real IndexedDB semantics with `fake-indexeddb`, private backend request contracts and conflicts, grouping, rare-blocker ranking, and evaluation denominators. Test model responses are mocks confined to `src/test`; they never populate product data or research statistics.
+Tests cover capture lifecycle, permission handling, frame boundaries, blind inputs, the events-only and public-video boundaries, malformed model output and provider failures, review persistence, IndexedDB semantics with `fake-indexeddb`, backend contracts, product scoping and evaluation denominators. Model and YouTube player responses in tests are mocks confined to `src/test`. Current counts are recorded in [AGENTS.md](AGENTS.md).
 
-The initial production build passed. The initial TypeScript check had three errors; initial lint had 240 formatting errors. The implementation fixes those errors and formats the research and route files to project conventions. See [the implementation report](docs/IMPLEMENTATION.md) for final check results and verification limits.
+## Design and handoff
 
-## Engineering and UI handoff
+The home headline is **“From zero to hero. One loop at a time.”** with the superhero mascot and animated infinity loop. All pages share the continuous purple/navy `data-theme="loop"` canvas; only the controlled checkout inside `.phone` keeps its light storefront palette. **Pause motion** in the header persists; system reduced motion always wins.
 
-See [the UX implementation checkpoint](docs/UX-IMPLEMENTATION.md), [architecture and component interfaces](docs/ARCHITECTURE.md) and [manual acceptance checks](docs/MANUAL-VERIFICATION.md). Katherine can change the existing research components, reusable UI components and styles without changing the capture, inference, persistence, aggregation or scoring modules.
+Business logic lives in `src/lib/research/` so Katherine can iterate on the UI components and styles independently. See [ARCHITECTURE.md](docs/ARCHITECTURE.md), [UX-IMPLEMENTATION.md](docs/UX-IMPLEMENTATION.md), [MANUAL-VERIFICATION.md](docs/MANUAL-VERIFICATION.md) and [the phase plan](docs/PROTOTYPE-PHASE-PLAN.md). Start a new agent session from [AGENTS.md](AGENTS.md).
 
-Katherine's meeting responsibilities include customer interviews and the pitch deck; Maria Emilia owns competitor-slide research; Fabian owns prototype readiness and the real Gemini demonstration. Additional engineering owners and post-interview dates remain unassigned in the phase plan. The visual direction now builds on the mascot and navy/gold foundation with violet, aqua and peach accents, glass surfaces and an animated closed-loop illustration. Motion can be paused from the header and follows system reduced-motion settings. The historical browser database identifier is retained so existing local recordings remain accessible; new downloads use the `loopmate-` filename prefix.
+Dependencies of note: `@fix-webm-duration/fix` (recording duration metadata), `react-markdown` (model text with HTML, remote images and links excluded), `fake-indexeddb` (tests only). No analytics/replay SDK or PostHog.
 
-New dependencies: `@fix-webm-duration/fix` repairs missing recording duration metadata; `react-markdown` renders model text with HTML, remote images and links excluded; `fake-indexeddb` is test-only. No analytics/replay SDK, PostHog, new backend SDK, framework migration, or generated AI data was added. Existing `zod` validates the analysis protocol; server calls use native `fetch`.
-
-Known prototype limits: full browser closure/crash can lose an unfinished in-memory recording; sparse frames can miss short failures; legacy recordings without a safe crop require a new recording for multimodal analysis; resizing invalidates the crop and stops capture; local deletion does not delete a shared copy; upload limit is 25 MB; API concurrency guards are per browser/process rather than distributed; shared workspace codes are not individual accounts. Use short consented recordings and explicit Stop & save before leaving the page.
-
-## Closed-loop visual direction
-
-For future-session continuity, start with [AGENTS.md](AGENTS.md), which records the current implementation, verification limits and next acceptance task.
-
-The home centers the message **“From zero to hero. One loop at a time.”** A luminous infinity path, floating superhero and translucent panels introduce Discover → Test → Grow. The selector explains the product vision; planned experiments/rollouts are labeled, and the illustration is not a live agent or execution indicator. All research screens share the continuous purple/navy canvas with readable dark controls and translucent accents; the controlled checkout alone retains its light storefront palette.
-
-Decorative motion uses CSS without a new animation dependency. **Pause motion** in the header persists across navigation/reloads; system reduced motion always disables animation. Recording setup does not receive route-entry motion, so its capture geometry stays stable.
-
-## Gemini request troubleshooting
-
-The November 12 fix removes a provider `maxItems: 50` schema constraint that reproduced HTTP 400 / INVALID_ARGUMENT with the configured Flash-Lite model. The server still enforces the 50-finding limit through Zod; evidence validation remains intact. If upgrading an already-running local app, restart `npm run dev` and retry the saved recording. No new key or model change was needed for this fix.
-
-Provider failures now distinguish invalid request/input, API-key/restriction issues, unavailable models, rate/quota limits and service failures. Only fixed safe diagnostic hints reach the browser; upstream messages and request data are not forwarded. A live synthetic-frame request through the fixed module passed; a real consented recording is still needed for the interview acceptance gate.
+Known limits: a crash can lose an unfinished recording; sparse frames can miss short failures; legacy uncropped recordings need a new recording for multimodal analysis; resizing temporarily invalidates the crop; concurrency guards are per process; upload limit is 25 MB.

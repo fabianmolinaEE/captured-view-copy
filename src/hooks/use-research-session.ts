@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { getSession, saveSession } from "@/lib/research/sessionStorage";
 import type { Session } from "@/lib/research/types";
+import { useSessionsChanged } from "@/hooks/use-demo-import";
 
 /** One optimistic document plus an ordered save queue keeps fast edits and decisions together. */
 export function useResearchSession(id: string) {
@@ -35,6 +36,24 @@ export function useResearchSession(id: string) {
       generation.current = version + 1;
     };
   }, [id]);
+  // A direct link can load before the automatic Tracker import has written this session.
+  useSessionsChanged((event) => {
+    if (latest.current) return;
+    const added = event?.detail?.added;
+    if (added?.length && !added.includes(id)) return;
+    const version = generation.current;
+    getSession(id)
+      .then((value) => {
+        if (generation.current === version && !latest.current && value) {
+          latest.current = value;
+          setSession(value);
+          setError("");
+        }
+      })
+      .catch(() => {
+        /* The initial load already reported any storage error. */
+      });
+  });
   const update = async (change: (current: Session) => Session) => {
     if (!latest.current) return false;
     const version = generation.current;

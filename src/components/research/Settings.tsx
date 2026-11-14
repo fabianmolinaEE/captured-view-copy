@@ -5,7 +5,167 @@ import { Shell, PageHeading } from "./Shell";
 import { clearAll, getSampling, saveSampling } from "@/lib/research/sessionStorage";
 import { captureSupport } from "@/lib/research/capture";
 import { connectionStatus, saveAccessCode, type ConnectionStatus } from "@/lib/research/apiClient";
-import { defaultSampling, type SamplingSettings } from "@/lib/research/types";
+import {
+  agentFocusAreas,
+  agentFocusLabels,
+  defaultSampling,
+  type SamplingSettings,
+  type Session,
+} from "@/lib/research/types";
+import { listSessions } from "@/lib/research/sessionStorage";
+import { trackerRunsFile } from "@/lib/research/demo/importTrackerRuns";
+import { explorerRunsFile, reimportAllDemoRuns } from "@/lib/research/demo/importExplorerRuns";
+import { useSessionsChanged } from "@/hooks/use-demo-import";
+import { Switch } from "@/components/ui/switch";
+import { ScoutCard } from "./ScoutCard";
+import { SimulatedBadge } from "./SimulatedBadge";
+import { getScout, scoutIds, type ScoutId } from "@/lib/research/scouts";
+import { useAgentSettings } from "@/hooks/use-agent-settings";
+import { useSimulation } from "@/hooks/use-simulation";
+import {
+  MAX_ANALYSES_LIMIT,
+  RUNNER_NOT_CONNECTED,
+  cadenceLabels,
+  cadences,
+  usageCapStatus,
+  usesFocusAreas,
+  type AgentSettings,
+  type Cadence,
+  type ScoutSettings,
+} from "@/lib/research/agentSettings";
+
+/** Keeps a raw draft while typing, so clearing the field never saves a cap of 0. */
+function DailyCapInput({ value, onChange }: { value: number; onChange: (next: number) => void }) {
+  const [draft, setDraft] = useState<string | null>(null);
+  const commit = (raw: string) => {
+    if (raw.trim() === "") return;
+    const next = Number(raw);
+    if (Number.isFinite(next)) onChange(next);
+  };
+  return (
+    <input
+      type="number"
+      min={0}
+      max={MAX_ANALYSES_LIMIT}
+      value={draft ?? value}
+      onChange={(e) => {
+        setDraft(e.target.value);
+        commit(e.target.value);
+      }}
+      onBlur={() => setDraft(null)}
+    />
+  );
+}
+
+function ScoutSettingsCard({
+  id,
+  value,
+  sessions,
+  settings,
+  onChange,
+}: {
+  id: ScoutId;
+  value: ScoutSettings;
+  sessions: Session[] | undefined;
+  settings: AgentSettings;
+  onChange: (patch: Partial<ScoutSettings>) => void;
+}) {
+  const scout = getScout(id);
+  const finds = usesFocusAreas(id);
+  const usage = finds && sessions ? usageCapStatus(sessions, settings, id) : undefined;
+  const switchId = `scout-${id}-enabled`;
+  return (
+    <ScoutCard scout={id} headingLevel={3} showStatusNote>
+      <div className="flex items-center justify-between gap-3 border-t border-[color:var(--scout-ring)] pt-3">
+        <label htmlFor={switchId} className="text-sm font-medium">
+          Send out {scout.name}
+        </label>
+        <Switch
+          id={switchId}
+          checked={value.enabled}
+          onCheckedChange={(enabled) => onChange({ enabled })}
+        />
+      </div>
+      {finds ? (
+        <>
+          <fieldset className="min-w-0">
+            <legend className="mb-2 text-xs font-medium">Focus areas</legend>
+            <div className="grid grid-cols-1 gap-x-3 gap-y-1.5 sm:grid-cols-2">
+              {agentFocusAreas.map((area) => (
+                <label key={area} className="flex items-center gap-2 text-xs">
+                  <input
+                    type="checkbox"
+                    className="accent-[color:var(--scout-main)]"
+                    checked={value.focus_areas.includes(area)}
+                    onChange={(e) =>
+                      onChange({
+                        focus_areas: e.target.checked
+                          ? [...value.focus_areas, area]
+                          : value.focus_areas.filter((item) => item !== area),
+                      })
+                    }
+                  />
+                  {agentFocusLabels[area]}
+                </label>
+              ))}
+            </div>
+            <p className="mt-2 text-[11px] leading-snug text-[color:var(--muted-foreground)]">
+              Emphasis only. Other lenses stay on.
+            </p>
+          </fieldset>
+          <label className="field">
+            Minimum confidence to surface: {Math.round(value.min_confidence * 100)}%
+            <input
+              type="range"
+              min={0}
+              max={100}
+              step={5}
+              className="accent-[color:var(--scout-main)]"
+              value={Math.round(value.min_confidence * 100)}
+              onChange={(e) => onChange({ min_confidence: Number(e.target.value) / 100 })}
+            />
+          </label>
+          <p className="-mt-3 text-[11px] leading-snug text-[color:var(--muted-foreground)]">
+            Lower scores are hidden, not deleted.
+          </p>
+          <label className="field">
+            Max analyses per day
+            <DailyCapInput
+              value={value.max_analyses_per_day}
+              onChange={(next) => onChange({ max_analyses_per_day: next })}
+            />
+          </label>
+          <p className="-mt-3 text-[11px] leading-snug text-[color:var(--muted-foreground)]">
+            {usage
+              ? `Used today: ${usage.used} of ${usage.max} · Analyze stops at the cap.`
+              : "Counting today's stored runs…"}
+          </p>
+        </>
+      ) : (
+        <p className="text-[11px] leading-snug text-[color:var(--muted-foreground)]">
+          Approved {id === "fixer" ? "fixes" : "tests"} start a labeled simulated run. Nothing is
+          deployed.
+        </p>
+      )}
+      <label className="field">
+        Cadence
+        <select
+          value={value.cadence}
+          onChange={(e) => onChange({ cadence: e.target.value as Cadence })}
+        >
+          {cadences.map((cadence) => (
+            <option key={cadence} value={cadence}>
+              {cadenceLabels[cadence]}
+            </option>
+          ))}
+        </select>
+      </label>
+      <p className="-mt-3 text-[11px] leading-snug text-[color:var(--muted-foreground)]">
+        {RUNNER_NOT_CONNECTED}. Saved, not scheduled.
+      </p>
+    </ScoutCard>
+  );
+}
 export function Settings() {
   const [settings, setSettings] = useState<SamplingSettings>(defaultSampling);
   const [supported, setSupported] = useState<boolean | null>(null);
@@ -13,7 +173,16 @@ export function Settings() {
   const [connection, setConnection] = useState<ConnectionStatus>();
   const [code, setCode] = useState("");
   const [message, setMessage] = useState("");
+  const [simMessage, setSimMessage] = useState("");
+  const [importMessage, setImportMessage] = useState("");
+  const [importing, setImporting] = useState(false);
+  const agents = useAgentSettings();
+  const simulation = useSimulation();
+  const [sessions, setSessions] = useState<Session[]>();
   useEffect(() => {
+    listSessions()
+      .then(setSessions)
+      .catch(() => setSessions([]));
     connectionStatus()
       .then(setConnection)
       .catch((e) => setMessage(e.message));
@@ -26,13 +195,110 @@ export function Settings() {
       .then(setStorage)
       .catch(() => {});
   }, []);
+  useSessionsChanged(() => {
+    listSessions()
+      .then(setSessions)
+      .catch(() => {});
+  });
   return (
     <Shell section="Settings">
       <PageHeading
-        title="Settings"
-        description="Capture compatibility, local storage, and AI transparency."
+        title="Workspace settings"
+        description="Scouts, AI connection, capture and storage for all products."
       />
-      <section className="setting-section pt-0">
+      <section id="scouts" className="setting-section pt-0" aria-labelledby="scouts-settings">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 id="scouts-settings">Scouts</h2>
+          <Button variant="ghost" size="sm" onClick={agents.reset}>
+            Restore defaults
+          </Button>
+        </div>
+        <p>Saved in this browser. Tracker and Explorer settings apply to real analyses.</p>
+        <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+          {scoutIds.map((id) => (
+            <ScoutSettingsCard
+              key={id}
+              id={id}
+              value={agents.settings[id]}
+              sessions={sessions}
+              settings={agents.settings}
+              onChange={(patch) => agents.updateScout(id, patch)}
+            />
+          ))}
+        </div>
+      </section>
+      <section className="setting-section" aria-labelledby="simulated-settings">
+        <h2 id="simulated-settings" className="flex flex-wrap items-center gap-2">
+          Simulated demo data <SimulatedBadge />
+        </h2>
+        <p>
+          Kept apart from research, never counted in it. {simulation.runs.length} simulated{" "}
+          {simulation.runs.length === 1 ? "run" : "runs"} stored.
+        </p>
+        <Button
+          variant="outline"
+          size="sm"
+          className="mt-3"
+          disabled={!simulation.runs.length}
+          onClick={() => {
+            if (
+              window.confirm(
+                "Delete all simulated demo runs and PRs? Recordings, insights and reviews are not affected.",
+              )
+            ) {
+              simulation.reset();
+              setSimMessage(
+                "Simulated demo data cleared. Research data was not changed. Approvals stay; restart from A/B Tests or Rollouts.",
+              );
+            }
+          }}
+        >
+          <Trash2 />
+          Reset simulated demo data
+        </Button>
+        {simMessage && (
+          <div className="info-note mt-3" role="status">
+            {simMessage}
+          </div>
+        )}
+      </section>
+      <section className="setting-section" aria-labelledby="tracker-runs-settings">
+        <h2 id="tracker-runs-settings">Pre-generated runs</h2>
+        <p>
+          Real Gemini output: Tracker ({trackerRunsFile().model_name}) on{" "}
+          {trackerRunsFile().videos.length} Uber Eats videos, Explorer (
+          {explorerRunsFile().model_name}) on {explorerRunsFile().videos.length} DoorDash videos.
+        </p>
+        <p className="text-[11px] text-muted-foreground">
+          Re-import adds only missing runs. Reviews are never overwritten. Not counted toward caps.
+        </p>
+        <Button
+          variant="outline"
+          size="sm"
+          className="mt-3"
+          disabled={importing}
+          onClick={async () => {
+            setImporting(true);
+            setImportMessage("");
+            try {
+              setImportMessage((await reimportAllDemoRuns()).message);
+              setSessions(await listSessions());
+            } catch (e) {
+              setImportMessage(e instanceof Error ? e.message : "Import failed.");
+            } finally {
+              setImporting(false);
+            }
+          }}
+        >
+          {importing ? "Importing…" : "Re-import Tracker and Explorer runs"}
+        </Button>
+        {importMessage && (
+          <div className="info-note mt-3" role="status">
+            {importMessage}
+          </div>
+        )}
+      </section>
+      <section className="setting-section">
         <div className="flex items-center justify-between">
           <h2>AI connection</h2>
           <span className="status-badge">
@@ -40,9 +306,7 @@ export function Settings() {
           </span>
         </div>
         <p>{connection?.message ?? "Checking server configuration…"}</p>
-        <p>
-          Model: {connection?.model ?? "Unknown"} · Cost: unavailable. API keys stay on the server.
-        </p>
+        <p>Model: {connection?.model ?? "Unknown"} · Cost unavailable · Keys stay on the server</p>
         <label className="field">
           Team workspace access code
           <input
@@ -73,17 +337,13 @@ export function Settings() {
           Clear access code
         </Button>
         <p>
-          The workspace code grants access to team recordings and analysis. It is kept in this tab’s
-          session storage. Shared storage:{" "}
-          {connection?.backend_configured ? "configured" : "not configured; sessions remain local"}.
+          Kept in this tab only. Shared storage:{" "}
+          {connection?.backend_configured ? "configured" : "off, sessions stay local"}.
         </p>
       </section>
       <section className="setting-section">
         <h2>Video sampling</h2>
-        <p>
-          Sampling preferences are saved locally and used for real analysis. Ground truth and
-          scenario settings are excluded from model inputs.
-        </p>
+        <p>Used for real analysis. Scenarios and ground truth are never sent.</p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           <label className="field">
             Interval (seconds)
@@ -153,11 +413,7 @@ export function Settings() {
               ? "Tab capture and media recording are available."
               : "Screen recording is not supported in this browser."}
         </div>
-        <p>
-          Use desktop Chrome or Edge on HTTPS or localhost. Screen sharing always requires explicit
-          permission. Select the current Test App tab; native mobile apps and outside-app capture
-          are not supported.
-        </p>
+        <p>Desktop Chrome or Edge, on HTTPS or localhost. Share the Test App tab when asked.</p>
       </section>
       <section className="setting-section">
         <h2 className="flex items-center gap-2">
@@ -165,9 +421,8 @@ export function Settings() {
           Local storage
         </h2>
         <p>
-          Videos, event logs, annotations, and evaluation labels are stored in this browser using
-          IndexedDB. Shared copies are uploaded only with explicit approval in session review.
-          Clearing browser data removes local copies; shared copies have separate deletion controls.
+          Everything is stored in this browser. Shared copies upload only when you choose, and are
+          deleted separately.
         </p>
         <div className="text-xs mt-4">
           Browser origin usage:{" "}

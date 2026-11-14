@@ -35,4 +35,20 @@ describe("signal-adjacent frame sampling", () => {
     });
     expect(hits).not.toContain(12_200);
   });
+  it("samples ordinary journey changes without needing a defect signal", () => {
+    const times = sampleTimes(
+      20_000,
+      [event(12_345, "screen_view"), event(14_100, "selection_change")],
+      {
+        interval_seconds: 20,
+        max_frames: 6,
+        max_width: 960,
+      },
+    );
+    expect(times).toContain(12_545);
+    expect(times).toContain(14_300);
+    expect(times.length).toBeLessThanOrEqual(6);
+    expect(times).toContain(0);
+    expect(times).toContain(19_900);
+  });
 });

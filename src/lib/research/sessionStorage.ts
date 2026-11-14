@@ -71,7 +71,10 @@ export function exportSession(session: Session) {
           {
             ...data,
             export_version: 1,
-            video_filename: `loopmate-${session.id}.${session.extension}`,
+            video_filename:
+              session.public_video && !session.video_blob.size
+                ? null
+                : `loopmate-${session.id}.${session.extension}`,
           },
           null,
           2,

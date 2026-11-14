@@ -1,4 +1,6 @@
+import { isCompetitorSession } from "./competitors";
 import type { Session, AnalysisMode } from "./types";
+/** Own-product evaluation only: competitor (Explorer) footage never enters these metrics. */
 export function score(sessions: Session[], mode: AnalysisMode = "video_frames_plus_events") {
   let observed = 0,
     detected = 0,
@@ -13,6 +15,7 @@ export function score(sessions: Session[], mode: AnalysisMode = "video_frames_pl
     eligibleSessions = 0,
     unresolved = 0;
   for (const session of sessions) {
+    if (isCompetitorSession(session)) continue;
     const run = session.runs.filter((r) => r.status === "completed" && r.mode === mode).at(-1);
     if (!run) continue;
     eligibleSessions++;
@@ -53,7 +56,9 @@ export function score(sessions: Session[], mode: AnalysisMode = "video_frames_pl
         f.timestamp_ms <= session.duration_ms;
       const sources = f.evidence_sources.every((source) =>
         source === "video"
-          ? mode !== "events_only" && session.video_blob.size > 0
+          ? mode !== "events_only" &&
+            (session.video_blob.size > 0 ||
+              (mode === "public_video" && session.public_video?.duration_verified === true))
           : f.event_ids.length > 0 &&
             f.event_ids.every((id) => session.events.some((e) => e.id === id)),
       );
@@ -76,10 +81,12 @@ export function score(sessions: Session[], mode: AnalysisMode = "video_frames_pl
   };
 }
 export function pairedScores(sessions: Session[]) {
-  const paired = sessions.filter((s) =>
-    ["events_only", "video_frames_plus_events"].every((mode) =>
-      s.runs.some((r) => r.mode === mode && r.status === "completed"),
-    ),
+  const paired = sessions.filter(
+    (s) =>
+      !isCompetitorSession(s) &&
+      ["events_only", "video_frames_plus_events"].every((mode) =>
+        s.runs.some((r) => r.mode === mode && r.status === "completed"),
+      ),
   );
   return { sessions: paired.length, video: score(paired), events: score(paired, "events_only") };
 }
