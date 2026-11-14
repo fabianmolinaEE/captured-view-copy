@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Shell, PageHeading, Footer } from "./Shell";
 import { listSessions, saveSession } from "@/lib/research/sessionStorage";
 import { useSessionsChanged } from "@/hooks/use-demo-import";
+import { curatedCopyToSave } from "@/lib/research/demo/importTrackerRuns";
 import { type Session, type FindingMatch, type AnalysisMode, label } from "@/lib/research/types";
 import { score, rate, pairedScores } from "@/lib/research/evaluation";
 export function Evaluation() {
@@ -38,7 +39,10 @@ export function Evaluation() {
     try {
       const next = s.sync ? { ...s, sync: { ...s.sync, state: "local_changes" as const } } : s;
       setSessions((prev) => prev.map((v) => (v.id === s.id ? next : v)));
-      const pending = queue.current.catch(() => {}).then(() => saveSession(next));
+      // A stale pre-generated copy must not revive what the curation migration removed.
+      const pending = queue.current
+        .catch(() => {})
+        .then(async () => saveSession(await curatedCopyToSave(next)));
       queue.current = pending.then(
         () => {},
         () => {},

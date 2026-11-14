@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import {
+  FEATURED_EXPLORER_FINDING_ID,
+  FEATURED_TRACKER_FINDING_ID,
   ORDER_AGAIN_FINDING_ID,
   ORDER_AGAIN_KEY,
   SAMPLE_SESSION_ID,
@@ -10,6 +12,8 @@ import {
 import { buildExplorerSession, explorerRunsFile } from "@/lib/research/demo/importExplorerRuns";
 import { buildTrackerSession, trackerRunsFile } from "@/lib/research/demo/importTrackerRuns";
 import { aggregateInsights } from "@/lib/research/insights";
+import { reviewFinding } from "@/lib/research/review";
+import { acceptAndApprove } from "@/lib/research/testDecisions";
 import {
   approveSampleTest,
   diffStats,
@@ -69,6 +73,27 @@ describe("unified insights", () => {
     const firstDone = items.findIndex((i) => !i.needs_attention);
     if (firstDone !== -1)
       expect(items.slice(firstDone).every((i) => !i.needs_attention)).toBe(true);
+  });
+
+  it("shows exactly the three demo insights for Uber Eats: Both, Tracker, Explorer", () => {
+    const items = buildUnifiedInsights(sessions, "uber-eats");
+    expect(items.map((i) => [i.title, i.source])).toEqual([
+      ["Order again on the home screen", "both"],
+      ["Hidden minimum order threshold", "tracker"],
+      ["Cart Complement Recommendations", "explorer"],
+    ]);
+    expect(trackerRunsFile().curation.kept_finding_ids).toEqual([FEATURED_TRACKER_FINDING_ID]);
+    expect(explorerRunsFile().curation.kept_finding_ids).toEqual([FEATURED_EXPLORER_FINDING_ID]);
+    // The order stays fixed after a decision (no reshuffle once the Tracker one is approved).
+    const decided = tracker.map((s) =>
+      acceptAndApprove(
+        reviewFinding(s, FEATURED_TRACKER_FINDING_ID, { review_status: "accepted" }),
+        FEATURED_TRACKER_FINDING_ID,
+      ),
+    );
+    const after = buildUnifiedInsights([...decided, ...explorer], "uber-eats");
+    expect(after.map((i) => i.source)).toEqual(["both", "tracker", "explorer"]);
+    expect(after[1]!.needs_attention).toBe(false);
   });
 
   it("filters by source and minimum video count", () => {

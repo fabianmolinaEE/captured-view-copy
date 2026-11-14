@@ -49,8 +49,7 @@ vi.mock("@/components/research/PublicVideoPlayer", () => ({
 import { Insights } from "@/components/research/Insights";
 import { InsightDetail } from "@/components/research/InsightDetail";
 
-const FIRST_TIME = "75f7d43d-b250-43dc-8df2-5f14c420684a";
-const HISTORICAL = "a56d0e77-c712-4f9c-8cb8-ea3659504eb2";
+const KEPT = "e02675ea-079d-47d7-916b-527f483be7c7";
 
 beforeEach(async () => {
   await clearAll();
@@ -63,21 +62,20 @@ beforeEach(async () => {
 afterEach(cleanup);
 
 describe("Imported Uber Eats Tracker runs across the app", () => {
-  it("an open Insights page refreshes to 8 pending Tracker insights beside the sample, without thumbnails", async () => {
+  it("an open Insights page refreshes to the curated pending Tracker insight beside the sample, without thumbnails", async () => {
     const view = render(<Insights />);
     await act(async () => {
       await importTrackerRuns();
     });
-    await waitFor(() => expect(screen.getAllByRole("article")).toHaveLength(9));
+    await waitFor(() => expect(screen.getAllByRole("article")).toHaveLength(2));
     const rows = screen.getAllByRole("article");
     const tracker = rows.filter((row) => row.getAttribute("data-source") === "tracker");
-    expect(tracker).toHaveLength(8);
+    expect(tracker).toHaveLength(1);
     // The labeled sample (Tracker + Explorer) is first; the featured real Tracker insight next.
     expect(rows[0]).toHaveAttribute("data-kind", "sample");
     expect(rows[1]).toHaveAccessibleName("Hidden minimum order threshold");
-    expect(screen.getAllByText("Needs review", { selector: "span" })).toHaveLength(9);
-    expect(screen.getAllByText("Tracker run · pre-generated Nov 13")).toHaveLength(8);
-    expect(screen.getAllByText("Historical UI (2020)")).toHaveLength(2);
+    expect(screen.getAllByText("Needs review", { selector: "span" })).toHaveLength(2);
+    expect(screen.getAllByText("Tracker run · pre-generated Nov 13")).toHaveLength(1);
     for (const row of tracker) {
       expect(within(row).getByText(/^from 1 video/)).toBeInTheDocument();
       // Suggested tests/routes come from the model output.
@@ -92,17 +90,14 @@ describe("Imported Uber Eats Tracker runs across the app", () => {
     await importTrackerRuns();
     const findings = (
       await import("@/lib/research/demo/uber-eats-tracker-runs.json")
-    ).default.videos.find((video) => video.session_id === HISTORICAL)!.findings;
-    const finding = findings[1]!;
-    render(
-      <InsightDetail sessionId={HISTORICAL} findingId={finding.id} seekMs={finding.timestamp_ms} />,
-    );
+    ).default.videos.find((video) => video.session_id === KEPT)!.findings;
+    const finding = findings[0]!;
+    render(<InsightDetail sessionId={KEPT} findingId={finding.id} seekMs={finding.timestamp_ms} />);
     expect(await screen.findByRole("heading", { name: finding.title })).toBeInTheDocument();
     expect(player.props.at(-1)).toMatchObject({
-      videoId: "Xkv-FUvspg0",
+      videoId: "oDcQjVREO5w",
       startMs: finding.timestamp_ms,
     });
-    expect(screen.getByText(/Historical UI \(2020\)/)).toBeInTheDocument();
     expect(
       screen.getByText("Tracker run · pre-generated Nov 13 · not counted toward today's cap"),
     ).toBeInTheDocument();

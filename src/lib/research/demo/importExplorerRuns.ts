@@ -5,18 +5,27 @@ import type { ProductId } from "../products";
 import { getSession, saveSession } from "../sessionStorage";
 import type { AnalysisRun, Finding, Session } from "../types";
 import {
+  applyCuration,
+  demoSessionsOrOthersStored,
+  describeCuration,
   describeImport,
   importTrackerRuns,
   notifySessionsChanged,
+  type DemoCuration,
   type TrackerImportResult,
 } from "./importTrackerRuns";
 
 /**
- * Imports the real, pre-generated DoorDash Explorer runs (Gemini output on four public DoorDash
- * YouTube walkthroughs, analyzed as competitor footage for Uber Eats) into this browser's
- * IndexedDB, the same way the Uber Eats Tracker runs are imported. The JSON holds only
+ * Imports the real, pre-generated DoorDash Explorer run (Gemini output on a public DoorDash
+ * YouTube walkthrough, analyzed as competitor footage for Uber Eats) into this browser's
+ * IndexedDB, the same way the Uber Eats Tracker run is imported. The JSON holds only
  * public-video metadata and model output: no secrets, no interaction events, no planted
  * scenarios and no ground truth.
+ *
+ * Curation (user request, Nov 13): the bundle keeps one video and one finding ("Cart Complement
+ * Recommendations"); the kept run and its `raw_output` (the model's complete original answer)
+ * are verbatim. `applyCuration` migrates browsers that imported the older bundle, touching only
+ * sessions with this bundle's `pregenerated` marker.
  *
  * Rules: model text is never altered; an existing session with the same id is never overwritten
  * (reviewer decisions, notes and edits survive); imported runs are marked `pregenerated` and are
@@ -26,7 +35,7 @@ import {
 export const EXPLORER_RUNS_SOURCE = "doordash-explorer-runs" as const;
 /** localStorage key recording that this browser already ran the automatic Explorer import. */
 export const EXPLORER_IMPORT_KEY = "loopmate-demo-import-explorer";
-const EXPLORER_IMPORT_VERSION = "doordash-explorer-runs@2026-11-13";
+const EXPLORER_IMPORT_VERSION = "doordash-explorer-runs@2026-11-13-curated";
 
 interface ExplorerVideo {
   candidate_id: string;
@@ -47,6 +56,7 @@ interface ExplorerRunsFile {
   competitor_of: ProductId;
   source: string;
   note: string;
+  curation: DemoCuration;
   videos: ExplorerVideo[];
 }
 const file = explorerRuns as unknown as ExplorerRunsFile;
@@ -102,10 +112,22 @@ export function buildExplorerSession(video: ExplorerVideo, now = new Date()): Se
 export const explorerRunsFile = (): Readonly<ExplorerRunsFile> => file;
 
 let inFlight: Promise<ExplorerImportResult> | null = null;
-/** Idempotent: adds only sessions whose id is not already stored. Concurrent calls share one run. */
+/**
+ * Idempotent: applies the curation, then adds only sessions whose id is not already stored.
+ * Concurrent calls share one run.
+ */
 export function importExplorerRuns(): Promise<ExplorerImportResult> {
   inFlight ??= (async () => {
-    const result: ExplorerImportResult = { added: [], skipped: [], failed: [], findings_added: 0 };
+    const result: ExplorerImportResult = {
+      added: [],
+      skipped: [],
+      failed: [],
+      findings_added: 0,
+      pruned: [],
+      curated: [],
+      kept_user_runs: [],
+    };
+    await applyCuration(EXPLORER_RUNS_SOURCE, file.videos, result);
     for (const video of file.videos) {
       try {
         if (await getSession(video.session_id)) {
@@ -123,7 +145,8 @@ export function importExplorerRuns(): Promise<ExplorerImportResult> {
         });
       }
     }
-    if (result.added.length) notifySessionsChanged(result.added);
+    const changed = [...result.added, ...result.curated, ...result.pruned];
+    if (changed.length) notifySessionsChanged(changed);
     return result;
   })().finally(() => {
     inFlight = null;
@@ -145,27 +168,18 @@ function markImportRan() {
     /* Without storage the idempotent import simply runs again next load. */
   }
 }
-async function anyExplorerSessionStored() {
-  for (const video of file.videos) {
-    try {
-      if (await getSession(video.session_id)) return true;
-    } catch {
-      return false;
-    }
-  }
-  return false;
-}
 let autoRun: Promise<ExplorerImportResult | null> | null = null;
 /**
- * Runs the import once per browser (per data version), with its own version key so it also runs
- * in browsers that already imported the Tracker runs. Deleted sessions are not re-added
- * automatically while at least one Explorer session remains; Settings → Re-import adds them.
+ * Runs the import (with the curation migration) once per browser per data version, with its own
+ * version key so it also runs in browsers that already imported the Tracker runs. A deleted
+ * Explorer session is not re-added automatically while any session remains; Settings →
+ * Re-import adds it.
  */
 export function autoImportExplorerRuns(): Promise<ExplorerImportResult | null> {
   if (typeof window === "undefined" || typeof indexedDB === "undefined")
     return Promise.resolve(null);
   autoRun ??= (async () => {
-    if (importAlreadyRan() && (await anyExplorerSessionStored())) return null;
+    if (importAlreadyRan() && (await demoSessionsOrOthersStored(file.videos))) return null;
     const result = await importExplorerRuns();
     if (!result.failed.length) markImportRan();
     return result;
@@ -181,8 +195,12 @@ export function describeExplorerImport(result: ExplorerImportResult) {
   const parts = [
     result.added.length
       ? `Added ${result.added.length} DoorDash Explorer ${result.added.length === 1 ? "run" : "runs"} (${result.findings_added} competitor ${result.findings_added === 1 ? "insight" : "insights"}).`
-      : "No Explorer runs were missing; nothing was changed.",
+      : result.pruned.length || result.curated.length
+        ? "No Explorer runs were missing."
+        : "No Explorer runs were missing; nothing was changed.",
   ];
+  const curation = describeCuration(result, "Explorer");
+  if (curation) parts.push(curation);
   if (result.added.length && result.skipped.length)
     parts.push(`${result.skipped.length} already present and left unchanged.`);
   if (result.failed.length)
@@ -197,7 +215,10 @@ export function describeExplorerImport(result: ExplorerImportResult) {
 export const pregeneratedRunLabel = (session: Parameters<typeof pregeneratedLabel>[0]) =>
   pregeneratedLabel(session);
 
-/** Settings → Re-import: adds any missing Tracker and Explorer runs; never overwrites. */
+/**
+ * Settings → Re-import: applies the curation and adds any missing curated Tracker and Explorer
+ * runs; never overwrites a stored curated finding.
+ */
 export async function reimportAllDemoRuns() {
   const [tracker, explorer] = await Promise.all([importTrackerRuns(), importExplorerRuns()]);
   return {

@@ -42,7 +42,12 @@ import { testDecisionOf } from "@/lib/research/testDecisions";
 import { discardRunsForFinding, discardRunsForSession } from "@/lib/research/simulation";
 import { SharedSessionPanel } from "./SharedSessionPanel";
 import { useSessionsChanged } from "@/hooks/use-demo-import";
-import { notifySessionsChanged } from "@/lib/research/demo/importTrackerRuns";
+import {
+  curatedCopyToSave,
+  notifySessionsChanged,
+  reconcileWithCuration,
+  RemovedDemoSessionError,
+} from "@/lib/research/demo/importTrackerRuns";
 import { useFrameThumbnail } from "@/lib/research/evidence";
 /** `#t=<ms>` deep link on the session timeline, or 0 (SSR-safe). */
 function initialHashMs() {
@@ -93,10 +98,36 @@ export function SessionReview({ id }: { id: string }) {
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, [id]);
-  // A direct link can load before the automatic Tracker import has written this session.
+  // A direct link can load before the automatic Tracker import has written this session. A page
+  // that loaded a pre-generated session before the curation migration re-reads it once the
+  // migration reports it, so a later save cannot bring back what the migration removed.
   useSessionsChanged((event) => {
-    if (current.current) return;
     const added = event?.detail?.added;
+    if (current.current) {
+      if (!current.current.pregenerated || !added?.includes(id)) return;
+      const pending = saveQueue.current
+        .catch(() => {})
+        .then(async () => {
+          const stored = await getSession(id);
+          if (!current.current || current.current.id !== id) return;
+          if (!stored) {
+            current.current = undefined;
+            setSession(undefined);
+            setUnsaved(false);
+            setError(new RemovedDemoSessionError().message);
+            return;
+          }
+          const reconciled = reconcileWithCuration(current.current, stored);
+          if (reconciled !== current.current) {
+            current.current = reconciled;
+            setSession(reconciled);
+          }
+        });
+      saveQueue.current = pending.catch(() => {
+        /* The next save reports any storage error. */
+      });
+      return;
+    }
     if (added?.length && !added.includes(id)) return;
     getSession(id)
       .then((value) => {
@@ -119,14 +150,25 @@ export function SessionReview({ id }: { id: string }) {
   const [selectedRun, setSelectedRun] = useState("");
   const [reviewFilter, setReviewFilter] = useState("all");
   const persist = async (updated: Session, markDirty = true) => {
-    const next =
+    let next: Session =
       updated.sync && markDirty
         ? { ...updated, sync: { ...updated.sync, state: "local_changes" as const } }
         : updated;
     current.current = next;
     setSession(next);
     setUnsaved(true);
-    const pending = saveQueue.current.catch(() => {}).then(() => saveSession(next));
+    const pending = saveQueue.current
+      .catch(() => {})
+      .then(async () => {
+        // A stale pre-generated copy must not revive what the curation migration removed.
+        const safe = await curatedCopyToSave(next);
+        if (safe !== next && current.current === next) {
+          current.current = safe;
+          setSession(safe);
+          next = safe;
+        }
+        await saveSession(safe);
+      });
     saveQueue.current = pending.then(
       () => {},
       () => {},
@@ -135,6 +177,11 @@ export function SessionReview({ id }: { id: string }) {
       await pending;
       if (current.current === next) setUnsaved(false);
     } catch (e) {
+      if (e instanceof RemovedDemoSessionError) {
+        current.current = undefined;
+        setSession(undefined);
+        setUnsaved(false);
+      }
       setError(e instanceof Error ? e.message : "Could not save changes.");
     }
   };

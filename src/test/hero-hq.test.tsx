@@ -118,6 +118,11 @@ describe("HQ", () => {
     expect(sample).toHaveAttribute("href", "/insights/sample/order-again");
     expect(within(sample).getByText("Simulated demo")).toBeInTheDocument();
     expect(within(sample).getByText("Tracker + Explorer")).toBeInTheDocument();
+    // Both scouts appear as overlapping hero avatars with one accessible name.
+    const heroes = within(sample).getByRole("img", { name: "Found by Tracker and Explorer" });
+    expect(
+      [...heroes.querySelectorAll("[data-scout]")].map((el) => el.getAttribute("data-scout")),
+    ).toEqual(["tracker", "explorer"]);
     expect(within(sample).getByTestId("video-count")).toHaveTextContent("from 16 videos · sample");
     expect(within(sample).getByText("Review insight")).toBeInTheDocument();
     // No thumbnails or posters anywhere on HQ.
@@ -179,10 +184,14 @@ describe("HQ", () => {
     expect(links[1]).toHaveTextContent("Uber Eats finding 1");
     expect(links[1]).toHaveAttribute("href", `/insights/${uber.id}/${FEATURED_TRACKER_FINDING_ID}`);
     expect(within(links[1]!).getByText("from 1 video")).toBeInTheDocument();
+    expect(within(links[1]!).getByRole("img", { name: "Found by Tracker" })).toBeInTheDocument();
     const explorer = links.find((link) => link.textContent?.includes("Cart add-ons"))!;
     expect(explorer.querySelector('[data-source="explorer"]')).toHaveTextContent(
       "Explorer · DoorDash",
     );
+    expect(
+      within(explorer).getByRole("img", { name: "Found by Explorer, watching DoorDash" }),
+    ).toBeInTheDocument();
     expect(within(explorer).queryByText("Simulated demo")).not.toBeInTheDocument();
     // Archived fixtures never appear; every real card is n = 1.
     expect(links).toHaveLength(5);
@@ -198,6 +207,20 @@ describe("HQ", () => {
     const byProduct = screen.getByRole("group", { name: "Tokens by product" });
     expect(within(byProduct).getByText("10,499")).toBeInTheDocument();
     expect(within(byProduct).getByText("1,000")).toBeInTheDocument();
+  });
+
+  it("keeps a reviewed featured insight in the list with its status", async () => {
+    const uber = uberEatsSession(1, 500);
+    uber.findings[0]!.id = FEATURED_TRACKER_FINDING_ID;
+    uber.findings[0]!.review_status = "rejected";
+    store.sessions = [uber];
+    render(<HeroHQ />);
+    await screen.findByText(/Last run/);
+    const tracker = insightLinks().find((link) =>
+      link.textContent?.includes("Uber Eats finding 1"),
+    );
+    expect(tracker).toBeDefined();
+    expect(within(tracker!).getByText("Rejected")).toBeInTheDocument();
   });
 
   it("follows the approved sample test running and can restart the demo", async () => {

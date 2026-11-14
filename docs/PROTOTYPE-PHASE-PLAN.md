@@ -97,7 +97,7 @@ Pages:
 - [x] **1.14** Tests for schema, decision rules, invalidation, usage cap, threshold filter, simulation labeling/isolation/reset and page empty states; typecheck, lint, build pass.
 
 - [x] **1.15** Four scouts (Tracker blue, Explorer green, Fixer orange, Experimenter purple) with original mascots, two buckets on Home, route fix → Fixer / experiment → Experimenter, disabled scout stops simulated runs.
-- [x] **1.16** Competitors tab always present; four DoorDash candidates (`competitors.ts`) saved as competitor footage of Uber Eats and excluded from Uber Eats metrics; sample insight badged "Simulated demo" until a clip is analyzed.
+- [x] **1.16** Competitors tab always present; four DoorDash candidates (`competitors.ts`) saved as competitor footage of Uber Eats and excluded from Uber Eats metrics; sample insight badged "Simulated demo" until a clip is analyzed. (Superseded Nov 13: no Competitors tab; Explorer insights sit in the unified Insights list. All four candidates were analyzed, and the curated demo bundle keeps only `GvejoxdR0Vo` / "Cart Complement Recommendations"; the candidate library is unchanged.)
 - [ ] **1.17** Real-browser walk of all pages (desktop + mobile) confirming badges, scout colors and that real counts never move.
 - [ ] **1.18** Re-analysis orphans simulated runs (new finding IDs → "Insight unavailable"). Known gap.
 

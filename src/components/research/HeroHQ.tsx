@@ -16,7 +16,6 @@ import {
   competitorSessionsFor,
   isCompetitorSession,
 } from "@/lib/research/competitors";
-import { latestFindings } from "@/lib/research/insights";
 import { isArchivedSession, products, sessionsForProduct } from "@/lib/research/products";
 import { getScout, type ScoutId } from "@/lib/research/scouts";
 import { sampleInsights } from "@/lib/research/demo/happyPath";
@@ -25,6 +24,8 @@ import type { SimulatedRun, StageState } from "@/lib/research/simulation";
 import {
   buildUnifiedInsights,
   compareUnified,
+  isRetiredDemoSession,
+  shownFindings,
   type UnifiedInsight,
 } from "@/lib/research/unifiedInsights";
 import type { Session } from "@/lib/research/types";
@@ -308,7 +309,7 @@ function InsightRow({ row, running }: { row: Row; running: boolean }) {
         />
         <span className="flex min-w-0 flex-1 flex-col gap-1.5">
           <span className="flex flex-wrap items-center gap-2">
-            <SourceMarker source={item.source} competitor={item.competitor} />
+            <SourceMarker source={item.source} competitor={item.competitor} heroSize={30} />
             {item.kind === "sample" && <SimulatedBadge detail="Fictional sample for the demo" />}
             <span
               className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${
@@ -346,7 +347,7 @@ function InsightRow({ row, running }: { row: Row; running: boolean }) {
 /* ---------- Page ---------- */
 
 export function HeroHQ() {
-  const [all, setAll] = useState<Session[]>([]);
+  const [stored, setAll] = useState<Session[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState("");
   const { settings } = useAgentSettings();
@@ -374,10 +375,12 @@ export function HeroHQ() {
   });
 
   /* Real records. */
+  // Pre-generated sessions the curated demo retired are left out before the migration deletes them.
+  const all = stored.filter((s) => !isRetiredDemoSession(s));
   const own = all.filter((s) => !isCompetitorSession(s) && !isArchivedSession(s));
   const competitor = all.filter((s) => isCompetitorSession(s));
-  const ownInsights = own.reduce((n, s) => n + latestFindings(s).length, 0);
-  const competitorInsights = competitor.reduce((n, s) => n + latestFindings(s).length, 0);
+  const ownInsights = own.reduce((n, s) => n + shownFindings(s).length, 0);
+  const competitorInsights = competitor.reduce((n, s) => n + shownFindings(s).length, 0);
   const trackerTokens = tokensOf(own);
   const explorerTokens = tokensOf(competitor);
   const now = new Date(sim.now);
@@ -397,12 +400,10 @@ export function HeroHQ() {
       product,
     })),
   );
-  // Featured demo rows stay while they need you or their test is in progress; rejected ones drop out.
+  // The three featured demo rows always show, in fixed order, matching Insights (UBER-EATS-DEMO.md
+  // check 3); each row's status reads Review insight, Test approved, Rejected and so on.
   const featured = rows
-    .filter(
-      (r) =>
-        r.item.featured_rank !== null && (r.item.needs_attention || r.item.decision === "approved"),
-    )
+    .filter((r) => r.item.featured_rank !== null)
     .sort((a, b) => a.item.featured_rank! - b.item.featured_rank!);
   const others = rows
     .filter((r) => r.item.featured_rank === null && r.item.needs_attention)

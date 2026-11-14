@@ -163,9 +163,14 @@ export function sampleItem(
   };
 }
 
-/** Needs-attention first, then confidence (desc), then key for stability. */
+/**
+ * Featured demo items first in their fixed order (sample, Tracker, Explorer), whatever their
+ * review state; then needs-attention, confidence (desc) and key for stability.
+ */
 export function compareUnified(a: UnifiedInsight, b: UnifiedInsight) {
+  const rank = (item: UnifiedInsight) => item.featured_rank ?? Number.POSITIVE_INFINITY;
   return (
+    (rank(a) === rank(b) ? 0 : rank(a) < rank(b) ? -1 : 1) ||
     Number(b.needs_attention) - Number(a.needs_attention) ||
     b.confidence - a.confidence ||
     a.key.localeCompare(b.key)
@@ -173,8 +178,42 @@ export function compareUnified(a: UnifiedInsight, b: UnifiedInsight) {
 }
 
 /**
+ * True for a finding from a bundled pre-generated run that the curated demo no longer shows
+ * (user request, Nov 13: only the three featured insights). The import migration deletes these;
+ * this keeps a browser that has not migrated yet from flashing them. Findings from the user's
+ * own later runs on such a session are not hidden.
+ */
+export function isRetiredDemoFinding(session: Session, finding: Finding) {
+  return (
+    !!session.pregenerated?.run_ids.includes(finding.analysis_run_id) &&
+    featuredRank(finding.id) === null
+  );
+}
+
+/**
+ * True for a whole pre-generated session the curated demo no longer uses: it holds only bundled
+ * runs and none of its findings is featured. The import migration deletes these; counts skip them
+ * so a browser that has not migrated yet shows the same totals as one that has.
+ */
+export function isRetiredDemoSession(session: Session) {
+  const marker = session.pregenerated;
+  if (!marker) return false;
+  return (
+    session.runs.every((run) => marker.run_ids.includes(run.id)) &&
+    session.findings.every((finding) => isRetiredDemoFinding(session, finding))
+  );
+}
+
+/** Latest-run findings the curated demo still shows (see `isRetiredDemoFinding`). */
+export function shownFindings(session: Session) {
+  return latestFindings(session).filter((finding) => !isRetiredDemoFinding(session, finding));
+}
+
+/**
  * Unified list for a product: latest-run findings from own-product sessions (Tracker) and from
  * competitor sessions linked to the product (Explorer), plus the sample when the product has one.
+ * For the Uber Eats demo this is exactly three items: the sample, then the curated Tracker and
+ * Explorer findings, plus any analyses the user ran themselves.
  */
 export function buildUnifiedInsights(
   sessions: Session[],
@@ -186,10 +225,12 @@ export function buildUnifiedInsights(
   const items: UnifiedInsight[] = [];
   for (const session of sessionsForProduct(sessions, productId))
     for (const finding of latestFindings(session))
-      items.push(realItem(session, finding, "tracker", null));
+      if (!isRetiredDemoFinding(session, finding))
+        items.push(realItem(session, finding, "tracker", null));
   for (const session of competitorSessionsFor(sessions, productId))
     for (const finding of latestFindings(session))
-      items.push(realItem(session, finding, "explorer", competitor ?? session.source_app));
+      if (!isRetiredDemoFinding(session, finding))
+        items.push(realItem(session, finding, "explorer", competitor ?? session.source_app));
   const sample = options.includeSample === false ? null : sampleInsightFor(productId);
   if (sample) items.push(sampleItem(sample, options.sampleDecision));
   return items.sort(compareUnified);

@@ -39,6 +39,7 @@ import {
 import { resetAgentSettings, setScoutSettings } from "@/hooks/use-agent-settings";
 import { selectProduct } from "@/hooks/use-product";
 import { pregeneratedLabel } from "@/lib/research/publicVideo";
+import { FEATURED_EXPLORER_FINDING_ID } from "@/lib/research/demo/happyPath";
 
 const pregeneratedFor = () => ({
   generated_at: "2026-11-13T10:00:00.000Z",
@@ -124,13 +125,22 @@ afterEach(() => {
 });
 
 describe("DoorDash Explorer run import", () => {
-  it("imports 4 competitor sessions with 7 unaltered findings, all routed to experiment", async () => {
+  it("imports the curated competitor session with its one unaltered finding, routed to experiment", async () => {
     const result = await importExplorerRuns();
     expect(result.failed).toEqual([]);
-    expect(result.added).toHaveLength(4);
-    expect(result.findings_added).toBe(7);
+    expect(result.added).toEqual([FIRST.session_id]);
+    expect(result.findings_added).toBe(1);
+    expect(file.videos).toHaveLength(1);
+    expect(FIRST.candidate_id).toBe("GvejoxdR0Vo");
+    expect(file.curation.kept_finding_ids).toEqual([FEATURED_EXPLORER_FINDING_ID]);
+    expect(file.curation.kept_finding_titles).toEqual(["Cart Complement Recommendations"]);
     const sessions = await listSessions();
-    expect(sessions).toHaveLength(4);
+    expect(sessions).toHaveLength(1);
+    expect(sessions[0]!.findings.map((f) => f.title)).toEqual(["Cart Complement Recommendations"]);
+    // raw_output still holds the model's complete original answer.
+    expect(JSON.stringify(sessions[0]!.runs[0]!.raw_output)).toContain(
+      "Proactive Fee Policy Explanation",
+    );
     for (const video of file.videos) {
       const session = sessions.find((s) => s.id === video.session_id)!;
       expect(isCompetitorSession(session)).toBe(true);
@@ -154,10 +164,12 @@ describe("DoorDash Explorer run import", () => {
       });
       expect(pregeneratedRunLabel(session)).toBe("Explorer run · pre-generated Nov 13");
     }
-    expect(sessions.flatMap((s) => s.findings).every((f) => f.suggested_route === "experiment"));
+    expect(
+      sessions.flatMap((s) => s.findings).every((f) => f.suggested_route === "experiment"),
+    ).toBe(true);
     // Competitor footage never counts as Uber Eats evidence, but is listed for its Competitors tab.
     expect(sessionsForProduct(sessions, "uber-eats")).toHaveLength(0);
-    expect(competitorSessionsFor(sessions, "uber-eats")).toHaveLength(4);
+    expect(competitorSessionsFor(sessions, "uber-eats")).toHaveLength(1);
     expect(competitorSessionsFor(sessions, "checkout")).toHaveLength(0);
     // Pre-generated runs never count toward any scout's daily cap.
     const day = new Date(FIRST.run.started_at);
@@ -173,48 +185,56 @@ describe("DoorDash Explorer run import", () => {
       reviewer_note: "Worth testing",
     });
     await saveSession(edited);
-    await deleteSession(file.videos[1]!.session_id);
     const again = await importExplorerRuns();
-    expect(again.added).toEqual([file.videos[1]!.session_id]);
-    expect(again.skipped).toHaveLength(3);
+    expect(again).toMatchObject({
+      added: [],
+      skipped: [FIRST.session_id],
+      pruned: [],
+      curated: [],
+    });
+    expect(describeExplorerImport(again)).toMatch(/nothing was changed/);
     const kept = (await getSession(FIRST.session_id))!;
     expect(kept.findings[0]!.review_status).toBe("accepted");
     expect(kept.findings[0]!.reviewer_note).toBe("Worth testing");
+    await deleteSession(FIRST.session_id);
     const third = await importExplorerRuns();
-    expect(third.added).toEqual([]);
-    expect(describeExplorerImport(third)).toMatch(/nothing was changed/);
+    expect(third.added).toEqual([FIRST.session_id]);
   });
 
   it("auto-imports with its own version key, even where the Tracker import already ran", async () => {
     await importTrackerRuns();
-    window.localStorage.setItem(DEMO_IMPORT_KEY, "uber-eats-tracker-runs@2026-11-13");
+    window.localStorage.setItem(DEMO_IMPORT_KEY, "uber-eats-tracker-runs@2026-11-13-curated");
     const events: string[][] = [];
     const listener = (e: Event) =>
       events.push((e as CustomEvent<{ added: string[] }>).detail.added);
     window.addEventListener(SESSIONS_CHANGED_EVENT, listener);
     const result = await autoImportExplorerRuns();
     window.removeEventListener(SESSIONS_CHANGED_EVENT, listener);
-    expect(result?.added).toHaveLength(4);
-    expect(events.at(-1)).toHaveLength(4);
-    expect(window.localStorage.getItem(EXPLORER_IMPORT_KEY)).toBeTruthy();
-    expect(window.localStorage.getItem(DEMO_IMPORT_KEY)).toBe("uber-eats-tracker-runs@2026-11-13");
+    expect(result?.added).toEqual([FIRST.session_id]);
+    expect(events.at(-1)).toEqual([FIRST.session_id]);
+    expect(window.localStorage.getItem(EXPLORER_IMPORT_KEY)).toBe(
+      "doordash-explorer-runs@2026-11-13-curated",
+    );
+    expect(window.localStorage.getItem(DEMO_IMPORT_KEY)).toBe(
+      "uber-eats-tracker-runs@2026-11-13-curated",
+    );
     resetExplorerAutoImportForTests();
     expect(await autoImportExplorerRuns()).toBeNull();
   });
 
   it("Settings re-import covers both Tracker and Explorer runs", async () => {
     const first = await reimportAllDemoRuns();
-    expect(first.tracker.added).toHaveLength(5);
-    expect(first.explorer.added).toHaveLength(4);
-    expect(first.message).toMatch(/Added 5 Uber Eats Tracker runs/);
-    expect(first.message).toMatch(/Added 4 DoorDash Explorer runs \(7 competitor insights\)/);
+    expect(first.tracker.added).toHaveLength(1);
+    expect(first.explorer.added).toHaveLength(1);
+    expect(first.message).toMatch(/Added 1 Uber Eats Tracker run \(1 insight\)/);
+    expect(first.message).toMatch(/Added 1 DoorDash Explorer run \(1 competitor insight\)/);
     const second = await reimportAllDemoRuns();
     expect(second.message).toMatch(/No Explorer runs were missing/);
   });
 });
 
 describe("Unified Insights with imported Tracker and Explorer runs", () => {
-  it("lists 7 Explorer cards (no thumbnails) under the legacy Competitors link", async () => {
+  it("lists the curated Explorer card (no thumbnail) under the legacy Competitors link", async () => {
     await importExplorerRuns();
     selectProduct("uber-eats");
     const view = render(<Insights source="explorer" />);
@@ -224,7 +244,7 @@ describe("Unified Insights with imported Tracker and Explorer runs", () => {
     );
     const sessions = await listSessions();
     const findings = sessions.flatMap((s) => latestFindings(s));
-    expect(findings).toHaveLength(7);
+    expect(findings).toHaveLength(1);
     for (const finding of findings) {
       const card = (await screen.findByRole("heading", { name: finding.title })).closest(
         "article",
@@ -254,7 +274,7 @@ describe("Unified Insights with imported Tracker and Explorer runs", () => {
     selectProduct("uber-eats");
     const onSourceChange = vi.fn();
     render(<Insights onSourceChange={onSourceChange} />);
-    await waitFor(() => expect(screen.getAllByRole("article")).toHaveLength(16));
+    await waitFor(() => expect(screen.getAllByRole("article")).toHaveLength(3));
     const rows = screen.getAllByRole("article");
     expect(rows.slice(0, 3).map((row) => row.getAttribute("aria-label"))).toEqual([
       "Order again on the home screen",
@@ -279,7 +299,11 @@ describe("Unified Insights with imported Tracker and Explorer runs", () => {
     const sources = within(screen.getByRole("group", { name: "Source" }));
     fireEvent.click(sources.getByRole("button", { name: /^Tracker/ }));
     expect(onSourceChange).toHaveBeenLastCalledWith("tracker");
-    expect(screen.getAllByRole("article")).toHaveLength(9);
+    // Tracker filter: the Tracker-only insight plus the Both sample.
+    expect(screen.getAllByRole("article").map((row) => row.getAttribute("aria-label"))).toEqual([
+      "Order again on the home screen",
+      "Hidden minimum order threshold",
+    ]);
     for (const finding of FIRST.findings)
       expect(screen.queryByRole("heading", { name: finding.title })).toBeNull();
     fireEvent.click(sources.getByRole("button", { name: /^Both/ }));

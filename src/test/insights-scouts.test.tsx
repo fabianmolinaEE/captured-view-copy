@@ -121,6 +121,9 @@ describe("Unified Insights (Tracker blocks)", () => {
     expect(spinner).toHaveAttribute("data-source", "tracker");
     expect(spinner).toHaveAttribute("data-kind", "real");
     expect(within(spinner).getByText("Tracker")).toBeInTheDocument();
+    const tracker = within(spinner).getByRole("img", { name: "Found by Tracker" });
+    expect(tracker.querySelectorAll("[data-scout]")).toHaveLength(1);
+    expect(tracker.querySelector('[data-scout="tracker"]')).not.toBeNull();
     expect(within(spinner).getByTestId("video-count")).toHaveTextContent(/^from 1 video/);
     expect(within(spinner).getByText(/Experiment → Experimenter/)).toBeInTheDocument();
     expect(within(spinner).getByText("Add progress text under the spinner.")).toBeInTheDocument();
@@ -139,6 +142,35 @@ describe("Unified Insights (Tracker blocks)", () => {
     expect(
       view.container.querySelector('[data-source="explorer"], [data-kind="sample"]'),
     ).toBeNull();
+  });
+
+  it("puts Tracker and Explorer in the header and on the source chips as little heroes", async () => {
+    render(<Insights />);
+    await screen.findByRole("heading", { name: "Spinner hides progress" });
+    const header = screen.getByTestId("insights-heroes");
+    expect(within(header).getByRole("img", { name: "Tracker, the blue scout" })).toHaveAttribute(
+      "data-animated",
+      "true",
+    );
+    expect(within(header).getByRole("img", { name: "Explorer, the green scout" })).toBeVisible();
+    expect(
+      screen.getByText((_, el) =>
+        el?.tagName === "P"
+          ? el.textContent === "Tracker watches your product. Explorer watches competitors."
+          : false,
+      ),
+    ).toBeInTheDocument();
+    const chips = group("Source");
+    const scoutsIn = (name: RegExp) =>
+      [...within(chips).getByRole("button", { name }).querySelectorAll("[data-scout]")].map((el) =>
+        el.getAttribute("data-scout"),
+      );
+    expect(scoutsIn(/^All/)).toEqual([]);
+    expect(scoutsIn(/^Tracker/)).toEqual(["tracker"]);
+    expect(scoutsIn(/^Explorer/)).toEqual(["explorer"]);
+    expect(scoutsIn(/^Both/)).toEqual(["tracker", "explorer"]);
+    // Chip avatars are decorative: the button names stay "Tracker 2" etc.
+    expect(within(chips).getByRole("button", { name: "Tracker 2" })).toBeInTheDocument();
   });
 
   it("filters by status and source, with a clear-filters escape hatch", async () => {
@@ -180,6 +212,10 @@ describe("Unified Insights (Tracker + Explorer)", () => {
     expect(sample).toHaveAttribute("data-kind", "sample");
     expect(within(sample).getByText("Simulated demo")).toBeVisible();
     expect(within(sample).getByText("Tracker + Explorer")).toBeInTheDocument();
+    const both = within(sample).getByRole("img", { name: "Found by Tracker and Explorer" });
+    expect(
+      [...both.querySelectorAll("[data-scout]")].map((el) => el.getAttribute("data-scout")),
+    ).toEqual(["tracker", "explorer"]);
     expect(within(sample).getByTestId("video-count")).toHaveTextContent(/from 16 videos · sample/);
     expect(within(sample).getByText("Seen in 14 of 50 sessions · sample")).toBeInTheDocument();
     expect(screen.getAllByRole("article")).toHaveLength(1);
@@ -197,6 +233,11 @@ describe("Unified Insights (Tracker + Explorer)", () => {
     ).closest("article")!;
     expect(competitor).toHaveAttribute("data-source", "explorer");
     expect(within(competitor).getByText("Explorer · DoorDash")).toBeInTheDocument();
+    expect(
+      within(competitor)
+        .getByRole("img", { name: "Found by Explorer, watching DoorDash" })
+        .querySelector('[data-scout="explorer"]'),
+    ).not.toBeNull();
     expect(within(competitor).getByText("Competitor pattern")).toBeInTheDocument();
     expect(card("Uber Eats own finding")).toHaveAttribute("data-source", "tracker");
     expect(card("Order again on the home screen")).toHaveAttribute("data-source", "both");

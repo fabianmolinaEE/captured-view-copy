@@ -6,10 +6,12 @@ import {
 import { autoImportExplorerRuns } from "@/lib/research/demo/importExplorerRuns";
 
 /**
- * Mount once in the root: imports the real pre-generated Uber Eats Tracker runs and DoorDash
- * Explorer runs the first time this browser opens the app (each with its own version key). Runs
- * only on the client (effects never run during SSR); the module guards make StrictMode's double
- * effect and remounts share one import.
+ * Mount once in the root: imports the real pre-generated Uber Eats Tracker run and DoorDash
+ * Explorer run the first time this browser opens the app (each with its own version key). A
+ * version bump also migrates browsers that imported the older, larger bundles to the curated
+ * demo set (only sessions carrying the bundle's `pregenerated` marker are touched). Runs only on
+ * the client (effects never run during SSR); the module guards make StrictMode's double effect
+ * and remounts share one import.
  */
 export function useDemoImport() {
   useEffect(() => {

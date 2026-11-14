@@ -2,8 +2,12 @@ import "fake-indexeddb/auto";
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { selectProduct } from "@/hooks/use-product";
-import { importTrackerRuns } from "@/lib/research/demo/importTrackerRuns";
-import { clearAll, deleteSession } from "@/lib/research/sessionStorage";
+import {
+  buildTrackerSession,
+  importTrackerRuns,
+  trackerRunsFile,
+} from "@/lib/research/demo/importTrackerRuns";
+import { clearAll, deleteSession, saveSession } from "@/lib/research/sessionStorage";
 
 vi.mock("@tanstack/react-router", () => ({
   useNavigate: () => vi.fn(),
@@ -33,7 +37,7 @@ import { Sessions } from "@/components/research/Sessions";
 import { SessionReview } from "@/components/research/SessionReview";
 import { Settings } from "@/components/research/Settings";
 
-const VOICEOVER = "ee08bb6d-654b-487a-a9bf-05a1ad0f8a48";
+const KEPT = "e02675ea-079d-47d7-916b-527f483be7c7";
 
 beforeEach(async () => {
   await clearAll();
@@ -51,18 +55,20 @@ describe("Tracker runs in the app", () => {
       await importTrackerRuns();
     });
     expect(
-      await screen.findByRole("link", { name: "How to Use Uber Eats for the First Time" }),
+      await screen.findByRole("link", {
+        name: "Uber Eats: how to order food (Russian-language tutorial)",
+      }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Total sessions").closest(".stat")).toHaveTextContent("5");
-    expect(screen.getByText("AI proposals").closest(".stat")).toHaveTextContent("8");
-    expect(screen.getByText("Historical UI (2020)")).toBeInTheDocument();
-    expect(screen.getByText("Tracker found no insights in this clip")).toBeInTheDocument();
-    expect(screen.getAllByText(/Tracker run · pre-generated Nov 13/)).toHaveLength(5);
+    expect(screen.getByText("Total sessions").closest(".stat")).toHaveTextContent("1");
+    expect(screen.getByText("AI proposals").closest(".stat")).toHaveTextContent("1");
+    expect(screen.getAllByText(/Tracker run · pre-generated Nov 13/)).toHaveLength(1);
   });
 
   it("session review says honestly when Tracker found nothing", async () => {
-    await importTrackerRuns();
-    render(<SessionReview id={VOICEOVER} />);
+    // A completed pre-generated run with zero findings (shape of a no-insight clip).
+    const video = trackerRunsFile().videos[0]!;
+    await saveSession(buildTrackerSession({ ...video, findings: [] } as never));
+    render(<SessionReview id={KEPT} />);
     expect(
       await screen.findByRole("heading", { name: "Tracker found no insights in this clip" }),
     ).toBeInTheDocument();
@@ -75,11 +81,11 @@ describe("Tracker runs in the app", () => {
 
   it("Settings re-import adds only missing runs and reports the result", async () => {
     await importTrackerRuns();
-    await deleteSession(VOICEOVER);
+    await deleteSession(KEPT);
     render(<Settings />);
     fireEvent.click(screen.getByRole("button", { name: "Re-import Tracker and Explorer runs" }));
     expect(
-      await screen.findByText(/Added 1 Uber Eats Tracker run \(0 insights\)\. 4 already present/),
+      await screen.findByText(/Added 1 Uber Eats Tracker run \(1 insight\)\./),
     ).toBeInTheDocument();
     fireEvent.click(
       await screen.findByRole("button", { name: "Re-import Tracker and Explorer runs" }),

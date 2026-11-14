@@ -224,7 +224,9 @@ export const sampleInsightLink = () =>
 /**
  * Real pre-generated findings featured in the demo alongside the sample (unaltered model output
  * from the bundled runs; present only after the automatic import). Tracker-only: "Hidden minimum
- * order threshold" (Uber Eats run). Explorer-only: "Cart Complement Recommendations" (DoorDash run).
+ * order threshold" (Uber Eats run, oDcQjVREO5w). Explorer-only: "Cart Complement Recommendations"
+ * (DoorDash run, GvejoxdR0Vo). At the user's request (Nov 13) these are the ONLY bundled findings:
+ * they must match each bundle's `curation.kept_finding_ids` (covered by tests).
  */
 export const FEATURED_TRACKER_FINDING_ID = "822882b7-fc89-4cce-88a0-5625cf8ef575";
 export const FEATURED_EXPLORER_FINDING_ID = "763474ac-b1d8-40a9-9a0f-994bb42a93af";

@@ -20,11 +20,12 @@ import {
 } from "@/lib/research/unifiedInsights";
 import { duration, label, type Session } from "@/lib/research/types";
 import { Button } from "@/components/ui/button";
-import { Shell, PageHeading } from "./Shell";
+import { Shell } from "./Shell";
+import { ScoutMascot } from "./ScoutMascot";
 import { SimulatedBadge } from "./SimulatedBadge";
 import { RouteBadge } from "./SuggestedTestPanel";
-import { SourceMarker, VideoCount } from "./SourceMarker";
-import { decisionState, sourceAccent } from "@/lib/research/sourceMarkers";
+import { SourceHeroes, SourceMarker, VideoCount } from "./SourceMarker";
+import { decisionState, sourceAccent, sourceHues } from "@/lib/research/sourceMarkers";
 
 type StatusFilter = "all" | "attention" | "accepted" | "rejected";
 
@@ -44,7 +45,7 @@ const statusOptions: { id: StatusFilter; name: string }[] = [
 const selectClass =
   "h-8 rounded-md border border-border bg-card px-2 text-xs text-foreground focus-visible:outline-2 focus-visible:outline-primary";
 const chipClass = (on: boolean) =>
-  `h-8 rounded-full border px-3 text-xs ${
+  `inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-xs ${
     on
       ? "border-primary bg-accent text-primary"
       : "border-border text-muted-foreground hover:text-foreground"
@@ -106,7 +107,7 @@ export function UnifiedInsightCard({
         style={{ background: sourceAccent(item.source) }}
       />
       <div className="flex flex-wrap items-center gap-2">
-        <SourceMarker source={item.source} competitor={item.competitor} />
+        <SourceMarker source={item.source} competitor={item.competitor} heroSize={30} />
         <VideoCount count={item.video_count} illustrative={!!sample} source={item.source} />
         {sample && <SimulatedBadge detail={SAMPLE_NOTE} className="relative z-10 cursor-help" />}
         <span className="text-[11px] capitalize text-muted-foreground">{label(item.category)}</span>
@@ -155,9 +156,28 @@ export function UnifiedInsightCard({
   );
 }
 
-/** Demo order: featured items (sample, Tracker-only, Explorer-only) first, then the rest. */
-function featuredFirst(items: UnifiedInsight[]) {
-  return [...items].sort((a, b) => (a.featured_rank ?? 99) - (b.featured_rank ?? 99));
+/**
+ * Page header with the two scouts that find insights, side by side. The bob/cape motion uses
+ * `motion-safe:` and the app motion toggle's global rule, so reduced motion keeps them still.
+ */
+function InsightsHeading() {
+  return (
+    <header className="page-heading">
+      <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+        <span className="flex shrink-0 items-end -space-x-1.5" data-testid="insights-heroes">
+          <ScoutMascot scout="tracker" size={56} animated className="h-auto w-11 sm:w-14" />
+          <ScoutMascot scout="explorer" size={56} animated className="h-auto w-11 sm:w-14" />
+        </span>
+        <div className="min-w-0">
+          <h1>Insights</h1>
+          <p>
+            <span style={{ color: sourceHues.tracker }}>Tracker</span> watches your product.{" "}
+            <span style={{ color: sourceHues.explorer }}>Explorer</span> watches competitors.
+          </p>
+        </div>
+      </div>
+    </header>
+  );
 }
 
 export function Insights({
@@ -214,14 +234,15 @@ export function Insights({
         (status === "attention" ? item.needs_attention : item.review_status === status)),
   );
   const below = matching.filter(isBelow);
-  const shown = featuredFirst(showBelow ? matching : matching.filter((item) => !isBelow(item)));
+  // `items` is already in demo order (featured trio first; see compareUnified).
+  const shown = showBelow ? matching : matching.filter((item) => !isBelow(item));
   // Own-product priorities only: competitor footage and samples never count (aggregateInsights).
   const groups = aggregateInsights(ownSessions(sessionsForProduct(sessions, productId)));
   const filtered = source !== "all" || minVideos > 1 || status !== "all";
 
   return (
     <Shell section="Insights">
-      <PageHeading title="Insights" description="What your users and competitors show you." />
+      <InsightsHeading />
       {error && (
         <div className="error-note my-4" role="alert">
           {error}
@@ -237,8 +258,11 @@ export function Insights({
               className={chipClass(source === option.id)}
               onClick={() => setSource(option.id)}
             >
+              {option.id !== "all" && (
+                <SourceHeroes source={option.id} size={20} decorative className="-ml-1" />
+              )}
               {option.name}
-              <span className="ml-1.5 opacity-70">
+              <span className="opacity-70">
                 {items.filter((item) => matchesSource(item, option.id)).length}
               </span>
             </button>

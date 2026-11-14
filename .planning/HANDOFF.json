@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "timestamp": "2026-11-14T03:37:23.111Z",
+  "timestamp": "2026-11-14T04:21:09.054Z",
   "source": "auto-postool",
   "partial": false,
   "phase": null,
@@ -26,23 +26,7 @@
     },
     {
       "status": "M",
-      "path": "CLAUDE.md"
-    },
-    {
-      "status": "M",
-      "path": "README.md"
-    },
-    {
-      "status": "M",
-      "path": "docs/ARCHITECTURE.md"
-    },
-    {
-      "status": "M",
-      "path": "docs/IMPLEMENTATION.md"
-    },
-    {
-      "status": "M",
-      "path": "docs/MANUAL-VERIFICATION.md"
+      "path": "docs/AUTOMATED-LOOP.md"
     },
     {
       "status": "M",
@@ -50,19 +34,7 @@
     },
     {
       "status": "M",
-      "path": "docs/UX-IMPLEMENTATION.md"
-    },
-    {
-      "status": "M",
-      "path": "roadmap.md"
-    },
-    {
-      "status": "M",
-      "path": "src/components/research/AnalysisPanel.tsx"
-    },
-    {
-      "status": "D",
-      "path": "src/components/research/ComingSoon.tsx"
+      "path": "docs/UBER-EATS-DEMO.md"
     },
     {
       "status": "M",
@@ -70,15 +42,7 @@
     },
     {
       "status": "M",
-      "path": "src/components/research/EvidencePanel.tsx"
-    },
-    {
-      "status": "M",
-      "path": "src/components/research/Home.tsx"
-    },
-    {
-      "status": "M",
-      "path": "src/components/research/InsightDetail.tsx"
+      "path": "src/components/research/HeroHQ.tsx"
     },
     {
       "status": "M",
@@ -86,31 +50,15 @@
     },
     {
       "status": "M",
-      "path": "src/components/research/LoopJourney.tsx"
-    },
-    {
-      "status": "M",
-      "path": "src/components/research/NextStepDraft.tsx"
-    },
-    {
-      "status": "M",
       "path": "src/components/research/SessionReview.tsx"
     },
     {
       "status": "M",
-      "path": "src/components/research/Sessions.tsx"
+      "path": "src/components/research/SourceMarker.tsx"
     },
     {
       "status": "M",
-      "path": "src/components/research/Settings.tsx"
-    },
-    {
-      "status": "M",
-      "path": "src/components/research/Shell.tsx"
-    },
-    {
-      "status": "M",
-      "path": "src/components/research/TestApp.tsx"
+      "path": "src/hooks/use-demo-import.ts"
     },
     {
       "status": "M",
@@ -118,373 +66,61 @@
     },
     {
       "status": "M",
-      "path": "src/lib/research/aiReview.ts"
+      "path": "src/lib/research/demo/doordash-explorer-runs.json"
     },
     {
       "status": "M",
-      "path": "src/lib/research/apiClient.ts"
+      "path": "src/lib/research/demo/happyPath.ts"
     },
     {
       "status": "M",
-      "path": "src/lib/research/capture.ts"
+      "path": "src/lib/research/demo/importExplorerRuns.ts"
     },
     {
       "status": "M",
-      "path": "src/lib/research/evaluation.ts"
+      "path": "src/lib/research/demo/importTrackerRuns.ts"
     },
     {
       "status": "M",
-      "path": "src/lib/research/evidence.ts"
+      "path": "src/lib/research/demo/uber-eats-tracker-runs.json"
     },
     {
       "status": "M",
-      "path": "src/lib/research/frameSampler.ts"
-    },
-    {
-      "status": "M",
-      "path": "src/lib/research/insights.ts"
-    },
-    {
-      "status": "M",
-      "path": "src/lib/research/review.ts"
-    },
-    {
-      "status": "M",
-      "path": "src/lib/research/server/analysis.server.ts"
-    },
-    {
-      "status": "M",
-      "path": "src/lib/research/server/api.server.ts"
-    },
-    {
-      "status": "M",
-      "path": "src/lib/research/server/backend.server.ts"
-    },
-    {
-      "status": "M",
-      "path": "src/lib/research/sessionStorage.ts"
-    },
-    {
-      "status": "M",
-      "path": "src/lib/research/sharedStorage.ts"
-    },
-    {
-      "status": "M",
-      "path": "src/lib/research/types.ts"
-    },
-    {
-      "status": "M",
-      "path": "src/routeTree.gen.ts"
-    },
-    {
-      "status": "M",
-      "path": "src/routes/__root.tsx"
-    },
-    {
-      "status": "M",
-      "path": "src/routes/ab-tests.tsx"
-    },
-    {
-      "status": "M",
-      "path": "src/routes/insights.$sessionId.$findingId.tsx"
-    },
-    {
-      "status": "M",
-      "path": "src/routes/insights.index.tsx"
-    },
-    {
-      "status": "M",
-      "path": "src/routes/insights.tsx"
-    },
-    {
-      "status": "M",
-      "path": "src/routes/rollouts.tsx"
-    },
-    {
-      "status": "M",
-      "path": "src/routes/test-app.tsx"
-    },
-    {
-      "status": "M",
-      "path": "src/styles.css"
-    },
-    {
-      "status": "M",
-      "path": "src/test/backend.test.ts"
-    },
-    {
-      "status": "M",
-      "path": "src/test/frame-sampler-signals.test.ts"
-    },
-    {
-      "status": "M",
-      "path": "src/test/insight-detail.test.tsx"
-    },
-    {
-      "status": "M",
-      "path": "src/test/motion.test.tsx"
-    },
-    {
-      "status": "M",
-      "path": "src/test/review.test.tsx"
-    },
-    {
-      "status": "M",
-      "path": "src/test/test-app-capture.test.tsx"
-    },
-    {
-      "status": "M",
-      "path": "src/test/workspace-ux.test.tsx"
-    },
-    {
-      "status": "??",
-      "path": "docs/AUTOMATED-LOOP.md"
-    },
-    {
-      "status": "??",
-      "path": "docs/SUNDAY-DELIVERY-DEMO.md"
-    },
-    {
-      "status": "??",
-      "path": "docs/UBER-EATS-DEMO.md"
-    },
-    {
-      "status": "??",
-      "path": "src/components/research/ABTests.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/components/research/FoodDeliveryDemo.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/components/research/HeroHQ.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/components/research/MergeCelebration.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/components/research/PRReview.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/components/research/ProductPicker.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/components/research/PublicVideoPlayer.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/components/research/Rollouts.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/components/research/SampleInsightDetail.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/components/research/ScoutCard.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/components/research/ScoutMascot.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/components/research/SimulatedBadge.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/components/research/SourceMarker.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/components/research/SuggestedTestPanel.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/components/research/UberEatsSources.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/hooks/use-agent-settings.ts"
-    },
-    {
-      "status": "??",
-      "path": "src/hooks/use-demo-import.ts"
-    },
-    {
-      "status": "??",
-      "path": "src/hooks/use-insights-back-search.ts"
-    },
-    {
-      "status": "??",
-      "path": "src/hooks/use-product.ts"
-    },
-    {
-      "status": "??",
-      "path": "src/hooks/use-simulation.ts"
-    },
-    {
-      "status": "??",
-      "path": "src/lib/research/agentSettings.ts"
-    },
-    {
-      "status": "??",
-      "path": "src/lib/research/competitors.ts"
-    },
-    {
-      "status": "??",
-      "path": "src/lib/research/demo/"
-    },
-    {
-      "status": "??",
-      "path": "src/lib/research/products.ts"
-    },
-    {
-      "status": "??",
-      "path": "src/lib/research/publicVideo.ts"
-    },
-    {
-      "status": "??",
-      "path": "src/lib/research/scouts.ts"
-    },
-    {
-      "status": "??",
-      "path": "src/lib/research/server/analysisPrompt.server.ts"
-    },
-    {
-      "status": "??",
-      "path": "src/lib/research/simulation.ts"
-    },
-    {
-      "status": "??",
-      "path": "src/lib/research/sourceMarkers.ts"
-    },
-    {
-      "status": "??",
-      "path": "src/lib/research/testDecisions.ts"
-    },
-    {
-      "status": "??",
       "path": "src/lib/research/unifiedInsights.ts"
     },
     {
-      "status": "??",
-      "path": "src/lib/research/videoAttachment.ts"
-    },
-    {
-      "status": "??",
-      "path": "src/routes/hq.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/test/ab-tests-rollouts.test.tsx"
-    },
-    {
-      "status": "??",
+      "status": "M",
       "path": "src/test/explorer-import.test.tsx"
     },
     {
-      "status": "??",
-      "path": "src/test/food-delivery.test.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/test/hero-hq-shell.test.tsx"
-    },
-    {
-      "status": "??",
+      "status": "M",
       "path": "src/test/hero-hq.test.tsx"
     },
     {
-      "status": "??",
-      "path": "src/test/home-scouts.test.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/test/insight-card-thumbnail.test.tsx"
-    },
-    {
-      "status": "??",
+      "status": "M",
       "path": "src/test/insights-scouts.test.tsx"
     },
     {
-      "status": "??",
-      "path": "src/test/late-import-links.test.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/test/product-analysis.test.ts"
-    },
-    {
-      "status": "??",
-      "path": "src/test/product-workspace.test.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/test/public-video-client.test.ts"
-    },
-    {
-      "status": "??",
-      "path": "src/test/public-video-player.test.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/test/public-video-ui.test.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/test/public-video.test.ts"
-    },
-    {
-      "status": "??",
-      "path": "src/test/scout-analysis.test.ts"
-    },
-    {
-      "status": "??",
-      "path": "src/test/scout-loop.test.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/test/scout-shell.test.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/test/scouts.test.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/test/session-review-public.test.tsx"
-    },
-    {
-      "status": "??",
-      "path": "src/test/small-target-analysis.test.ts"
-    },
-    {
-      "status": "??",
+      "status": "M",
       "path": "src/test/tracker-import-ui.test.tsx"
     },
     {
-      "status": "??",
+      "status": "M",
       "path": "src/test/tracker-import.test.ts"
     },
     {
-      "status": "??",
+      "status": "M",
       "path": "src/test/tracker-integration.test.tsx"
     },
     {
-      "status": "??",
+      "status": "M",
       "path": "src/test/unified-insights.test.ts"
     },
     {
       "status": "??",
-      "path": "src/test/video-attachment.test.ts"
+      "path": "src/test/demo-curation.test.ts"
     }
   ],
   "next_action": null,
-  "context_notes": "Recent commits:\nc80db85 steps 1,2\n187c951 Add project README\nf661437 Implemented zero-to-hero flow\n1904112 Changes\n4b86de6 Changes"
+  "context_notes": "Recent commits:\n1fcdfdb version 12\nc80db85 steps 1,2\n187c951 Add project README\nf661437 Implemented zero-to-hero flow\n1904112 Changes"
 }
