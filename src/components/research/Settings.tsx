@@ -277,11 +277,12 @@ export function Settings() {
       <section className="setting-section" aria-labelledby="usage-settings">
         <h2 id="usage-settings">Token usage counter</h2>
         <p>
-          HQ counts real provider-reported tokens
+          HQ usage counts today&apos;s real Tracker and Explorer analyses and their
+          provider-reported tokens
           {usageSince
-            ? ` since ${new Date(usageSince).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}.`
-            : " across all stored runs."}{" "}
-          Resetting starts a new window; stored runs keep their real usage.
+            ? `, starting at your reset (${new Date(usageSince).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}) if that is later than midnight.`
+            : "."}{" "}
+          The daily cap always counts the whole day. Stored runs keep their real usage.
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           <Button variant="outline" size="sm" onClick={() => resetUsageCounter()}>
@@ -290,7 +291,7 @@ export function Settings() {
           </Button>
           {usageSince && (
             <Button variant="ghost" size="sm" onClick={() => clearUsageCounter()}>
-              Show all-time usage
+              Clear reset
             </Button>
           )}
         </div>

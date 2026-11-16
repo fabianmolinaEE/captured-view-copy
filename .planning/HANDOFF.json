@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "timestamp": "2026-11-16T04:25:27.231Z",
+  "timestamp": "2026-11-16T04:59:31.006Z",
   "source": "auto-postool",
   "partial": false,
   "phase": null,
@@ -22,21 +22,25 @@
     },
     {
       "status": "M",
-      "path": "src/lib/research/frameSampler.ts"
+      "path": "src/components/research/HeroHQ.tsx"
     },
     {
       "status": "M",
-      "path": "src/lib/research/server/analysis.server.ts"
+      "path": "src/components/research/Settings.tsx"
     },
     {
       "status": "M",
-      "path": "src/lib/research/server/analysisPrompt.server.ts"
+      "path": "src/test/hero-hq.test.tsx"
     },
     {
-      "status": "M",
-      "path": "src/lib/research/types.ts"
+      "status": "??",
+      "path": "src/lib/research/hqStats.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/test/hq-stats.test.ts"
     }
   ],
   "next_action": null,
-  "context_notes": "Recent commits:\n6be5b9f fixed logo\ncbd467d last versio\n1fcdfdb version 12\nc80db85 steps 1,2\n187c951 Add project README"
+  "context_notes": "Recent commits:\nc73a154 fixed granularity of insights\n6be5b9f fixed logo\ncbd467d last versio\n1fcdfdb version 12\nc80db85 steps 1,2"
 }

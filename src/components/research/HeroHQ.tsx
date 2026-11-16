@@ -8,26 +8,20 @@ import { SourceMarker, VideoCount } from "./SourceMarker";
 import { sourceAccent } from "@/lib/research/sourceMarkers";
 import { useAgentSettings } from "@/hooks/use-agent-settings";
 import { useUsageSince } from "@/hooks/use-usage-since";
-import { tokensSince } from "@/lib/research/agentSettings";
+import { computeHqStats } from "@/lib/research/hqStats";
 import { selectProduct, useProduct } from "@/hooks/use-product";
 import { useSimulation } from "@/hooks/use-simulation";
 import { useSessionsChanged } from "@/hooks/use-demo-import";
-import { analysesToday, RUNNER_NOT_CONNECTED } from "@/lib/research/agentSettings";
-import {
-  competitorOf,
-  competitorSessionsFor,
-  isCompetitorSession,
-} from "@/lib/research/competitors";
-import { isArchivedSession, products, sessionsForProduct } from "@/lib/research/products";
+import { RUNNER_NOT_CONNECTED } from "@/lib/research/agentSettings";
+import { competitorOf, isCompetitorSession } from "@/lib/research/competitors";
+import { isArchivedSession, products } from "@/lib/research/products";
 import { getScout, type ScoutId } from "@/lib/research/scouts";
 import { sampleInsights } from "@/lib/research/demo/happyPath";
 import { listSessions } from "@/lib/research/sessionStorage";
 import type { SimulatedRun, StageState } from "@/lib/research/simulation";
 import {
-  buildUnifiedInsights,
   compareUnified,
   isRetiredDemoSession,
-  shownFindings,
   type UnifiedInsight,
 } from "@/lib/research/unifiedInsights";
 import type { Session } from "@/lib/research/types";
@@ -45,7 +39,7 @@ type Row = { item: UnifiedInsight; product: ProductRef };
 
 const nf = new Intl.NumberFormat("en-US");
 const fmt = (n: number) => nf.format(n);
-const plural = (n: number, word: string) => `${fmt(n)} ${word}${n === 1 ? "" : "s"}`;
+const plural = (n: number, word: string, many = `${word}s`) => `${fmt(n)} ${n === 1 ? word : many}`;
 const ATTENTION_LIMIT = 6;
 const TRACKER = getScout("tracker").colors.main;
 const EXPLORER = getScout("explorer").colors.main;
@@ -375,14 +369,19 @@ export function HeroHQ() {
   const all = stored.filter((s) => !isRetiredDemoSession(s));
   const own = all.filter((s) => !isCompetitorSession(s) && !isArchivedSession(s));
   const competitor = all.filter((s) => isCompetitorSession(s));
-  const ownInsights = own.reduce((n, s) => n + shownFindings(s).length, 0);
-  const competitorInsights = competitor.reduce((n, s) => n + shownFindings(s).length, 0);
-  const tokensOf = (sessions: Session[]) => tokensSince(sessions, usageSince);
-  const trackerTokens = tokensOf(own);
-  const explorerTokens = tokensOf(competitor);
   const now = new Date(sim.now);
-  const trackerToday = analysesToday(all, now, "tracker");
-  const explorerToday = analysesToday(all, now, "explorer");
+  // Every HQ number comes from one helper that reuses the Insights list and the Analyze cap rule.
+  const stats = computeHqStats(stored, {
+    now,
+    usageSince,
+    sampleDecision: sim.sampleDecision,
+  });
+  const ownInsights = stats.insights.tracker;
+  const competitorInsights = stats.insights.explorer;
+  const trackerTokens = stats.usage.tracker.tokens;
+  const explorerTokens = stats.usage.explorer.tokens;
+  const trackerToday = stats.capToday.tracker;
+  const explorerToday = stats.capToday.explorer;
   const latestOwnRun = own
     .flatMap((session) =>
       session.runs.map((run) => ({ session, at: Date.parse(run.completed_at) })),
@@ -393,12 +392,7 @@ export function HeroHQ() {
   /* Unified insights (Tracker + Explorer + labeled sample). HQ lists Uber Eats only (demo focus). */
   const rows: Row[] = products
     .filter((product) => product.id === "uber-eats")
-    .flatMap((product) =>
-      buildUnifiedInsights(all, product.id, { sampleDecision: sim.sampleDecision }).map((item) => ({
-        item,
-        product,
-      })),
-    );
+    .flatMap((product) => stats.insightsByProduct[product.id].map((item) => ({ item, product })));
   // The three featured demo rows always show, in fixed order, matching Insights (UBER-EATS-DEMO.md
   // check 3); each row's status reads Review insight, Test approved, Rejected and so on.
   const featured = rows
@@ -452,13 +446,15 @@ export function HeroHQ() {
       ? "working"
       : "idle";
 
-  const spendByProduct: SpendRow[] = products.map((product) => ({
+  const spendByProduct: SpendRow[] = stats.products.map((product) => ({
     label: product.name,
-    value:
-      tokensOf(sessionsForProduct(own, product.id)) +
-      tokensOf(competitorSessionsFor(all, product.id)),
+    value: product.tokens,
     color: "#c4bbff",
   }));
+  const windowLabel = stats.window.fromReset
+    ? `since ${new Date(stats.window.start).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}`
+    : "today";
+  const windowAnalyses = stats.usage.tracker.analyses + stats.usage.explorer.analyses;
 
   return (
     <Shell section="HQ">
@@ -688,22 +684,27 @@ export function HeroHQ() {
               color={EXPLORER}
             />
             <SpendBars
-              label="Tokens by agent"
+              label={`Tokens by agent · ${windowLabel}`}
               rows={[
-                { label: "Tracker", value: trackerTokens, color: TRACKER },
-                { label: "Explorer", value: explorerTokens, color: EXPLORER },
+                {
+                  label: `Tracker · ${plural(stats.usage.tracker.analyses, "run")}`,
+                  value: trackerTokens,
+                  color: TRACKER,
+                },
+                {
+                  label: `Explorer · ${plural(stats.usage.explorer.analyses, "run")}`,
+                  value: explorerTokens,
+                  color: EXPLORER,
+                },
               ]}
             />
-            <SpendBars label="Tokens by product" rows={spendByProduct} />
+            <SpendBars label={`Tokens by product · ${windowLabel}`} rows={spendByProduct} />
             <p
               className="m-0 text-[11px] text-[color:var(--muted-foreground)]"
-              title="Token totals are provider-reported on stored runs. Billing credits are not connected in the prototype; Experimenter and Fixer runs are simulated and use no tokens."
+              title="Analyses count real Tracker/Explorer runs that reached Gemini (not the bundled pre-generated demo runs), the same rule as the daily cap. Tokens are provider-reported on exactly those runs. Experimenter and Fixer runs are simulated and use no tokens. Billing credits are not connected."
             >
-              Provider-reported tokens
-              {usageSince
-                ? ` since ${new Date(usageSince).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}`
-                : ""}{" "}
-              · credits not connected
+              {plural(windowAnalyses, "analysis", "analyses")} {windowLabel} ·{" "}
+              {fmt(trackerTokens + explorerTokens)} tokens · credits not connected
             </p>
           </section>
         </aside>

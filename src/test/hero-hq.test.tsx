@@ -60,6 +60,7 @@ function uberEatsSession(findings = 2, tokens = 500): Session {
   const run = makeRun({
     mode: "public_video",
     usage: { total_tokens: tokens },
+    started_at: new Date().toISOString(),
     completed_at: new Date().toISOString(),
   });
   return makeSession({
@@ -152,14 +153,21 @@ describe("HQ", () => {
   });
 
   it("unifies real Tracker and Explorer insights with source markers and real usage", async () => {
-    const checkout = makeSession({ runs: [makeRun({ usage: { total_tokens: 1000 } })] });
+    const today = new Date().toISOString();
+    const checkout = makeSession({
+      runs: [makeRun({ usage: { total_tokens: 1000 }, started_at: today, completed_at: today })],
+    });
     checkout.findings = [
       makeFinding({ analysis_run_id: checkout.runs[0]!.id, review_status: "pending" }),
     ];
     const uber = uberEatsSession(2, 500);
     uber.findings[0]!.id = FEATURED_TRACKER_FINDING_ID;
     const doordash = makeSession({ source_app: "DoorDash", runs: [] });
-    const ddRun = makeRun({ usage: { total_tokens: 9999 } });
+    const ddRun = makeRun({
+      usage: { total_tokens: 9999 },
+      started_at: today,
+      completed_at: today,
+    });
     doordash.runs = [ddRun];
     doordash.findings = [
       makeFinding({ analysis_run_id: ddRun.id, title: "Cart add-ons", review_status: "pending" }),
@@ -202,12 +210,36 @@ describe("HQ", () => {
     expect(within(agent("Tracker")).getByText("3")).toBeInTheDocument();
     expect(within(agent("Explorer")).getByText("1")).toBeInTheDocument();
     expect(within(agent("Explorer")).getByText(/Watching DoorDash · 1 clip analyzed/));
-    const byAgent = screen.getByRole("group", { name: "Tokens by agent" });
+    const byAgent = screen.getByRole("group", { name: /^Tokens by agent · today$/ });
     expect(within(byAgent).getByText("1,500")).toBeInTheDocument();
     expect(within(byAgent).getByText("9,999")).toBeInTheDocument();
-    const byProduct = screen.getByRole("group", { name: "Tokens by product" });
+    const byProduct = screen.getByRole("group", { name: /^Tokens by product · today$/ });
     expect(within(byProduct).getByText("10,499")).toBeInTheDocument();
     expect(within(byProduct).getByText("1,000")).toBeInTheDocument();
+    // Runs and tokens share one window, and the run counts match the daily-cap meters.
+    expect(within(byAgent).getByText("Tracker · 2 runs")).toBeInTheDocument();
+    expect(within(byAgent).getByText("Explorer · 1 run")).toBeInTheDocument();
+    expect(screen.getByText(/3 analyses today · 11,499 tokens/)).toBeInTheDocument();
+  });
+
+  it("leaves older runs and pre-generated runs out of today's usage", async () => {
+    const old = uberEatsSession(1, 500);
+    old.runs[0]!.started_at = "2026-11-11T00:00:00.000Z";
+    old.runs[0]!.completed_at = "2026-11-11T00:00:01.000Z";
+    const bundled = uberEatsSession(1, 7000);
+    bundled.pregenerated = {
+      source: "uber-eats-tracker-runs",
+      generated_at: "2026-11-13T00:00:00.000Z",
+      note: "test",
+      run_ids: [bundled.runs[0]!.id],
+      imported_at: new Date().toISOString(),
+    } as Session["pregenerated"];
+    store.sessions = [old, bundled];
+    render(<HeroHQ />);
+    await screen.findByText(/Last run/);
+    const byAgent = screen.getByRole("group", { name: /^Tokens by agent · today$/ });
+    expect(within(byAgent).getByText("Tracker · 0 runs")).toBeInTheDocument();
+    expect(screen.getByText(/0 analyses today · 0 tokens/)).toBeInTheDocument();
   });
 
   it("keeps a reviewed featured insight in the list with its status", async () => {
