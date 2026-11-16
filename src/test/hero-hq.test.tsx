@@ -193,8 +193,9 @@ describe("HQ", () => {
       within(explorer).getByRole("img", { name: "Found by Explorer, watching DoorDash" }),
     ).toBeInTheDocument();
     expect(within(explorer).queryByText("Simulated demo")).not.toBeInTheDocument();
-    // Archived fixtures never appear; every real card is n = 1.
-    expect(links).toHaveLength(5);
+    // HQ lists Uber Eats only: the Bag Checkout finding and archived fixtures never appear.
+    expect(links).toHaveLength(4);
+    expect(links.some((link) => link.getAttribute("href")?.includes(checkout.id))).toBe(false);
     fireEvent.click(explorer);
     expect(product).toBe("uber-eats");
 

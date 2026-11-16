@@ -7,6 +7,8 @@ import { SimulatedBadge } from "./SimulatedBadge";
 import { SourceMarker, VideoCount } from "./SourceMarker";
 import { sourceAccent } from "@/lib/research/sourceMarkers";
 import { useAgentSettings } from "@/hooks/use-agent-settings";
+import { useUsageSince } from "@/hooks/use-usage-since";
+import { tokensSince } from "@/lib/research/agentSettings";
 import { selectProduct, useProduct } from "@/hooks/use-product";
 import { useSimulation } from "@/hooks/use-simulation";
 import { useSessionsChanged } from "@/hooks/use-demo-import";
@@ -64,13 +66,6 @@ function relativeTime(at: number, now: number) {
   return new Date(at).toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
-const tokensOf = (sessions: Session[]) =>
-  sessions
-    .flatMap((s) => s.runs)
-    .reduce((sum, run) => {
-      const total = run.usage?.total_tokens;
-      return typeof total === "number" && Number.isFinite(total) ? sum + total : sum;
-    }, 0);
 const analyzedCount = (sessions: Session[]) =>
   sessions.filter((s) => s.runs.some((r) => r.status === "completed")).length;
 
@@ -351,6 +346,7 @@ export function HeroHQ() {
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState("");
   const { settings } = useAgentSettings();
+  const usageSince = useUsageSince();
   const sim = useSimulation();
   const { productId } = useProduct();
   // Insights is product-scoped: from HQ, land on the demo product when none is chosen yet.
@@ -381,6 +377,7 @@ export function HeroHQ() {
   const competitor = all.filter((s) => isCompetitorSession(s));
   const ownInsights = own.reduce((n, s) => n + shownFindings(s).length, 0);
   const competitorInsights = competitor.reduce((n, s) => n + shownFindings(s).length, 0);
+  const tokensOf = (sessions: Session[]) => tokensSince(sessions, usageSince);
   const trackerTokens = tokensOf(own);
   const explorerTokens = tokensOf(competitor);
   const now = new Date(sim.now);
@@ -393,13 +390,15 @@ export function HeroHQ() {
     .filter(({ at }) => Number.isFinite(at))
     .sort((a, b) => b.at - a.at)[0];
 
-  /* Unified insights (Tracker + Explorer + labeled sample), across products. */
-  const rows: Row[] = products.flatMap((product) =>
-    buildUnifiedInsights(all, product.id, { sampleDecision: sim.sampleDecision }).map((item) => ({
-      item,
-      product,
-    })),
-  );
+  /* Unified insights (Tracker + Explorer + labeled sample). HQ lists Uber Eats only (demo focus). */
+  const rows: Row[] = products
+    .filter((product) => product.id === "uber-eats")
+    .flatMap((product) =>
+      buildUnifiedInsights(all, product.id, { sampleDecision: sim.sampleDecision }).map((item) => ({
+        item,
+        product,
+      })),
+    );
   // The three featured demo rows always show, in fixed order, matching Insights (UBER-EATS-DEMO.md
   // check 3); each row's status reads Review insight, Test approved, Rejected and so on.
   const featured = rows
@@ -700,7 +699,11 @@ export function HeroHQ() {
               className="m-0 text-[11px] text-[color:var(--muted-foreground)]"
               title="Token totals are provider-reported on stored runs. Billing credits are not connected in the prototype; Experimenter and Fixer runs are simulated and use no tokens."
             >
-              Provider-reported tokens · credits not connected
+              Provider-reported tokens
+              {usageSince
+                ? ` since ${new Date(usageSince).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}`
+                : ""}{" "}
+              · credits not connected
             </p>
           </section>
         </aside>

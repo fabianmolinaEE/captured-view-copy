@@ -1,5 +1,14 @@
 import { useEffect, useState } from "react";
-import { Check, CircleAlert, HardDrive, ShieldCheck, Trash2, Save, Info } from "lucide-react";
+import {
+  Check,
+  CircleAlert,
+  HardDrive,
+  ShieldCheck,
+  Trash2,
+  Save,
+  Info,
+  RotateCcw,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Shell, PageHeading } from "./Shell";
 import { clearAll, getSampling, saveSampling } from "@/lib/research/sessionStorage";
@@ -21,6 +30,8 @@ import { ScoutCard } from "./ScoutCard";
 import { SimulatedBadge } from "./SimulatedBadge";
 import { getScout, scoutIds, type ScoutId } from "@/lib/research/scouts";
 import { useAgentSettings } from "@/hooks/use-agent-settings";
+import { useUsageSince } from "@/hooks/use-usage-since";
+import { clearUsageCounter, resetUsageCounter } from "@/lib/research/agentSettings";
 import { useSimulation } from "@/hooks/use-simulation";
 import {
   MAX_ANALYSES_LIMIT,
@@ -177,6 +188,7 @@ export function Settings() {
   const [importMessage, setImportMessage] = useState("");
   const [importing, setImporting] = useState(false);
   const agents = useAgentSettings();
+  const usageSince = useUsageSince();
   const simulation = useSimulation();
   const [sessions, setSessions] = useState<Session[]>();
   useEffect(() => {
@@ -261,6 +273,27 @@ export function Settings() {
             {simMessage}
           </div>
         )}
+      </section>
+      <section className="setting-section" aria-labelledby="usage-settings">
+        <h2 id="usage-settings">Token usage counter</h2>
+        <p>
+          HQ counts real provider-reported tokens
+          {usageSince
+            ? ` since ${new Date(usageSince).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}.`
+            : " across all stored runs."}{" "}
+          Resetting starts a new window; stored runs keep their real usage.
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <Button variant="outline" size="sm" onClick={() => resetUsageCounter()}>
+            <RotateCcw />
+            Reset usage counter
+          </Button>
+          {usageSince && (
+            <Button variant="ghost" size="sm" onClick={() => clearUsageCounter()}>
+              Show all-time usage
+            </Button>
+          )}
+        </div>
       </section>
       <section className="setting-section" aria-labelledby="tracker-runs-settings">
         <h2 id="tracker-runs-settings">Pre-generated runs</h2>

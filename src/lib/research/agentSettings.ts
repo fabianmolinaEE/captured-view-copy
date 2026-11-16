@@ -105,6 +105,49 @@ export function saveAgentSettings(settings: AgentSettings): boolean {
     return false;
   }
 }
+/**
+ * Usage window: HQ token totals count only provider-reported usage on runs completed at or after
+ * this time. Resetting never edits or fabricates usage; older runs keep their real numbers.
+ */
+export const USAGE_SINCE_KEY = "loopmate-usage-since";
+export const USAGE_SINCE_EVENT = "loopmate-usage-since-changed";
+export function loadUsageSince(): string | null {
+  try {
+    const value = window.localStorage.getItem(USAGE_SINCE_KEY);
+    return value && Number.isFinite(Date.parse(value)) ? value : null;
+  } catch {
+    return null;
+  }
+}
+export function resetUsageCounter(at: Date = new Date()): string | null {
+  try {
+    const iso = at.toISOString();
+    window.localStorage.setItem(USAGE_SINCE_KEY, iso);
+    window.dispatchEvent(new Event(USAGE_SINCE_EVENT));
+    return iso;
+  } catch {
+    return null;
+  }
+}
+export function clearUsageCounter() {
+  try {
+    window.localStorage.removeItem(USAGE_SINCE_KEY);
+    window.dispatchEvent(new Event(USAGE_SINCE_EVENT));
+  } catch {
+    /* storage unavailable */
+  }
+}
+/** Real provider-reported tokens on runs completed in the usage window (all runs if no reset). */
+export function tokensSince(sessions: Session[], since: string | null) {
+  const from = since ? Date.parse(since) : -Infinity;
+  return sessions
+    .flatMap((s) => s.runs)
+    .filter((run) => Date.parse(run.completed_at) >= from)
+    .reduce((sum, run) => {
+      const total = run.usage?.total_tokens;
+      return typeof total === "number" && Number.isFinite(total) ? sum + total : sum;
+    }, 0);
+}
 export function updateScoutSettings(
   settings: AgentSettings,
   scout: ScoutId,

@@ -1,7 +1,7 @@
 {
   "version": "1.0",
-  "timestamp": "2026-11-14T04:21:09.054Z",
-  "source": "auto-postool",
+  "timestamp": "2026-11-16T01:23:16.684Z",
+  "source": "auto-compact",
   "partial": false,
   "phase": null,
   "phase_name": null,
@@ -22,23 +22,7 @@
     },
     {
       "status": "M",
-      "path": "AGENTS.md"
-    },
-    {
-      "status": "M",
-      "path": "docs/AUTOMATED-LOOP.md"
-    },
-    {
-      "status": "M",
-      "path": "docs/PROTOTYPE-PHASE-PLAN.md"
-    },
-    {
-      "status": "M",
-      "path": "docs/UBER-EATS-DEMO.md"
-    },
-    {
-      "status": "M",
-      "path": "src/components/research/Evaluation.tsx"
+      "path": "public/favicon.ico"
     },
     {
       "status": "M",
@@ -46,81 +30,37 @@
     },
     {
       "status": "M",
-      "path": "src/components/research/Insights.tsx"
+      "path": "src/components/research/Settings.tsx"
     },
     {
       "status": "M",
-      "path": "src/components/research/SessionReview.tsx"
+      "path": "src/lib/research/agentSettings.ts"
     },
     {
       "status": "M",
-      "path": "src/components/research/SourceMarker.tsx"
-    },
-    {
-      "status": "M",
-      "path": "src/hooks/use-demo-import.ts"
-    },
-    {
-      "status": "M",
-      "path": "src/hooks/use-research-session.ts"
-    },
-    {
-      "status": "M",
-      "path": "src/lib/research/demo/doordash-explorer-runs.json"
-    },
-    {
-      "status": "M",
-      "path": "src/lib/research/demo/happyPath.ts"
-    },
-    {
-      "status": "M",
-      "path": "src/lib/research/demo/importExplorerRuns.ts"
-    },
-    {
-      "status": "M",
-      "path": "src/lib/research/demo/importTrackerRuns.ts"
-    },
-    {
-      "status": "M",
-      "path": "src/lib/research/demo/uber-eats-tracker-runs.json"
-    },
-    {
-      "status": "M",
-      "path": "src/lib/research/unifiedInsights.ts"
-    },
-    {
-      "status": "M",
-      "path": "src/test/explorer-import.test.tsx"
+      "path": "src/routes/__root.tsx"
     },
     {
       "status": "M",
       "path": "src/test/hero-hq.test.tsx"
     },
     {
-      "status": "M",
-      "path": "src/test/insights-scouts.test.tsx"
-    },
-    {
-      "status": "M",
-      "path": "src/test/tracker-import-ui.test.tsx"
-    },
-    {
-      "status": "M",
-      "path": "src/test/tracker-import.test.ts"
-    },
-    {
-      "status": "M",
-      "path": "src/test/tracker-integration.test.tsx"
-    },
-    {
-      "status": "M",
-      "path": "src/test/unified-insights.test.ts"
+      "status": "??",
+      "path": "public/apple-touch-icon.png"
     },
     {
       "status": "??",
-      "path": "src/test/demo-curation.test.ts"
+      "path": "public/favicon.svg"
+    },
+    {
+      "status": "??",
+      "path": "src/hooks/use-usage-since.ts"
+    },
+    {
+      "status": "??",
+      "path": "src/test/usage-counter.test.ts"
     }
   ],
   "next_action": null,
-  "context_notes": "Recent commits:\n1fcdfdb version 12\nc80db85 steps 1,2\n187c951 Add project README\nf661437 Implemented zero-to-hero flow\n1904112 Changes"
+  "context_notes": "Recent commits:\ncbd467d last versio\n1fcdfdb version 12\nc80db85 steps 1,2\n187c951 Add project README\nf661437 Implemented zero-to-hero flow"
 }
