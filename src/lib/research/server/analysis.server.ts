@@ -210,7 +210,41 @@ const mmss = (ms: number) => {
 export function publicWindowInstruction(clip: { start_ms: number; end_ms: number }) {
   return `Analyze only the segment from ${mmss(clip.start_ms)} to ${mmss(clip.end_ms)} of this video (start_ms ${clip.start_ms}, end_ms ${clip.end_ms}). Ignore everything outside it. Every finding's timestamp_ms and end_timestamp_ms must be inside this segment, in milliseconds on the full video's timeline.`;
 }
+/**
+ * Short request-scoped aliases ("ev1", "ev2", …) for event IDs, in event order. Long UUIDs are
+ * error-prone for the model to copy (it abbreviates them to a prefix), so the request carries
+ * these instead and returned IDs are looked up exactly. Nothing is guessed or prefix-matched: any
+ * other string stays as written and fails validation unless it is a supplied event ID. Returns
+ * null (send real IDs) if an alias would collide with a real ID.
+ */
+export function eventAliases(events: readonly { id: string }[]): Map<string, string> | null {
+  const real = new Set(events.map((e) => e.id));
+  const aliases = new Map(events.map((e, i) => [`ev${i + 1}`, e.id] as const));
+  for (const alias of aliases.keys()) if (real.has(alias)) return null;
+  return aliases;
+}
+/** Exact alias → event ID lookup on model output; unknown strings are left untouched. */
+function resolveEventAliases(parsed: unknown, aliases: Map<string, string> | null): unknown {
+  if (!aliases || !parsed || typeof parsed !== "object") return parsed;
+  const findings = (parsed as { findings?: unknown }).findings;
+  if (!Array.isArray(findings)) return parsed;
+  return {
+    ...parsed,
+    findings: findings.map((f: unknown) =>
+      f && typeof f === "object" && Array.isArray((f as { event_ids?: unknown }).event_ids)
+        ? {
+            ...f,
+            event_ids: (f as { event_ids: unknown[] }).event_ids.map((id) =>
+              typeof id === "string" ? (aliases.get(id) ?? id) : id,
+            ),
+          }
+        : f,
+    ),
+  };
+}
 export function geminiBody(input: AnalysisInput) {
+  const aliases = eventAliases(input.events);
+  const realToAlias = new Map([...(aliases ?? [])].map(([alias, id]) => [id, alias] as const));
   const {
     frames,
     categories: _categories,
@@ -238,7 +272,12 @@ export function geminiBody(input: AnalysisInput) {
       {
         role: "user",
         parts: [
-          { text: JSON.stringify(evidence) },
+          {
+            text: JSON.stringify({
+              ...evidence,
+              events: evidence.events.map((e) => ({ ...e, id: realToAlias.get(e.id) ?? e.id })),
+            }),
+          },
           ...(input.mode === "public_video" && input.youtube_video
             ? [
                 // Agentic video understanding: the model navigates the timeline itself and picks
@@ -351,8 +390,9 @@ export async function analyze(
       throw new Error("Gemini returned malformed JSON. No proposals were saved.");
     }
   }
+  const aliases = eventAliases(input.events);
   const findings = validateFindings(
-    parsed,
+    resolveEventAliases(parsed, aliases),
     { id: input.session_id, duration_ms: input.duration_ms, events: input.events },
     input.run_id,
     input.mode,
@@ -397,7 +437,9 @@ export async function analyze(
       started_at,
       completed_at: new Date().toISOString(),
       latency_ms: Date.now() - started,
+      // Verbatim model answer; its event_ids use the request aliases recorded below.
       raw_output: parsed,
+      ...(aliases && input.events.length ? { event_aliases: Object.fromEntries(aliases) } : {}),
       input_fingerprint: fingerprint,
       ...(input.focus_areas?.length ? { focus_areas: [...input.focus_areas] } : {}),
       ...(input.competitor_of ? { competitor_of: input.competitor_of as ProductId } : {}),

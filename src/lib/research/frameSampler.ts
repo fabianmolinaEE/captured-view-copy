@@ -108,9 +108,12 @@ export interface CloseUpTarget {
   y: number;
 }
 /**
- * Missed and repeated touch points that deserve an enlarged view, paired with the nearest full
- * frame (preferring just after the touch). Only crop-normalized coordinates qualify; legacy
- * viewport-pixel coordinates cannot be mapped onto the crop.
+ * Touch points that deserve an enlarged view, each paired with a full sampled frame. Missed and
+ * repeated touches come first (frame nearest just after the touch, which still shows the control);
+ * remaining slots go to other touches in time order, paired with the frame just before the touch
+ * because a successful tap usually changes the screen. That way the controls a person actually
+ * used are shown enlarged even when nothing went wrong. Only crop-normalized coordinates qualify;
+ * legacy viewport-pixel coordinates cannot be mapped onto the crop.
  */
 export function closeUpTargets(
   events: SessionEvent[],
@@ -118,24 +121,37 @@ export function closeUpTargets(
   max = MAX_CLOSE_UPS,
 ): CloseUpTarget[] {
   const chosen: (CloseUpTarget & { at: number })[] = [];
-  for (const e of interactionSignals(events)) {
-    if (chosen.length >= max) break;
-    if (!isTap(e) || e.metadata?.["coordinate_space"] !== "checkout_normalized") continue;
+  const signals = interactionSignals(events);
+  const flagged = new Set(signals);
+  const others = events.filter((e) => isTap(e) && !flagged.has(e)).sort((a, b) => a.t_ms - b.t_ms);
+  const pick = (e: SessionEvent, before: boolean) => {
+    if (chosen.length >= max) return;
+    if (!isTap(e) || e.metadata?.["coordinate_space"] !== "checkout_normalized") return;
     const { x, y } = e;
-    if (x === undefined || y === undefined || !(x >= 0 && x <= 1 && y >= 0 && y <= 1)) continue;
-    const near = times
-      .filter((t) => t >= e.t_ms - 500 && t <= e.t_ms + 1000)
-      .sort((a, b) => Math.abs(a - (e.t_ms + 200)) - Math.abs(b - (e.t_ms + 200)))[0];
-    if (near === undefined) continue;
+    if (x === undefined || y === undefined || !(x >= 0 && x <= 1 && y >= 0 && y <= 1)) return;
+    const near = (
+      before
+        ? times.filter((t) => t >= e.t_ms - 1500 && t <= e.t_ms - 50).sort((a, b) => b - a)
+        : times
+            .filter((t) => t >= e.t_ms - 500 && t <= e.t_ms + 1000)
+            .sort((a, b) => Math.abs(a - (e.t_ms + 200)) - Math.abs(b - (e.t_ms + 200)))
+    )[0];
+    if (near === undefined) return;
     // One close-up per spot: a burst of touches on the same control is shown once.
     if (chosen.some((c) => Math.abs(c.at - e.t_ms) < 1500 && Math.hypot(c.x - x, c.y - y) < 0.08))
-      continue;
+      return;
     chosen.push({ t_ms: near, x, y, at: e.t_ms });
-  }
+  };
+  for (const e of signals) pick(e, false);
+  for (const e of others) pick(e, true);
   return chosen.map(({ t_ms, x, y }) => ({ t_ms, x, y }));
 }
-/** Square close-up side as a fraction of the crop width, and its encoded size bound. */
-const CLOSE_UP_FRACTION = 0.3;
+/**
+ * Square close-up side as a fraction of the crop width, and its encoded size bound. A near-miss
+ * lands beside the control, so the close-up is centered on the touch and must be wide enough to
+ * show the whole nearby control too (0.3 cut a small button in half).
+ */
+const CLOSE_UP_FRACTION = 0.45;
 const CLOSE_UP_MAX_PX = 768;
 const CLOSE_UP_MAX_ZOOM = 4;
 /** Close-up area in normalized crop coordinates, clamped to stay inside the crop. */

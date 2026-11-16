@@ -201,6 +201,8 @@ export interface AnalysisRun {
   usage?: { input_tokens?: number; output_tokens?: number; total_tokens?: number };
   frame_timestamps_ms?: number[];
   input_fingerprint?: string;
+  /** Request-scoped alias → event ID map; `raw_output` cites the aliases. */
+  event_aliases?: Record<string, string> | undefined;
   source_clip?: { url: string; start_ms: number; end_ms: number };
   /** Provenance: emphasis lenses the server applied (allow-listed enum). */
   focus_areas?: AgentFocus[] | undefined;

@@ -1,7 +1,7 @@
 {
   "version": "1.0",
-  "timestamp": "2026-11-16T01:23:16.684Z",
-  "source": "auto-compact",
+  "timestamp": "2026-11-16T04:25:27.231Z",
+  "source": "auto-postool",
   "partial": false,
   "phase": null,
   "phase_name": null,
@@ -22,45 +22,21 @@
     },
     {
       "status": "M",
-      "path": "public/favicon.ico"
+      "path": "src/lib/research/frameSampler.ts"
     },
     {
       "status": "M",
-      "path": "src/components/research/HeroHQ.tsx"
+      "path": "src/lib/research/server/analysis.server.ts"
     },
     {
       "status": "M",
-      "path": "src/components/research/Settings.tsx"
+      "path": "src/lib/research/server/analysisPrompt.server.ts"
     },
     {
       "status": "M",
-      "path": "src/lib/research/agentSettings.ts"
-    },
-    {
-      "status": "M",
-      "path": "src/routes/__root.tsx"
-    },
-    {
-      "status": "M",
-      "path": "src/test/hero-hq.test.tsx"
-    },
-    {
-      "status": "??",
-      "path": "public/apple-touch-icon.png"
-    },
-    {
-      "status": "??",
-      "path": "public/favicon.svg"
-    },
-    {
-      "status": "??",
-      "path": "src/hooks/use-usage-since.ts"
-    },
-    {
-      "status": "??",
-      "path": "src/test/usage-counter.test.ts"
+      "path": "src/lib/research/types.ts"
     }
   ],
   "next_action": null,
-  "context_notes": "Recent commits:\ncbd467d last versio\n1fcdfdb version 12\nc80db85 steps 1,2\n187c951 Add project README\nf661437 Implemented zero-to-hero flow"
+  "context_notes": "Recent commits:\n6be5b9f fixed logo\ncbd467d last versio\n1fcdfdb version 12\nc80db85 steps 1,2\n187c951 Add project README"
 }

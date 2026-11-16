@@ -112,9 +112,9 @@ describe("frames near missed and repeated taps", () => {
     ).toHaveLength(4);
   });
   it("keeps the close-up square and inside the crop", () => {
-    // A phone crop of 730×1290 source pixels: a 219 px square around the touch.
+    // A phone crop of 730×1290 source pixels: a ~328 px square (45% of the width) around the touch.
     const area = closeUpRegion(0.98, 0.02, 730, 1290);
-    expect(area.width).toBeCloseTo(0.3);
+    expect(area.width).toBeCloseTo(0.45);
     expect(area.width * 730).toBeCloseTo(area.height * 1290);
     expect(area.x + area.width).toBeLessThanOrEqual(1);
     expect(area.y).toBe(0);
